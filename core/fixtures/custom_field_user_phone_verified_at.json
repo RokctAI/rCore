@@ -1,0 +1,15 @@
+[
+ {
+  "doctype": "Custom Field",
+  "dt": "User",
+  "fieldname": "phone_verified_at",
+  "fieldtype": "Datetime",
+  "label": "Phone Verified At",
+  "no_copy": 1,
+  "print_hide": 1,
+  "report_hide": 1,
+  "hidden": 1,
+  "name": "User-phone_verified_at"
+ }
+]
+

@@ -1,0 +1,27 @@
+[
+    {
+        "doctype": "Email Template",
+        "name": "Resend Verification",
+        "subject": "Please Verify Your Email Address for {{ doc.company_name }}",
+        "response": """
+<div style=\"font-family: Arial, sans-serif; color: #333;\">
+    <h2 style=\"color: #2c3e50;\">Verify Your Email</h2>
+    <p>Hello {{ doc.first_name }},</p>
+    <p>We have received a request to resend the verification email for your account with <strong>{{ doc.company_name }}</strong>.</p>
+    <p>Please click the button below to verify your email address and secure your account.</p>
+    <div style=\"margin: 20px 0; text-align: center;\">
+        <a href=\"{{ doc.verification_url }}\" style=\"background-color: #3498db; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;\">Verify Your Email Address</a>
+    </div>
+    <p>If the button above does not work, you can copy and paste the following link into your browser:</p>
+    <p><a href=\"{{ doc.verification_url }}\">{{ doc.verification_url }}</a></p>
+    <p>This verification link will expire in 72 hours.</p>
+    <br>
+    <p>Thank you,</p>
+    <p>The ROKCT.ai Team</p>
+</div>
+""",
+        "owner": "Administrator",
+        "module": "control"
+    }
+]
+

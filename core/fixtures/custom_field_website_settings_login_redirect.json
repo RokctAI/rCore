@@ -1,0 +1,10 @@
+{
+    "doctype":  "Custom Field",
+    "dt":  "Website Settings",
+    "fieldname":  "custom_login_redirect_url",
+    "fieldtype":  "Data",
+    "label":  "Custom Login Redirect URL",
+    "description":  "If set, the /login page will permanently redirect to this URL.",
+    "insert_after":  "post_login_route",
+    "module":  "core"
+}

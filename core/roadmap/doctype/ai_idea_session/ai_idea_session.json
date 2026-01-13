@@ -1,0 +1,67 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-04 12:24:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "roadmap",
+  "session_id",
+  "status",
+  "prompt_title"
+ ],
+ "fields": [
+  {
+   "fieldname": "roadmap",
+   "fieldtype": "Link",
+   "label": "Roadmap",
+   "options": "Roadmap",
+   "reqd": 1
+  },
+  {
+   "fieldname": "session_id",
+   "fieldtype": "Data",
+   "label": "Jules Session ID",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nCompleted\nError",
+   "reqd": 1
+  },
+  {
+   "fieldname": "prompt_title",
+   "fieldtype": "Data",
+   "label": "Prompt Title"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-10-04 12:24:00.000000",
+ "modified_by": "Administrator",
+ "module": "roadmap",
+ "name": "AI Idea Session",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

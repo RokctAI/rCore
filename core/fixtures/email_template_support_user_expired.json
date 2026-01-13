@@ -1,0 +1,21 @@
+[
+    {
+        "doctype": "Email Template",
+        "name": "Support User Expired",
+        "subject": "Support Access Revoked for {{ doc.support_user_name }}",
+        "response": """
+<div style=\"font-family: Arial, sans-serif; color: #333;\">
+    <h2 style=\"color: #2c3e50;\">Support Access Revoked</h2>
+    <p>This is an automated notification to inform you that the temporary support access for the user <strong>{{ doc.support_user_name }} ({{ doc.support_user_email }})</strong> has been automatically revoked as the 24-hour access window has expired.</p>
+    <p>The user account was disabled at: {{ doc.disabled_at }}</p>
+    <p>No further action is required from your side. This is for your security and information.</p>
+    <br>
+    <p>Thank you,</p>
+    <p>The ROKCT.ai Team</p>
+</div>
+""",
+        "owner": "Administrator",
+        "module": "control"
+    }
+]
+

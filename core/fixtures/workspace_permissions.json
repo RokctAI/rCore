@@ -1,0 +1,178 @@
+[
+    {
+        "doctype": "Role Permission",
+        "role": "Module: EDI",
+        "parent": "EDI",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Subcontracting",
+        "parent": "Subcontracting",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: E-commerce",
+        "parent": "E-commerce",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Bulk Transaction",
+        "parent": "Bulk Transaction",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Telephony",
+        "parent": "Telephony",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Communication",
+        "parent": "Communication",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Quality Management",
+        "parent": "Quality Management",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: ERPNext Integrations",
+        "parent": "ERPNext Integrations",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Regional",
+        "parent": "Regional",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Maintenance",
+        "parent": "Maintenance",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Portal",
+        "parent": "Portal",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Assets",
+        "parent": "Assets",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Utilities",
+        "parent": "Utilities",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Support",
+        "parent": "Support",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Stock",
+        "parent": "Stock",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Manufacturing",
+        "parent": "Manufacturing",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Setup",
+        "parent": "Setup",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Selling",
+        "parent": "Selling",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Projects",
+        "parent": "Projects",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Buying",
+        "parent": "Buying",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: CRM",
+        "parent": "CRM",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    },
+    {
+        "doctype": "Role Permission",
+        "role": "Module: Accounts",
+        "parent": "Accounts",
+        "parenttype": "Workspace",
+        "permlevel": 0,
+        "read": 1
+    }
+]

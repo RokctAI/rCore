@@ -1,0 +1,49 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2025-10-04 04:10:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "jules_api_key",
+  "source_repository"
+ ],
+ "fields": [
+  {
+   "fieldname": "jules_api_key",
+   "fieldtype": "Password",
+   "label": "Jules API Key",
+   "description": "Enter your personal Jules API key."
+  },
+  {
+   "fieldname": "source_repository",
+   "fieldtype": "Data",
+   "label": "Source Repository",
+   "description": "e.g., sources/github/your-org/your-repo"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-10-04 04:10:00.000000",
+ "modified_by": "Administrator",
+ "module": "roadmap",
+ "name": "Jules Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

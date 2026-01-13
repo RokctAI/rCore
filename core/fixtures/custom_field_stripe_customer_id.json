@@ -1,0 +1,14 @@
+[
+    {
+        "doctype": "Custom Field",
+        "dt": "Customer",
+        "fieldname": "stripe_customer_id",
+        "fieldtype": "Data",
+        "label": "Stripe Customer ID",
+        "no_copy": 1,
+        "print_hide": 1,
+        "read_only": 1,
+        "name": "Customer-stripe_customer_id"
+    }
+]
+

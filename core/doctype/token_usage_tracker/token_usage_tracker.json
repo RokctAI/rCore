@@ -1,0 +1,70 @@
+{
+    "name": "Token Usage Tracker",
+    "engine": "InnoDB",
+    "autoname": "hash",
+    "creation": "2025-10-03 16:00:00.000000",
+    "doctype": "DocType",
+    "fields": [
+        {
+            "fieldname": "user",
+            "fieldtype": "Link",
+            "label": "User",
+            "options": "User",
+            "reqd": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "model",
+            "fieldtype": "Data",
+            "label": "Model"
+        },
+        {
+            "fieldname": "endpoint",
+            "fieldtype": "Data",
+            "label": "Endpoint"
+        },
+        {
+            "fieldname": "prompt_tokens",
+            "fieldtype": "Int",
+            "label": "Prompt Tokens"
+        },
+        {
+            "fieldname": "completion_tokens",
+            "fieldtype": "Int",
+            "label": "Completion Tokens"
+        },
+        {
+            "fieldname": "total_tokens",
+            "fieldtype": "Int",
+            "label": "Total Tokens",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "reference_doctype",
+            "fieldtype": "Link",
+            "label": "Reference Doctype",
+            "options": "DocType"
+        },
+        {
+            "fieldname": "reference_name",
+            "fieldtype": "Dynamic Link",
+            "label": "Reference Name",
+            "options": "reference_doctype"
+        }
+    ],
+    "modified": "2025-11-02 04:42:11.447709",
+    "modified_by": "Administrator",
+    "module": "control",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "role": "System Manager",
+            "read": 1,
+            "write": 1,
+            "create": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

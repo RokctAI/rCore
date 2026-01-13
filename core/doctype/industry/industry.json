@@ -1,0 +1,32 @@
+{
+    "name": "Industry",
+    "engine": "InnoDB",
+    "autoname": "field:industry_name",
+    "creation": "2025-09-10 03:28:00.000000",
+    "doctype": "DocType",
+    "module": "control",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "role": "System Manager",
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1
+        }
+    ],
+    "fields": [
+        {
+            "fieldname": "industry_name",
+            "fieldtype": "Data",
+            "label": "Industry Name",
+            "reqd": 1,
+            "unique": 1,
+            "in_list_view": 1
+        }
+    ],
+    "track_changes": 1,
+    "issingle": 0,
+    "sort_field": "modified",
+    "sort_order": "DESC"
+}

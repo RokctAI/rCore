@@ -1,0 +1,13 @@
+[
+    {"doctype": "Province", "province_name": "Eastern Cape"},
+    {"doctype": "Province", "province_name": "Free State"},
+    {"doctype": "Province", "province_name": "Gauteng"},
+    {"doctype": "Province", "province_name": "KwaZulu-Natal"},
+    {"doctype": "Province", "province_name": "Limpopo"},
+    {"doctype": "Province", "province_name": "Mpumalanga"},
+    {"doctype": "Province", "province_name": "National"},
+    {"doctype": "Province", "province_name": "North West"},
+    {"doctype": "Province", "province_name": "Northern Cape"},
+    {"doctype": "Province", "province_name": "Western Cape"}
+]
+

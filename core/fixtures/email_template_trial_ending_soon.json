@@ -1,0 +1,22 @@
+[
+    {
+        "doctype": "Email Template",
+        "name": "Trial Ending Soon",
+        "subject": "Your Trial for {{ doc.company_name }} is Ending Soon",
+        "response": """
+<div style=\"font-family: Arial, sans-serif; color: #333;\">
+    <h2 style=\"color: #2c3e50;\">Your Free Trial is Ending Soon</h2>
+    <p>Hello {{ doc.admin_name }},</p>
+    <p>This is a reminder that your free trial for <strong>{{ doc.company_name }}</strong> is scheduled to end in 7 days.</p>
+    <p>To ensure uninterrupted access to all features, please log in and upgrade to a paid plan.</p>
+    <p>If no action is taken, your account will be automatically switched to our free plan at the end of the trial period.</p>
+    <br>
+    <p>Thank you,</p>
+    <p>The ROKCT.ai Team</p>
+</div>
+""",
+        "owner": "Administrator",
+        "module": "control"
+    }
+]
+

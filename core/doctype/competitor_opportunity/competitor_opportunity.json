@@ -1,0 +1,39 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-13 12:36:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "opportunity",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "opportunity",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Opportunity",
+   "options": "Opportunity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "label": "Notes"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-13 12:36:00.000000",
+ "modified_by": "Administrator",
+ "module": "control",
+ "name": "Competitor Opportunity",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
+

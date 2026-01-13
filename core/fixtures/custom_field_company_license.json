@@ -1,0 +1,13 @@
+[
+    {
+        "doctype": "Custom Field",
+        "dt": "Company",
+        "fieldname": "credit_provider_license",
+        "fieldtype": "Data",
+        "label": "Credit Provider License Number",
+        "description": "Required if the Company provides interest-bearing loans (e.g. NCRCP Number).",
+        "insert_after": "tax_id",
+        "no_copy": 0,
+        "reqd": 0
+    }
+]

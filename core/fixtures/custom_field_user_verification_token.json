@@ -1,0 +1,15 @@
+[
+ {
+  "doctype": "Custom Field",
+  "dt": "User",
+  "fieldname": "email_verification_token",
+  "fieldtype": "Data",
+  "label": "Email Verification Token",
+  "no_copy": 1,
+  "print_hide": 1,
+  "report_hide": 1,
+  "hidden": 1,
+  "name": "User-email_verification_token"
+ }
+]
+

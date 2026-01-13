@@ -1,0 +1,48 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="container" style="padding-top: 50px; text-align: center;">
+    <h1>Processing Payment...</h1>
+    <p>Please wait while we securely process your payment with Paystack.</p>
+    <div id="paystack-button-container" style="margin-top: 20px;">
+        <button id="paystack-button" class="btn btn-primary">Pay Now</button>
+    </div>
+</div>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var handler = PaystackPop.setup({
+            key: '{{ public_key }}',
+            email: '{{ email }}',
+            amount: {{ amount }}, // Amount in kobo
+        currency: '{{ currency }}',
+        ref: '{{ reference }}',
+        callback: function (response) {
+            // This is called after the transaction is completed successfully
+            frappe.call({
+                method: "core.pay.doctype.paystack_settings.paystack_settings.verify_transaction_and_get_auth",
+                args: {
+                    reference: response.reference
+                },
+                callback: function (r) {
+                    if (r.message && r.message.success) {
+                        window.location.href = '/payment-success?reference=' + response.reference;
+                    } else {
+                        window.location.href = '/payment-failed?reason=' + (r.message ? r.message.message : 'Verification Failed');
+                    }
+                }
+            });
+        },
+        onClose: function () {
+            // This is called when the user closes the popup
+            window.location.href = '/payment-cancel';
+        }
+        });
+
+    // Automatically click the button to open the popup
+    // Or you can let the user click it. For a redirect flow, auto-click is better.
+    handler.openIframe();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+[
+    {
+        "doctype": "Role Permission",
+        "role": "System Manager",
+        "parent": "Company",
+        "parenttype": "DocType",
+        "permlevel": 0,
+        "create": 0
+    }
+]
+

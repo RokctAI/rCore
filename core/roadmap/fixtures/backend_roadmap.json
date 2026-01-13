@@ -1,0 +1,1103 @@
+[
+    {
+        "feature": "Auth: Register",
+        "explanation": "User registration",
+        "status": "Done"
+    },
+    {
+        "feature": "Auth: Login",
+        "explanation": "User login",
+        "status": "Done"
+    },
+    {
+        "feature": "Auth: Check Phone",
+        "explanation": "Check if a phone number is already registered",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Auth: Logout",
+        "explanation": "User logout",
+        "status": "Doing"
+    },
+    {
+        "feature": "Auth: Verify Phone",
+        "explanation": "Verify a user's phone number",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Auth: Resend Verification",
+        "explanation": "Resend the phone verification code",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Auth: Verify Email",
+        "explanation": "Verify a user's email address",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Auth: Forgot Password",
+        "explanation": "Initiate the forgot password process",
+        "status": "Done"
+    },
+    {
+        "feature": "Auth: Social Login",
+        "explanation": "Login with social providers",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Install: Check Init File",
+        "explanation": "Check if the application is initialized",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Install: Set Init File",
+        "explanation": "Set the initialization file",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Install: Set Database",
+        "explanation": "Set up the database",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Install: Create Admin",
+        "explanation": "Create the admin user",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Install: Run Migration",
+        "explanation": "Run database migrations",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Install: Check Licence",
+        "explanation": "Check the application license",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: API Status",
+        "explanation": "Get the status of the API",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Weather",
+        "explanation": "Get weather information",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Languages",
+        "explanation": "Manage languages",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Currencies",
+        "explanation": "Manage currencies",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Coupon Check",
+        "explanation": "Check the validity of a coupon",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Products",
+        "explanation": "Manage products",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Categories",
+        "explanation": "Manage categories",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Brands",
+        "explanation": "Manage brands",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Landing Pages",
+        "explanation": "Manage landing pages",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Shops",
+        "explanation": "Manage shops",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Banners",
+        "explanation": "Manage banners",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: FAQs",
+        "explanation": "Manage FAQs",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Payments",
+        "explanation": "Manage payment gateways",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Blogs",
+        "explanation": "Manage blog posts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Carts",
+        "explanation": "Manage shopping carts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Stories",
+        "explanation": "Manage stories",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Receipts",
+        "explanation": "Manage receipts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Order Statuses",
+        "explanation": "Manage order statuses",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Tags",
+        "explanation": "Manage tags",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Delivery Zones",
+        "explanation": "Manage delivery zones",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Product Histories",
+        "explanation": "View product history",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Careers",
+        "explanation": "Manage career openings",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Pages",
+        "explanation": "Manage static pages",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Branches",
+        "explanation": "Manage branches",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Orders",
+        "explanation": "Manage orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Push Notifications",
+        "explanation": "Send push notifications",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Parcel Orders",
+        "explanation": "Manage parcel orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Payment Gateways",
+        "explanation": "Manage all payment gateways",
+        "status": "Ideas"
+    },
+    {
+        "feature": "REST: Delivery Points",
+        "explanation": "Manage delivery points",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Profile",
+        "explanation": "Manage user profile",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Loan Management",
+        "explanation": "Manage user loans",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Loan Documents",
+        "explanation": "Manage loan documents",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Membership",
+        "explanation": "Manage user membership",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Orders",
+        "explanation": "Manage user orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Parcel Orders",
+        "explanation": "Manage user parcel orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Addresses",
+        "explanation": "Manage user addresses",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Invites",
+        "explanation": "Manage user invites",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Wallet",
+        "explanation": "Manage user wallet",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Transactions",
+        "explanation": "View user transactions",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Shop Management",
+        "explanation": "Manage user's shop (for sellers)",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Request Models",
+        "explanation": "Manage user request models",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Tickets",
+        "explanation": "Manage user support tickets",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Export Orders",
+        "explanation": "Export user orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Carts",
+        "explanation": "Manage user shopping carts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Order Refunds",
+        "explanation": "Manage user order refunds",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): Notifications",
+        "explanation": "Manage user notifications",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (User): PayFast Card Management",
+        "explanation": "Manage PayFast cards",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Deliveryman): Orders",
+        "explanation": "Manage delivery orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Deliveryman): Statistics",
+        "explanation": "View delivery statistics",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Deliveryman): Settings",
+        "explanation": "Manage deliveryman settings",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Deliveryman): Shop Bans",
+        "explanation": "Manage shop bans",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Deliveryman): Payouts",
+        "explanation": "Manage deliveryman payouts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Deliveryman): Order Reports",
+        "explanation": "View delivery order reports",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Deliveryman): Parcel Orders",
+        "explanation": "Manage delivery parcel orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Deliveryman): Payment to Partners",
+        "explanation": "Manage payments to partners",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Deliveryman): Delivery Zones",
+        "explanation": "Manage delivery zones",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Waiter): Orders",
+        "explanation": "Manage waiter orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Waiter): Order Reports",
+        "explanation": "View waiter order reports",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Cook): Orders",
+        "explanation": "Manage cook orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Cook): Order Reports",
+        "explanation": "View cook order reports",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Dashboard & Statistics",
+        "explanation": "View seller dashboard and statistics",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Sales History & Reports",
+        "explanation": "View sales history and reports",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Extras (Groups & Values)",
+        "explanation": "Manage product extras",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Units",
+        "explanation": "Manage product units",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Shop Management",
+        "explanation": "Manage seller's shop",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Categories",
+        "explanation": "Manage shop categories",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Brands",
+        "explanation": "Manage shop brands",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Kitchens",
+        "explanation": "Manage kitchens",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Shop Categories",
+        "explanation": "Manage shop categories",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Products",
+        "explanation": "Manage shop products",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Coupons",
+        "explanation": "Manage shop coupons",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Shop Users",
+        "explanation": "Manage shop users",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Invites",
+        "explanation": "Manage shop invites",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Discounts",
+        "explanation": "Manage shop discounts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Banners",
+        "explanation": "Manage shop banners",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Orders",
+        "explanation": "Manage shop orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Transactions",
+        "explanation": "View shop transactions",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Bonuses",
+        "explanation": "Manage shop bonuses",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Stories",
+        "explanation": "Manage shop stories",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Tags",
+        "explanation": "Manage shop tags",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Delivery Zones",
+        "explanation": "Manage shop delivery zones",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Shop Payments",
+        "explanation": "Manage shop payments",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Order Refunds",
+        "explanation": "Manage shop order refunds",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Shop Working Days",
+        "explanation": "Manage shop working days",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Shop Closed Days",
+        "explanation": "Manage shop closed days",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Payouts",
+        "explanation": "Manage seller payouts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Reviews",
+        "explanation": "Manage shop reviews",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Receipts",
+        "explanation": "Manage shop receipts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Shop Galleries",
+        "explanation": "Manage shop galleries",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Shop Deliveryman Settings",
+        "explanation": "Manage shop deliveryman settings",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Menus",
+        "explanation": "Manage shop menus",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Branches",
+        "explanation": "Manage shop branches",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Inventory",
+        "explanation": "Manage shop inventory",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Inventory Items",
+        "explanation": "Manage shop inventory items",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Ads Packages",
+        "explanation": "Manage ads packages",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Shop Ads Packages",
+        "explanation": "Manage shop ads packages",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Request Models",
+        "explanation": "Manage request models",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Payment to Partners",
+        "explanation": "Manage payments to partners",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): User Addresses",
+        "explanation": "Manage user addresses",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Delivery Man Delivery Zones",
+        "explanation": "Manage deliveryman delivery zones",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Seller): Combos",
+        "explanation": "Manage product combos",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Dashboard & Statistics",
+        "explanation": "View admin dashboard and statistics",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Terms & Conditions",
+        "explanation": "Manage terms and conditions",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Privacy & Policy",
+        "explanation": "Manage privacy policy",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Reviews",
+        "explanation": "Manage all reviews",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Languages",
+        "explanation": "Manage system languages",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Currencies",
+        "explanation": "Manage system currencies",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Categories",
+        "explanation": "Manage all categories",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Brands",
+        "explanation": "Manage all brands",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Landing Pages",
+        "explanation": "Manage landing pages",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Banners",
+        "explanation": "Manage all banners",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Units",
+        "explanation": "Manage all units",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Shops",
+        "explanation": "Manage all shops",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Extras (Groups & Values)",
+        "explanation": "Manage all extras",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Products",
+        "explanation": "Manage all products",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Orders",
+        "explanation": "Manage all orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Parcel Orders",
+        "explanation": "Manage all parcel orders",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Parcel Options",
+        "explanation": "Manage parcel options",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Parcel Order Settings",
+        "explanation": "Manage parcel order settings",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Users",
+        "explanation": "Manage all users",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Roles",
+        "explanation": "Manage user roles",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Wallet Histories",
+        "explanation": "View all wallet histories",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Points",
+        "explanation": "Manage points system",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Payments",
+        "explanation": "Manage all payments",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Translations",
+        "explanation": "Manage system translations",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Transactions",
+        "explanation": "View all transactions",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Payment to Partners",
+        "explanation": "Manage all payments to partners",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Tickets",
+        "explanation": "Manage all support tickets",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): FAQs",
+        "explanation": "Manage all FAQs",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Blogs",
+        "explanation": "Manage all blog posts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Settings",
+        "explanation": "Manage system settings",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Backups",
+        "explanation": "Manage system backups",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Project Upload/Update",
+        "explanation": "Manage project updates",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Stories",
+        "explanation": "Manage all stories",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Order Statuses",
+        "explanation": "Manage all order statuses",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Tags",
+        "explanation": "Manage all tags",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Delivery Zones",
+        "explanation": "Manage all delivery zones",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Delivery Man Delivery Zones",
+        "explanation": "Manage all deliveryman delivery zones",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Email Settings",
+        "explanation": "Manage email settings",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): DeliveryMan Settings",
+        "explanation": "Manage all deliveryman settings",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Delivery Vehicle Types",
+        "explanation": "Manage delivery vehicle types",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Email Templates",
+        "explanation": "Manage email templates",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Order Refunds",
+        "explanation": "Manage all order refunds",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Shop Working Days",
+        "explanation": "Manage all shop working days",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Shop Closed Days",
+        "explanation": "Manage all shop closed days",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Notifications",
+        "explanation": "Manage all notifications",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Email Subscriptions",
+        "explanation": "Manage email subscriptions",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Payouts",
+        "explanation": "Manage all payouts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Shop Tags",
+        "explanation": "Manage all shop tags",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Payment Payloads",
+        "explanation": "Manage payment payloads",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): SMS Payloads",
+        "explanation": "Manage SMS payloads",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Bonuses",
+        "explanation": "Manage all bonuses",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Referrals",
+        "explanation": "Manage referrals",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Reports",
+        "explanation": "View all reports",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Receipts",
+        "explanation": "Manage all receipts",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Menus",
+        "explanation": "Manage all menus",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Careers",
+        "explanation": "Manage all careers",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Pages",
+        "explanation": "Manage all pages",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Booking Module",
+        "explanation": "Manage the booking module",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Model Logs",
+        "explanation": "View model logs",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Inventory",
+        "explanation": "Manage all inventory",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Ads Packages",
+        "explanation": "Manage all ads packages",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Kitchens",
+        "explanation": "Manage all kitchens",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Request Models",
+        "explanation": "Manage all request models",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Delivery Points",
+        "explanation": "Manage all delivery points",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Dashboard (Admin): Combos",
+        "explanation": "Manage all combos",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: PayPal",
+        "explanation": "Handle PayPal webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: Razorpay",
+        "explanation": "Handle Razorpay webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: Stripe",
+        "explanation": "Handle Stripe webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: MyFatoorah",
+        "explanation": "Handle MyFatoorah webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: Iyzico",
+        "explanation": "Handle Iyzico webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: FlutterWave",
+        "explanation": "Handle FlutterWave webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: MercadoPago",
+        "explanation": "Handle MercadoPago webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: Paystack",
+        "explanation": "Handle Paystack webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: PayTabs",
+        "explanation": "Handle PayTabs webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: Moyasar",
+        "explanation": "Handle Moyasar webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: ZainCash",
+        "explanation": "Handle ZainCash webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: Mollie",
+        "explanation": "Handle Mollie webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: Maksekeskus",
+        "explanation": "Handle Maksekeskus webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: PayFast",
+        "explanation": "Handle PayFast webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Webhook: Telegram",
+        "explanation": "Handle Telegram webhooks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Connect/Disconnect",
+        "explanation": "Connect or disconnect from ERPGo",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Status",
+        "explanation": "Get ERPGo connection status",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Dashboard",
+        "explanation": "View ERPGo dashboard",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Profile",
+        "explanation": "View ERPGo profile",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Sync",
+        "explanation": "Sync data with ERPGo",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Reports",
+        "explanation": "Get reports from ERPGo",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Inventory",
+        "explanation": "Get inventory from ERPGo",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Employees",
+        "explanation": "Get employees from ERPGo",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Staff Access",
+        "explanation": "Manage staff access to ERPGo",
+        "status": "Ideas"
+    },
+    {
+        "feature": "ERPGo: Webhooks",
+        "explanation": "Handle webhooks from ERPGo",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Visions",
+        "explanation": "Manage visions",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Pillars",
+        "explanation": "Manage pillars",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Strategic Objectives",
+        "explanation": "Manage strategic objectives",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: KPIs",
+        "explanation": "Manage KPIs",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Todo Tasks",
+        "explanation": "Manage todo tasks",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Plan on a Page",
+        "explanation": "View the plan on a page",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Apps",
+        "explanation": "Manage apps",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Roadmap Versions",
+        "explanation": "Manage roadmap versions",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Personal Mastery Goals",
+        "explanation": "Manage personal mastery goals",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Expenses",
+        "explanation": "Manage expenses",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Energy Consumption",
+        "explanation": "Manage energy consumption",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: RO Systems",
+        "explanation": "Manage RO systems",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Maintenance Records",
+        "explanation": "Manage maintenance records",
+        "status": "Ideas"
+    },
+    {
+        "feature": "Resources: Tanks",
+        "explanation": "Manage tanks",
+        "status": "Ideas"
+    }
+]
+

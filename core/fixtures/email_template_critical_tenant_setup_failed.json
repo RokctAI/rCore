@@ -1,0 +1,17 @@
+[
+    {
+        "doctype": "Email Template",
+        "name": "Critical Tenant Setup Failed",
+        "subject": "CRITICAL: Tenant Setup Failed for {{ doc.site_name }}",
+        "response": """
+<h3>A new tenant site was created, but the initial user setup failed after multiple retries.</h3>
+<p><b>Site Name:</b> {{ doc.site_name }}</p>
+<p><b>Subscription:</b> {{ doc.subscription_name }}</p>
+<p><b>Customer:</b> {{ doc.customer }}</p>
+<p>The site exists but has no user. The subscription status has been set to 'Setup Failed'. Manual intervention is required immediately.</p>
+""",
+        "owner": "Administrator",
+        "module": "control"
+    }
+]
+

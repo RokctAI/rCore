@@ -1,0 +1,9 @@
+[
+    {
+        "doctype": "Role",
+        "name": "Company Creator",
+        "role_name": "Company Creator",
+        "desk_access": 1
+    }
+]
+
