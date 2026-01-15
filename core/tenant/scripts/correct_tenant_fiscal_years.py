@@ -48,7 +48,7 @@ def run_correction():
 
                 command = [
                     "bench", "--site", site, "execute",
-                    "rokct.rokct.tenant.api.update_fiscal_year_if_default",
+                    "core.tenant.api.update_fiscal_year_if_default",
                     "--kwargs", json.dumps({"start_date": start_date})
                 ]
 
