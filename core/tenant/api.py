@@ -62,7 +62,7 @@ def forward_error_to_control(doc, method):
     """
     if frappe.conf.get("app_role") == "tenant":
         frappe.enqueue(
-            "rokct.rokct.tenant.api.send_error_to_control",
+            "core.tenant.api.send_error_to_control",
             doc=doc,
             now=True  # Send immediately
         )
@@ -594,7 +594,7 @@ def create_temporary_support_user(agent_id: str, reason: str, support_email_doma
 
         # Log this significant security event to the brain
         frappe.call(
-            "rokct.brain.api.record_event",
+            "brain.api.record_event",
             message=f"Temporary support access granted to agent '{agent_id}' for reason: {reason}. User account '{support_email}' created.",
             reference_doctype="User",
             reference_name="Administrator"
@@ -644,7 +644,7 @@ def disable_temporary_support_user(support_user_email):
 
         # Log this significant security event to the brain
         frappe.call(
-            "rokct.brain.api.record_event",
+            "brain.api.record_event",
             message=f"Temporary support access for user account '{support_user_email}' was revoked.",
             reference_doctype="User",
             reference_name="Administrator"
@@ -739,7 +739,7 @@ def log_frontend_error(error_message, context=None):
 
         # Call the brain's API to record the event
         frappe.call(
-            "rokct.brain.api.record_event",
+            "brain.api.record_event",
             message=brain_message,
             reference_doctype=reference_doctype,
             reference_name=reference_name
