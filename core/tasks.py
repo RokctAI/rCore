@@ -275,7 +275,7 @@ def _fetch_and_upsert_stimuli():
             "mainProcurementCategory": stimulus_settings.main_procurement_category
         }
 
-        relevant_tenders = frappe.call("rokct.control.api.get_relevant_tenders", filters=json.dumps(filters))
+        relevant_tenders = frappe.call("control.control.api.tenders.get_relevant_tenders", filters=json.dumps(filters))
 
         if not relevant_tenders:
             print("No new relevant tenders found.")
