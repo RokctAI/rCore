@@ -24,7 +24,7 @@ def _send_via_control_relay(**kwargs):
 
         # The control panel will use the Host header to identify the tenant.
         scheme = frappe.conf.get("control_plane_scheme", "https")
-        api_url = f"{scheme}://{control_plane_url}/api/method/rokct.control.api.relay_email"
+        api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.email.relay_email"
         headers = {"X-Rokct-Secret": api_secret}
 
         response = requests.post(api_url, data=relay_args, headers=headers)
