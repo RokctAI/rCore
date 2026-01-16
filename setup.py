@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-name = "core"
+name = "rcore"
 version = "0.0.1"
 description = "Core ROKCT Logic"
 author = "RokctAI"

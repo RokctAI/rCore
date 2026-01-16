@@ -1,0 +1,10 @@
+{
+    "doctype":  "Custom Field",
+    "dt":  "Item",
+    "fieldname":  "is_visible",
+    "label":  "Is Visible",
+    "fieldtype":  "Check",
+    "default":  "1",
+    "insert_after":  "disabled",
+    "module": "rcore"
+}
