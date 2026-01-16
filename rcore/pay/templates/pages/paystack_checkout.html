@@ -21,7 +21,7 @@
         callback: function (response) {
             // This is called after the transaction is completed successfully
             frappe.call({
-                method: "core.pay.doctype.paystack_settings.paystack_settings.verify_transaction_and_get_auth",
+                method: "rcore.pay.doctype.paystack_settings.paystack_settings.verify_transaction_and_get_auth",
                 args: {
                     reference: response.reference
                 },
