@@ -111,7 +111,7 @@ def setup_github_workflow(roadmap_name):
         hostname = db_name.replace('_', '.')
         site_url = f"{scheme}://{hostname}"
 
-    api_endpoint_url = f"{site_url}/api/method/core.roadmap.api.update_task_status_from_pr"
+    api_endpoint_url = f"{site_url}/api/method/rcore.roadmap.api.update_task_status_from_pr"
 
     settings = frappe.get_doc("Roadmap Settings")
     workflow_template = settings.github_action_yaml
