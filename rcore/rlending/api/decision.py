@@ -1,6 +1,6 @@
 import frappe
 
-# NOTE: We assume 'decision_engine' folder is in core.rlending
+# NOTE: We assume 'decision_engine' folder is in rcore.rlending
 # from rcore.rlending.decision_engine.engine import ScoringEngine
 
 @frappe.whitelist()
