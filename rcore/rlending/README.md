@@ -11,4 +11,4 @@ It houses custom logic for ROKCT's lending operations, separating it from the st
 - **Assets**: Custom asset realisation logic.
 
 ## Usage
-This module functions as a layer on top of `frappe/lending`. The frontend interacts with `core.rlending.api` for custom flows, while standard background processes are handled by the core app.
+This module functions as a layer on top of `frappe/lending`. The frontend interacts with `rcore.rlending.api` for custom flows, while standard background processes are handled by the core app.
