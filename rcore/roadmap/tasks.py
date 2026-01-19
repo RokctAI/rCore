@@ -3,6 +3,7 @@
 
 import frappe
 import json
+from rcore.roadmap.utils import check_queue_status, get_prompts, construct_contextual_prompt
 
 # --- Main Scheduled Tasks ---
 
@@ -27,7 +28,7 @@ def populate_roadmap_with_ai_ideas():
             }, 
             fields=["name", "source_repository", "jules_api_key"]
         )
-        prompts = _get_prompts()
+        prompts = get_prompts()
 
         if not prompts:
             # Only log if debugging, otherwise it fills logs daily
@@ -46,7 +47,7 @@ def populate_roadmap_with_ai_ideas():
                 continue
 
             # CHECK CONCURRENCY (Queue Status)
-            if not _check_queue_status(api_key):
+            if not check_queue_status(api_key):
                 frappe.log_error(f"Skipping Idea Gen for {roadmap_name}: Jules Queue is Full/Busy.", "Jules Concurrency")
                 continue
 
@@ -216,15 +217,13 @@ def process_building_queue():
                 if not api_key: continue
 
                 # CHECK CONCURRENCY (Queue Status)
-                if not _check_queue_status(api_key):
+                if not check_queue_status(api_key):
                     frappe.log_error(f"Skipping Building Queue for {roadmap_name}: Jules Queue is Full/Busy.", "Jules Concurrency")
                     continue
 
                 for f in roadmap_features:
-                    # Construct Building Prompt
-                    task_description = f"Task: {f.feature}\nDetails: {f.explanation or 'No details provided.'}\nType: {f.type}"
-                    system_instruction = "\n\nIMPORTANT: IMPLEMENATION MODE. Please implement the requested changes. You may create a Pull Request."
-                    full_prompt = f"{task_description}{system_instruction}"
+                    # Construct Building Prompt using roadmap context
+                    full_prompt = construct_contextual_prompt(roadmap, f, "Building")
 
                     # Start Jules Session
                     session = frappe.call("brain.api.start_jules_session", 
@@ -367,21 +366,6 @@ def cleanup_archived_sessions():
 
 # --- Helpers ---
 
-def _check_queue_status(api_key):
-    """
-    Checks if there are any sessions in 'QUEUED' state.
-    Returns True if Safe (No Queue), False if Busy (Queue exists).
-    """
-    try:
-        sessions = frappe.call("brain.api.get_jules_sessions", api_key=api_key)
-        # Check if any session is QUEUED
-        is_queued = any(s.get("state") == "QUEUED" for s in sessions)
-        return not is_queued # Safe if NOT queued
-    except Exception:
-        # If API fails, assume safe to try (let Jules reject if needed) or fail open.
-        # Failing open to avoid blocking everything on a transient error.
-        return True
-
 def _save_ideas_to_roadmap(roadmap_name, ideas):
     roadmap_doc = frappe.get_doc("Roadmap", roadmap_name)
     for idea in ideas:
@@ -391,15 +375,15 @@ def _save_ideas_to_roadmap(roadmap_name, ideas):
         feature_doc.status = "Ideas"
         feature_doc.is_ai_generated = 1
         feature_doc.type = idea.get("type", "Feature")
+        
+        # Parse Tags from Brain Response
+        tags = idea.get("tags", [])
+        if isinstance(tags, list):
+            for tag in tags:
+                feature_doc.append("tags", {"tag": str(tag)})
+
         roadmap_doc.append("features", feature_doc)
     roadmap_doc.save(ignore_permissions=True)
-
-def _get_prompts():
-    try:
-        settings = frappe.get_single("Roadmap Settings") # It is a Single doctype
-        return settings.prompts or []
-    except:
-        return []
 
 def _get_latest_agent_message(activities):
     return next((act.get("agentActivity", {}).get("message") for act in reversed(activities) if act.get("agentActivity")), None)
@@ -409,4 +393,3 @@ def _parse_ideas_from_response(response_text):
         return json.loads(response_text).get("ideas", [])
     except (json.JSONDecodeError, AttributeError):
         return []
-
