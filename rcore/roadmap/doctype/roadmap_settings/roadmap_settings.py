@@ -31,13 +31,24 @@ class RoadmapSettings(Document):
 				"title": "Lead Architect: Feature Ideation",
 				"type": "Feature",
 				"mode": "Planning",
-				"prompt": "Act as a Senior Software Architect. The project stack is: {stack}. The dependencies are: {dependency}. The platform contexts are: {platform}. Brainstorm feature ideas that add high value to the project roadmap based on the current codebase and project status. Focus on modularity, scalability, and user impact. For each idea, categorize it with tags (e.g., 'Frontend', 'Backend', 'UI', 'Logic'). Provide output in JSON format."
+				"prompt": "Act as a Senior Software Architect. The project stack is: {stack}. The dependencies are: {dependency}. The platform contexts are: {platform}. Brainstorm feature ideas that add high value to the project roadmap based on the current codebase and project status. Focus on modularity, scalability, and user impact. For each idea, you MUST assign one or more of the following Tags: ['Frontend', 'Backend', 'UI', 'UX', 'Database', 'Security', 'API', 'Mobile']. Provide output in JSON format."
 			})
 			self.append("prompts", {
 				"title": "Lead Architect: Implementation",
 				"type": "Feature",
 				"mode": "Building",
-				"prompt": "Act as a Senior Engineer. The project stack is: {stack}. The dependencies are: {dependency}. The feature tags are: {feature_tags}. Your goal is to implement features with high code quality and consistency. 1) Follow existing patterns (e.g., DocTypes in Frappe, Vertical Slices in Next.js), 2) Write clean, documented, and testable code. If tags include 'Frontend', ensure API/Service layers are integrated. If tags include 'Backend', ensure schema and permissions are set. 3) Ensure no breaking changes to existing APIs."
+				"prompt": """Act as a Senior Engineer. 
+Project Stack: {stack}
+Dependencies: {dependency}
+Context Tags: {feature_tags}
+
+Implementation Guidelines:
+{tag_guidelines}
+
+General Rules:
+1. Follow existing project patterns (e.g., Vertical Slices).
+2. Write clean, documented, and testable code.
+3. Ensure no breaking changes to existing functionality."""
 			})
 
 def populate_defaults():
