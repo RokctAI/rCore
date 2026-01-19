@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
+from rcore.roadmap.utils import construct_contextual_prompt
 
 class RoadmapFeature(Document):
     def get_indicator(self, doc):
@@ -36,7 +37,8 @@ def assign_to_jules(docname, feature, explanation):
 
         # Step 3: Delegate to Brain Service
         # We now explicitly pass the key and source
-        prompt = f"Task: {feature}\n\nDetails: {explanation}"
+        prompt = construct_contextual_prompt(roadmap, feature_doc, "Building")
+
         session = frappe.call("brain.api.start_jules_session", 
             prompt=prompt, 
             source_repo=source_repo, 

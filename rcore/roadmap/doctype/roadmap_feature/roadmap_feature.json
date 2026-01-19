@@ -12,6 +12,8 @@
         "explanation",
         "jules_ai_assistant_section",
         "assign_to_jules",
+        "section_break_tags",
+        "tags",
         "ai_status",
         "pull_request_url",
         "jules_session_id",
@@ -64,6 +66,18 @@
             "fieldname": "assign_to_jules",
             "fieldtype": "Button",
             "label": "Assign to Jules"
+        },
+        {
+            "fieldname": "section_break_tags",
+            "fieldtype": "Section Break",
+            "label": "Categories"
+        },
+        {
+            "fieldname": "tags",
+            "fieldtype": "Table",
+            "label": "Feature Tags",
+            "options": "Roadmap Feature Tag",
+            "description": "Categories like Frontend, Backend, UI, Logic."
         },
         {
             "default": "Pending",

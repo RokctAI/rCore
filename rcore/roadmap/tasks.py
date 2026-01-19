@@ -3,6 +3,7 @@
 
 import frappe
 import json
+import time
 from rcore.roadmap.utils import check_queue_status, get_prompts, construct_contextual_prompt
 
 # --- Main Scheduled Tasks ---
@@ -362,6 +363,84 @@ def cleanup_archived_sessions():
 
     except Exception as e:
         frappe.log_error(f"Cleanup task failed: {e}", "Jules Cleanup")
+
+
+@frappe.whitelist()
+def discover_roadmap_context(roadmap_name):
+    """
+    Auto-Discovery Task (On Demand)
+    1. Starts a Planning Session with Jules to analyze the codebase.
+    2. Asks for a Description and Classifications (Stack/Platform/Dependency).
+    3. Polls (briefly) for handling.
+    4. Returns the result and closes the session.
+    """
+    roadmap = frappe.get_doc("Roadmap", roadmap_name)
+    api_key = roadmap.get_password("jules_api_key")
+    
+    if not api_key:
+         # Fallback
+         settings = frappe.get_single("Roadmap Settings")
+         api_key = settings.get_password("jules_api_key")
+    
+    if not api_key:
+        frappe.throw("Jules API Key is missing.")
+
+    if not roadmap.source_repository:
+        frappe.throw("Source Repository is missing.")
+
+    # 1. Start Session
+    prompt = (
+        "Analyze the repository code structure and dependencies.\n"
+        "Return a JSON object with the following fields:\n"
+        "- description: A concise 1-2 sentence summary of what this project does.\n"
+        "- classifications: A list of objects, each having 'category' (Stack, Platform, or Dependency) and 'value' (e.g. 'Next.js', 'iOS', 'PostgreSQL').\n"
+        "Do NOT write code. Provide ONLY the JSON."
+    )
+
+    try:
+        session = frappe.call("brain.api.start_jules_session", 
+            prompt=prompt, 
+            source_repo=roadmap.source_repository, 
+            api_key=api_key
+        )
+        
+        session_id = session.get("name")
+        if not session_id:
+            frappe.throw("Failed to start Jules Session.")
+
+        # 2. Poll for Result (Max 30 seconds - usually fast for pure text)
+        for _ in range(10):
+            time.sleep(3) 
+            activities = frappe.call("brain.api.get_jules_activities", 
+                session_id=session_id, 
+                api_key=api_key
+            )
+            
+            latest_msg = _get_latest_agent_message(activities)
+            if latest_msg:
+                 # Try to parse
+                 try:
+                     # Heuristic: Find JSON blob if mixed with text
+                     if "{" in latest_msg and "}" in latest_msg:
+                         start = latest_msg.find("{")
+                         end = latest_msg.rfind("}") + 1
+                         json_str = latest_msg[start:end]
+                         data = json.loads(json_str)
+                         
+                         if "description" in data or "classifications" in data:
+                             # Success! Cleanup and Return.
+                             frappe.call("brain.api.delete_jules_session", session_id=session_id, api_key=api_key)
+                             return data
+                 except:
+                     continue
+        
+        # Timeout
+        frappe.call("brain.api.delete_jules_session", session_id=session_id, api_key=api_key)
+        frappe.throw("Jules took too long to analyze the repository.")
+
+    except Exception as e:
+        frappe.log_error(f"Discovery Failed: {e}", "Jules Discovery")
+        frappe.throw(f"Discovery Failed: {str(e)}")
 
 
 # --- Helpers ---
