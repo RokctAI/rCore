@@ -20,4 +20,4 @@
 ## Lessons Learned
 *(Agent to append new lessons here when a mistake is made or a correction is received)*
 
-*   **[Date]** - [Lesson]
+*   **2026-01-19** - Protocol: In Planning Mode, use branch 'main'. Do NOT create new branches until Building Mode.

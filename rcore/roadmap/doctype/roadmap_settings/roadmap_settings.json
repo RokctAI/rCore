@@ -1,79 +1,93 @@
 {
- "actions": [],
- "allow_rename": 1,
- "creation": "2025-10-04 12:28:00.000000",
- "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
-  "jules_api_url",
-  "github_action_yaml",
-  "prompts",
-  "section_break_4",
-  "github_action_secret",
-  "column_break_6",
-  "github_setup_instructions"
- ],
- "fields": [
-  {
-   "fieldname": "jules_api_url",
-   "fieldtype": "Data",
-   "label": "Jules API URL",
-   "default": "https://jules.googleapis.com/v1alpha/sessions"
-  },
-  {
-   "fieldname": "github_action_yaml",
-   "fieldtype": "Code",
-   "label": "GitHub Action YAML",
-   "options": "yaml"
-  },
-  {
-   "fieldname": "prompts",
-   "fieldtype": "Table",
-   "label": "AI Prompts",
-   "options": "AI Prompt"
-  },
-  {
-   "fieldname": "section_break_4",
-   "fieldtype": "Section Break",
-   "label": "GitHub Integration"
-  },
-  {
-   "fieldname": "github_action_secret",
-   "fieldtype": "Password",
-   "label": "GitHub Action Secret"
-  },
-  {
-   "fieldname": "column_break_6",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "github_setup_instructions",
-   "fieldtype": "HTML",
-   "label": "GitHub Setup Instructions"
-  }
- ],
- "issingle": 1,
- "links": [],
- "modified": "2025-10-04 12:28:00.000000",
- "modified_by": "Administrator",
- "module": "roadmap",
- "name": "Roadmap Settings",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2025-10-04 12:28:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "jules_api_url",
+        "jules_api_key",
+        "github_action_yaml",
+        "prompts",
+        "section_break_4",
+        "github_action_secret",
+        "column_break_6",
+        "github_setup_instructions"
+    ],
+    "fields": [
+        {
+            "fieldname": "jules_api_url",
+            "fieldtype": "Data",
+            "label": "Jules API URL",
+            "default": "https://jules.googleapis.com/v1alpha/sessions"
+        },
+        {
+            "fieldname": "jules_api_key",
+            "fieldtype": "Password",
+            "label": "Global Jules API Key",
+            "description": "Default key used across all roadmaps. Individual roadmaps can still override this if needed."
+        },
+        {
+            "fieldname": "public_roadmap",
+            "fieldtype": "Link",
+            "label": "Public Roadmap",
+            "options": "Roadmap",
+            "description": "Select a Roadmap to display publicly in the footer."
+        },
+        {
+            "fieldname": "github_action_yaml",
+            "fieldtype": "Code",
+            "label": "GitHub Action YAML",
+            "options": "yaml"
+        },
+        {
+            "fieldname": "prompts",
+            "fieldtype": "Table",
+            "label": "AI Prompts",
+            "options": "AI Prompt"
+        },
+        {
+            "fieldname": "section_break_4",
+            "fieldtype": "Section Break",
+            "label": "GitHub Integration"
+        },
+        {
+            "fieldname": "github_action_secret",
+            "fieldtype": "Password",
+            "label": "GitHub Action Secret"
+        },
+        {
+            "fieldname": "column_break_6",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "github_setup_instructions",
+            "fieldtype": "HTML",
+            "label": "GitHub Setup Instructions"
+        }
+    ],
+    "issingle": 1,
+    "links": [],
+    "modified": "2025-10-04 12:28:00.000000",
+    "modified_by": "Administrator",
+    "module": "roadmap",
+    "name": "Roadmap Settings",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
 }
