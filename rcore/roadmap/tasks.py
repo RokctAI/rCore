@@ -103,7 +103,8 @@ def populate_roadmap_with_ai_ideas():
                     session = frappe.call("brain.api.start_jules_session", 
                         prompt=full_prompt, 
                         source_repo=roadmap.get("source_repository"), 
-                        api_key=api_key
+                        api_key=api_key,
+                        automation_mode="AUTOMATION_MODE_UNSPECIFIED"
                     )
                     
                     if session and session.get("name"): # name is session_id
@@ -146,6 +147,20 @@ def process_pending_ai_sessions():
                     session.add_comment("Comment", "Missing API Key (Roadmap & Global)")
                     session.save(ignore_permissions=True)
                     continue
+
+                # TIMEOUT CHECK (30 Minutes)
+                # If session is pending for > 30 mins, kill it.
+                creation_time = frappe.utils.get_datetime(session.creation)
+                if frappe.utils.time_diff_in_seconds(frappe.utils.now_datetime(), creation_time) > 1800:
+                     session.status = "Error"
+                     session.add_comment("Comment", "Session Timed Out (>30 mins)")
+                     try:
+                         frappe.call("brain.api.delete_jules_session", session_id=session.session_id, api_key=api_key)
+                     except:
+                         pass
+                     session.save(ignore_permissions=True)
+                     frappe.db.commit()
+                     continue
 
                 # Delegate to Brain
                 activities = frappe.call("brain.api.get_jules_activities", 
@@ -393,7 +408,7 @@ def discover_roadmap_context(roadmap_name):
         "Analyze the repository code structure and dependencies.\n"
         "Return a JSON object with the following fields:\n"
         "- description: A concise 1-2 sentence summary of what this project does.\n"
-        "- classifications: A list of objects, each having 'category' (Stack, Platform, or Dependency) and 'value' (e.g. 'Next.js', 'iOS', 'PostgreSQL').\n"
+        "- classifications: A FLAT list of objects. Each object MUST have 'category' and 'value'. Do NOT nest. Limit to top 5 MAJOR technologies.\n"
         "Do NOT write code. Provide ONLY the JSON."
     )
 
@@ -401,7 +416,8 @@ def discover_roadmap_context(roadmap_name):
         session = frappe.call("brain.api.start_jules_session", 
             prompt=prompt, 
             source_repo=roadmap.source_repository, 
-            api_key=api_key
+            api_key=api_key,
+            automation_mode="AUTOMATION_MODE_UNSPECIFIED"
         )
         
         session_id = session.get("name")
@@ -469,6 +485,13 @@ def _get_latest_agent_message(activities):
 
 def _parse_ideas_from_response(response_text):
     try:
-        return json.loads(response_text).get("ideas", [])
+        # Robust Parsing: Find JSON blob if mixed with text
+        json_str = response_text
+        if "{" in response_text and "}" in response_text:
+             start = response_text.find("{")
+             end = response_text.rfind("}") + 1
+             json_str = response_text[start:end]
+        
+        return json.loads(json_str).get("ideas", [])
     except (json.JSONDecodeError, AttributeError):
         return []
