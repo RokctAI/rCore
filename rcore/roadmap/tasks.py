@@ -299,10 +299,28 @@ def jules_task_monitor():
             
             state = session_data.get("state")
             
+            # Sync detailed State
+            if state == "AWAITING_USER_FEEDBACK":
+                 doc = frappe.get_doc("Roadmap Feature", f.name)
+                 if doc.ai_status != "Pending": # Avoid spamming
+                     doc.add_comment("Comment", "⚠️ Jules is waiting for your feedback. Please open the session to reply.")
+                 doc.save(ignore_permissions=True)
+                 frappe.db.commit()
+                 continue
+            
+            if state == "AWAITING_PLAN_APPROVAL":
+                 doc = frappe.get_doc("Roadmap Feature", f.name)
+                 if doc.ai_status != "Pending":
+                     doc.add_comment("Comment", "⚠️ Jules Plan is ready for review. Please open the session to approve.")
+                 doc.save(ignore_permissions=True)
+                 frappe.db.commit()
+                 continue
+
             # Handle Failure
             if state in ["FAILED", "CANCELLED", "ERROR"]:
                  doc = frappe.get_doc("Roadmap Feature", f.name)
                  doc.status = "Error" # Alert user
+                 doc.ai_status = "Error"
                  doc.add_comment("Comment", f"Jules Session Failed/Cancelled. State: {state}. Please open session to investigate.")
                  doc.save(ignore_permissions=True)
                  frappe.db.commit()
@@ -409,6 +427,7 @@ def discover_roadmap_context(roadmap_name):
         "Return a JSON object with the following fields:\n"
         "- description: A concise 1-2 sentence summary of what this project does.\n"
         "- classifications: A FLAT list of objects. Each object MUST have 'category' and 'value'. Do NOT nest. Limit to top 5 MAJOR technologies.\n"
+        "- initial_ideas: A list of objects, each with 'title' (string), 'explanation' (string), and 'type' (string, e.g. 'Feature' or 'Bug'). Suggest 3-5 initial features based on the codebase.\n"
         "Do NOT write code. Provide ONLY the JSON."
     )
 
@@ -444,6 +463,25 @@ def discover_roadmap_context(roadmap_name):
                          data = json.loads(json_str)
                          
                          if "description" in data or "classifications" in data:
+                             # Update Roadmap Context
+                             if "description" in data and not roadmap.description:
+                                  roadmap.description = data["description"]
+                             
+                             if "classifications" in data:
+                                 # Clear existing? Or Append? Let's Append unique.
+                                 existing_tags = [c.value for c in roadmap.classifications]
+                                 for c in data["classifications"]:
+                                     if c.get("value") not in existing_tags:
+                                         roadmap.append("classifications", {
+                                             "category": c.get("category", "Tech"),
+                                             "value": c.get("value")
+                                         })
+                             roadmap.save(ignore_permissions=True)
+                             
+                             # Handle Initial Ideas
+                             if "initial_ideas" in data:
+                                 _save_ideas_to_roadmap(roadmap_name, data["initial_ideas"])
+
                              # Success! Cleanup and Return.
                              frappe.call("brain.api.delete_jules_session", session_id=session_id, api_key=api_key)
                              return data
