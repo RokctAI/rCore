@@ -18,6 +18,26 @@ class Roadmap(Document):
 			else:
 				self.ai_status = "Not Configured"
 		else:
-			# If the repository is cleared, reset statuses
-			self.ai_status = "Not Configured"
 			self.github_status = "Unlinked"
+
+	def after_save(self):
+		"""
+		Trigger Auto-Discovery if:
+		1. We have a Repo + Key
+		2. Description is empty OR Repo changed (Dirty check logic simplified for now)
+		"""
+		if not self.source_repository:
+			return
+
+		# Check if we have a key (local or global)
+		# We use the utility helper to avoid circular imports if possible, or just checking get_password
+		has_key = self.get_password("jules_api_key")
+		if not has_key:
+			settings = frappe.get_single("Roadmap Settings")
+			has_key = settings.get_password("jules_api_key")
+		
+		if has_key:
+			# Trigger Discovery if description is missing (First run)
+			# OR if we want to force it (Future: maybe a 'force_discovery' flag)
+			if not self.description or not self.classifications:
+				frappe.enqueue("rcore.roadmap.tasks.discover_roadmap_context", roadmap_name=self.name)
