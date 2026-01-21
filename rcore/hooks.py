@@ -19,7 +19,11 @@ def get_scheduler_events():
 	events = {
 		"all": ["rcore.roadmap.tasks.process_pending_ai_sessions"],
 		"hourly": ["rcore.roadmap.tasks.jules_task_monitor"],
-		"daily": ["rcore.roadmap.tasks.populate_roadmap_with_ai_ideas"]
+		"daily": [
+            "rcore.roadmap.tasks.populate_roadmap_with_ai_ideas",
+            "rcore.roadmap.tasks.process_building_queue",
+            "rcore.roadmap.tasks.cleanup_archived_sessions"
+        ]
 	}
 
 	return events

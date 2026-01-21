@@ -1,38 +1,58 @@
 {
- "actions": [],
- "allow_rename": 1,
- "creation": "2025-10-04 12:27:00.000000",
- "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
-  "title",
-  "prompt"
- ],
- "fields": [
-  {
-   "fieldname": "title",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Title",
-   "reqd": 1
-  },
-  {
-   "fieldname": "prompt",
-   "fieldtype": "Text",
-   "label": "Prompt",
-   "reqd": 1
-  }
- ],
- "index_web_pages_for_search": 1,
- "istable": 1,
- "links": [],
- "modified": "2025-10-04 12:27:00.000000",
- "modified_by": "Administrator",
- "module": "roadmap",
- "name": "AI Prompt",
- "owner": "Administrator",
- "permissions": [],
- "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2025-10-04 12:27:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "title",
+        "type",
+        "mode",
+        "prompt"
+    ],
+    "fields": [
+        {
+            "fieldname": "title",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Title",
+            "reqd": 1
+        },
+        {
+            "fieldname": "type",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Type",
+            "options": "Feature\nBug",
+            "default": "Feature",
+            "reqd": 1
+        },
+        {
+            "fieldname": "mode",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Mode",
+            "options": "Planning\nBuilding",
+            "default": "Planning",
+            "reqd": 1
+        },
+        {
+            "fieldname": "prompt",
+            "fieldtype": "Text",
+            "label": "Prompt",
+            "reqd": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "istable": 1,
+    "links": [],
+    "modified": "2025-10-04 12:27:00.000000",
+    "modified_by": "Administrator",
+    "module": "roadmap",
+    "name": "AI Prompt",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
 }
