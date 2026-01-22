@@ -1,6 +1,13 @@
-# CRITICAL AGENT INSTRUCTIONS (Protocol V2)
+# CRITICAL AGENT INSTRUCTIONS (Protocol V12 - Workspace Ready)
+
+# WORKSPACE PROTOCOL
+> 1. **CHECK**: Does a `.rokct/memory.md` exist in parent folders (e.g., `../.rokct`)?
+> 2. **IF YES**: **READ IT**. It contains the **Global Memory** and preference overrides for the whole workspace.
+> 3. **HANDSHAKE**: Follow the `workspace_handshake.md` SOP in your local workflows.
+> 4. **PRECEDENCE**: Global Memory overrides technical defaults; Local Memory overrides repo-specific logic.
 
 > **READ THIS FIRST.** This file contains the absolute non-negotiable rules for this project.
+
 
 ## 1. User Authority (Core)
 *   **User**: The User is the final authority.
