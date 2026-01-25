@@ -1,0 +1,14 @@
+[project]
+name = "rcore"
+version = "1.4.5"
+description = "Core ROKCT Logic"
+authors = [
+    { name = "RokctAI", email = "admin@rokct.ai"}
+]
+dependencies = [
+    "frappe"
+]
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
