@@ -6,7 +6,6 @@ authors = [
     { name = "RokctAI", email = "admin@rokct.ai"}
 ]
 dependencies = [
-    "frappe"
 ]
 
 [build-system]
