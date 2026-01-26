@@ -3,9 +3,9 @@
 
 import frappe
 import requests
-from payments.payment_gateways.base import PaymentGatewayController
+from frappe.model.document import Document
 
-class PaystackSettings(PaymentGatewayController):
+class PaystackSettings(Document):
     def on_update(self):
         # This ensures that the Payment Gateway record is created if it doesn't exist.
         if not frappe.db.exists("Payment Gateway", "Paystack"):
