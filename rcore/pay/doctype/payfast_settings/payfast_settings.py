@@ -6,9 +6,9 @@ import hashlib
 import ipaddress
 import socket
 from urllib.parse import urlencode
-from payments.payment_gateways.base import PaymentGatewayController
+from frappe.model.document import Document
 
-class PayFastSettings(PaymentGatewayController):
+class PayFastSettings(Document):
     def on_update(self):
         if not frappe.db.exists("Payment Gateway", "PayFast"):
             frappe.get_doc({
