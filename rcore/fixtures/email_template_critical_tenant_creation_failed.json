@@ -3,15 +3,8 @@
         "doctype": "Email Template",
         "name": "Critical Tenant Creation Failed",
         "subject": "CRITICAL: Tenant Site Creation Failed for {{ doc.site_name }}",
-        "response": """
-<h3>A new tenant site creation failed during the `bench` command execution.</h3>
-<p><b>Site Name:</b> {{ doc.site_name }}</p>
-<p>The `Company Subscription` record has been automatically deleted, so the user can try signing up again.</p>
-<p><b>Error Details:</b></p>
-<pre>{{ doc.error_message }}</pre>
-""",
+        "response": "<h3>A new tenant site creation failed during the `bench` command execution.</h3><p><b>Site Name:</b> {{ doc.site_name }}</p><p>The `Company Subscription` record has been automatically deleted, so the user can try signing up again.</p><p><b>Error Details:</b></p><pre>{{ doc.error_message }}</pre>",
         "owner": "Administrator",
         "module": "control"
     }
 ]
-
