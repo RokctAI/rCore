@@ -1,27 +1,10 @@
 [
- {
-  "doctype": "Email Template",
-  "name": "New User Welcome",
-  "subject": "Welcome to {{ doc.company_name }} on ROKCT.ai!",
-  "response": """
-<div style=\"font-family: Arial, sans-serif; color: #333;\">
-    <h2 style=\"color: #2c3e50;\">Welcome Aboard, {{ doc.first_name }}!</h2>
-    <p>We are thrilled to have you join us. Your new account has been successfully created for your company, <strong>{{ doc.company_name }}</strong>.</p>
-    <p>Your workspace is ready and you can log in using the credentials you provided during signup.</p>
-    <p>Before you get started, please take a moment to verify your email address by clicking the button below. This is an important step to ensure your account is secure.</p>
-    <div style=\"margin: 20px 0; text-align: center;\">
-        <a href=\"{{ doc.verification_url }}\" style=\"background-color: #3498db; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;\">Verify Your Email Address</a>
-    </div>
-    <p>If the button above does not work, you can copy and paste the following link into your browser:</p>
-    <p><a href=\"{{ doc.verification_url }}\">{{ doc.verification_url }}</a></p>
-    <p>This verification link will expire in 72 hours.</p>
-    <br>
-    <p>Thank you,</p>
-    <p>The ROKCT.ai Team</p>
-</div>
-""",
-  "owner": "Administrator",
-  "module": "control"
- }
+  {
+    "doctype": "Email Template",
+    "name": "New User Welcome",
+    "subject": "Welcome to {{ doc.company_name }} on ROKCT.ai!",
+    "response": "<div style=\"font-family: Arial, sans-serif; color: #333;\"><h2 style=\"color: #2c3e50;\">Welcome Aboard, {{ doc.first_name }}!</h2><p>We are thrilled to have you join us. Your new account has been successfully created for your company, <strong>{{ doc.company_name }}</strong>.</p><p>Your workspace is ready and you can log in using the credentials you provided during signup.</p><p>Before you get started, please take a moment to verify your email address by clicking the button below. This is an important step to ensure your account is secure.</p><div style=\"margin: 20px 0; text-align: center;\"><a href=\"{{ doc.verification_url }}\" style=\"background-color: #3498db; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;\">Verify Your Email Address</a></div><p>If the button above does not work, you can copy and paste the following link into your browser:</p><p><a href=\"{{ doc.verification_url }}\">{{ doc.verification_url }}</a></p><p>This verification link will expire in 72 hours.</p><br><p>Thank you,</p><p>The ROKCT.ai Team</p></div>",
+    "owner": "Administrator",
+    "module": "control"
+  }
 ]
-
