@@ -9,7 +9,8 @@
         "read": 1,
         "report": 1,
         "export": 1,
-        "print": 1
+        "print": 1,
+        "name": "042bee45f0"
     },
     {
         "doctype": "DocPerm",
@@ -21,7 +22,8 @@
         "read": 1,
         "report": 1,
         "export": 1,
-        "print": 1
+        "print": 1,
+        "name": "a0aed15ebe"
     },
     {
         "doctype": "DocPerm",
@@ -33,7 +35,8 @@
         "read": 1,
         "report": 1,
         "export": 1,
-        "print": 1
+        "print": 1,
+        "name": "86b3114573"
     },
     {
         "doctype": "DocPerm",
@@ -45,7 +48,8 @@
         "read": 1,
         "report": 1,
         "export": 1,
-        "print": 1
+        "print": 1,
+        "name": "883219d474"
     },
     {
         "doctype": "DocPerm",
@@ -57,7 +61,8 @@
         "read": 1,
         "report": 1,
         "export": 1,
-        "print": 1
+        "print": 1,
+        "name": "c3e94a1226"
     },
     {
         "doctype": "DocPerm",
@@ -69,7 +74,8 @@
         "read": 1,
         "report": 1,
         "export": 1,
-        "print": 1
+        "print": 1,
+        "name": "0252225321"
     },
     {
         "doctype": "DocPerm",
@@ -81,7 +87,8 @@
         "read": 1,
         "report": 1,
         "export": 1,
-        "print": 1
+        "print": 1,
+        "name": "173cfef64a"
     },
     {
         "doctype": "DocPerm",
@@ -93,7 +100,8 @@
         "read": 1,
         "report": 1,
         "export": 1,
-        "print": 1
+        "print": 1,
+        "name": "efd238e227"
     },
     {
         "doctype": "DocPerm",
@@ -105,7 +113,8 @@
         "read": 1,
         "report": 1,
         "export": 1,
-        "print": 1
+        "print": 1,
+        "name": "f45af6a2b6"
     },
     {
         "doctype": "DocPerm",
@@ -117,6 +126,7 @@
         "read": 1,
         "report": 0,
         "export": 0,
-        "print": 0
+        "print": 0,
+        "name": "dad6980386"
     }
 ]
