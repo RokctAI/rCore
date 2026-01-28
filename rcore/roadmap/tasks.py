@@ -533,3 +533,28 @@ def _parse_ideas_from_response(response_text):
         return json.loads(json_str).get("ideas", [])
     except (json.JSONDecodeError, AttributeError):
         return []
+
+def _get_api_key():
+    """
+    Helper to get the Global Jules API Key from Settings.
+    """
+    settings = frappe.get_single("Roadmap Settings")
+    return settings.get_password("jules_api_key")
+
+def _create_jules_session(api_key, source_repo, title, prompt):
+    """
+    Helper to start a Jules Session (typically for one-off tasks like workflow setup).
+    """
+    try:
+        session = frappe.call("brain.api.start_jules_session", 
+            prompt=prompt, 
+            source_repo=source_repo, 
+            api_key=api_key,
+            automation_mode="AUTO_CREATE_PR",
+            title=title
+        )
+        if session:
+            return session.get("name")
+    except Exception as e:
+        frappe.log_error(f"Failed to create Jules session: {e}", "Jules API Helper")
+    return None
