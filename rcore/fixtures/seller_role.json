@@ -2,7 +2,7 @@
     {
         "doctype": "Role",
         "role_name": "Seller",
-        "desk_access": 1
+        "desk_access": 1,
+        "name": "Seller"
     }
 ]
-
