@@ -33,7 +33,10 @@ def before_app_uninstall(app_name):
 
 def create_salary_slip_loan_fields():
 	if "lending" in frappe.get_installed_apps():
-		create_custom_fields(get_salary_slip_loan_fields(), ignore_validate=True)
+		if frappe.db.exists("DocType", "Salary Slip"):
+			create_custom_fields(get_salary_slip_loan_fields(), ignore_validate=True)
+		else:
+			print("Skipping Salary Slip custom fields as DocType 'Salary Slip' is not found.")
 
 def get_salary_slip_loan_fields():
 	"""Custom fields for Lending integration on Salary Slip"""
