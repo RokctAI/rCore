@@ -5,7 +5,8 @@
         "parent": "EDI",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "19479c880e"
     },
     {
         "doctype": "Role Permission",
@@ -13,7 +14,8 @@
         "parent": "Subcontracting",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "40d0e69515"
     },
     {
         "doctype": "Role Permission",
@@ -21,7 +23,8 @@
         "parent": "E-commerce",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "3951c72a98"
     },
     {
         "doctype": "Role Permission",
@@ -29,7 +32,8 @@
         "parent": "Bulk Transaction",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "89f789f995"
     },
     {
         "doctype": "Role Permission",
@@ -37,7 +41,8 @@
         "parent": "Telephony",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "f4f7674165"
     },
     {
         "doctype": "Role Permission",
@@ -45,7 +50,8 @@
         "parent": "Communication",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "7dc0323522"
     },
     {
         "doctype": "Role Permission",
@@ -53,7 +59,8 @@
         "parent": "Quality Management",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "c45014a7f0"
     },
     {
         "doctype": "Role Permission",
@@ -61,7 +68,8 @@
         "parent": "ERPNext Integrations",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "19e6490430"
     },
     {
         "doctype": "Role Permission",
@@ -69,7 +77,8 @@
         "parent": "Regional",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "d167028639"
     },
     {
         "doctype": "Role Permission",
@@ -77,7 +86,8 @@
         "parent": "Maintenance",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "1b16266985"
     },
     {
         "doctype": "Role Permission",
@@ -85,7 +95,8 @@
         "parent": "Portal",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "a0eae202d0"
     },
     {
         "doctype": "Role Permission",
@@ -93,7 +104,8 @@
         "parent": "Assets",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "ed3f699da3"
     },
     {
         "doctype": "Role Permission",
@@ -101,7 +113,8 @@
         "parent": "Utilities",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "dab7419b90"
     },
     {
         "doctype": "Role Permission",
@@ -109,7 +122,8 @@
         "parent": "Support",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "c74984922b"
     },
     {
         "doctype": "Role Permission",
@@ -117,7 +131,8 @@
         "parent": "Stock",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "394fac6d7c"
     },
     {
         "doctype": "Role Permission",
@@ -125,7 +140,8 @@
         "parent": "Manufacturing",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "af80068c02"
     },
     {
         "doctype": "Role Permission",
@@ -133,7 +149,8 @@
         "parent": "Setup",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "cfad253fd1"
     },
     {
         "doctype": "Role Permission",
@@ -141,7 +158,8 @@
         "parent": "Selling",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "294946c7c9"
     },
     {
         "doctype": "Role Permission",
@@ -149,7 +167,8 @@
         "parent": "Projects",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "2a15d8d917"
     },
     {
         "doctype": "Role Permission",
@@ -157,7 +176,8 @@
         "parent": "Buying",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "2a7f15c74a"
     },
     {
         "doctype": "Role Permission",
@@ -165,7 +185,8 @@
         "parent": "CRM",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "685926996a"
     },
     {
         "doctype": "Role Permission",
@@ -173,6 +194,7 @@
         "parent": "Accounts",
         "parenttype": "Workspace",
         "permlevel": 0,
-        "read": 1
+        "read": 1,
+        "name": "b7b19639d1"
     }
 ]
