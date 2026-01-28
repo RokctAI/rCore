@@ -16,7 +16,7 @@
         "export": 1,
         "print": 1,
         "email": 1,
-        "if_owner": 0
+        "if_owner": 0,
+        "name": "c04c70826e"
     }
 ]
-
