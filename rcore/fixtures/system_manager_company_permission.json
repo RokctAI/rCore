@@ -5,7 +5,7 @@
         "parent": "Company",
         "parenttype": "DocType",
         "permlevel": 0,
-        "create": 0
+        "create": 0,
+        "name": "b386f00ef0"
     }
 ]
-
