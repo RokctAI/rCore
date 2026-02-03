@@ -1,6 +1,6 @@
 [
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "System Manager",
         "parent": "Company",
         "parenttype": "DocType",
