@@ -7,10 +7,22 @@ from frappe.tests.utils import FrappeTestCase
 class TestKPI(FrappeTestCase):
     def setUp(self):
         # Create a Strategic Objective to link to
+        # Create a Strategic Objective to link to (with full hierarchy)
+        if not frappe.db.exists("Vision", "Test Vision"):
+             self.vision = frappe.get_doc({"doctype": "Vision", "title": "Test Vision"}).insert(ignore_permissions=True)
+        else:
+             self.vision = frappe.get_doc("Vision", "Test Vision")
+
+        if not frappe.db.exists("Pillar", "Test Pillar"):
+             self.pillar = frappe.get_doc({"doctype": "Pillar", "title": "Test Pillar", "vision": self.vision.name}).insert(ignore_permissions=True)
+        else:
+             self.pillar = frappe.get_doc("Pillar", "Test Pillar")
+
         if not frappe.db.exists("Strategic Objective", "Test Strat Obj"):
             self.strat_obj = frappe.get_doc({
                 "doctype": "Strategic Objective",
-                "title": "Test Strat Obj"
+                "title": "Test Strat Obj",
+                "pillar": self.pillar.name
             }).insert(ignore_permissions=True)
         else:
             self.strat_obj = frappe.get_doc("Strategic Objective", "Test Strat Obj")
