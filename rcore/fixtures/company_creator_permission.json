@@ -1,6 +1,6 @@
 [
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "name": "Company Creator-Company-0",
         "role": "Company Creator",
         "parent": "Company",
@@ -21,4 +21,3 @@
         "email": 1
     }
 ]
-
