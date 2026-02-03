@@ -33,21 +33,24 @@ class PlanOnAPage(Document):
                     content += f"KPI: {kpi.title}\n{kpi.description}\n\n"
 
         # Create or update the Engram
-        engram_name = f"plan-on-a-page-{plan.name}"
-        if not frappe.db.exists("Engram", engram_name):
-            engram = frappe.new_doc("Engram")
-            engram.reference_doctype = "Plan On A Page"
-            engram.reference_name = plan.name
-            engram.reference_title = "Company Strategic Plan"
-            engram.summary = content
-            engram.insert(ignore_permissions=True)
-        else:
-            engram = frappe.get_doc("Engram", engram_name)
-            engram.summary = content
-            engram.save(ignore_permissions=True)
-
-        # Set the permissions for the Engram
-        if not engram.has_permission("read", "System Manager"):
-            engram.add_permission("read", "System Manager")
-            engram.save(ignore_permissions=True)
+        # Create or update the Engram
+        # Check if Engram doctype exists (Brain app dependency)
+        if frappe.db.exists("DocType", "Engram"):
+            engram_name = f"plan-on-a-page-{plan.name}"
+            if not frappe.db.exists("Engram", engram_name):
+                engram = frappe.new_doc("Engram")
+                engram.reference_doctype = "Plan On A Page"
+                engram.reference_name = plan.name
+                engram.reference_title = "Company Strategic Plan"
+                engram.summary = content
+                engram.insert(ignore_permissions=True)
+            else:
+                engram = frappe.get_doc("Engram", engram_name)
+                engram.summary = content
+                engram.save(ignore_permissions=True)
+    
+            # Set the permissions for the Engram
+            if not engram.has_permission("read", "System Manager"):
+                engram.add_permission("read", "System Manager")
+                engram.save(ignore_permissions=True)
 
