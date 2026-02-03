@@ -9,10 +9,11 @@ class TestHrmsHooks(FrappeTestCase):
         # We Mock the internal import/call inside publish_update
         # Logic: publish_update imports rcore.rhrms
         
+        frappe.db.set_value("HR Settings", None, "emp_created_by", "Naming Series")
+
         with patch.dict("sys.modules", {"rcore.rhrms": MagicMock()}):
              # Create Mock Employee
              # We might need to mock frappe.db.get_single_value("HR Settings", "emp_created_by") if Employee autoname runs
-             frappe.db.set_value("HR Settings", None, "emp_created_by", "Naming Series")
              
              employee = frappe.get_doc({
                 "doctype": "Employee",
