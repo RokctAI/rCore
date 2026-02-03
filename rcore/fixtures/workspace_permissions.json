@@ -1,6 +1,6 @@
 [
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: EDI",
         "parent": "EDI",
         "parenttype": "Workspace",
@@ -9,7 +9,7 @@
         "name": "19479c880e"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Subcontracting",
         "parent": "Subcontracting",
         "parenttype": "Workspace",
@@ -18,7 +18,7 @@
         "name": "40d0e69515"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: E-commerce",
         "parent": "E-commerce",
         "parenttype": "Workspace",
@@ -27,7 +27,7 @@
         "name": "3951c72a98"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Bulk Transaction",
         "parent": "Bulk Transaction",
         "parenttype": "Workspace",
@@ -36,7 +36,7 @@
         "name": "89f789f995"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Telephony",
         "parent": "Telephony",
         "parenttype": "Workspace",
@@ -45,7 +45,7 @@
         "name": "f4f7674165"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Communication",
         "parent": "Communication",
         "parenttype": "Workspace",
@@ -54,7 +54,7 @@
         "name": "7dc0323522"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Quality Management",
         "parent": "Quality Management",
         "parenttype": "Workspace",
@@ -63,7 +63,7 @@
         "name": "c45014a7f0"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: ERPNext Integrations",
         "parent": "ERPNext Integrations",
         "parenttype": "Workspace",
@@ -72,7 +72,7 @@
         "name": "19e6490430"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Regional",
         "parent": "Regional",
         "parenttype": "Workspace",
@@ -81,7 +81,7 @@
         "name": "d167028639"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Maintenance",
         "parent": "Maintenance",
         "parenttype": "Workspace",
@@ -90,7 +90,7 @@
         "name": "1b16266985"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Portal",
         "parent": "Portal",
         "parenttype": "Workspace",
@@ -99,7 +99,7 @@
         "name": "a0eae202d0"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Assets",
         "parent": "Assets",
         "parenttype": "Workspace",
@@ -108,7 +108,7 @@
         "name": "ed3f699da3"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Utilities",
         "parent": "Utilities",
         "parenttype": "Workspace",
@@ -117,7 +117,7 @@
         "name": "dab7419b90"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Support",
         "parent": "Support",
         "parenttype": "Workspace",
@@ -126,7 +126,7 @@
         "name": "c74984922b"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Stock",
         "parent": "Stock",
         "parenttype": "Workspace",
@@ -135,7 +135,7 @@
         "name": "394fac6d7c"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Manufacturing",
         "parent": "Manufacturing",
         "parenttype": "Workspace",
@@ -144,7 +144,7 @@
         "name": "af80068c02"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Setup",
         "parent": "Setup",
         "parenttype": "Workspace",
@@ -153,7 +153,7 @@
         "name": "cfad253fd1"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Selling",
         "parent": "Selling",
         "parenttype": "Workspace",
@@ -162,7 +162,7 @@
         "name": "294946c7c9"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Projects",
         "parent": "Projects",
         "parenttype": "Workspace",
@@ -171,7 +171,7 @@
         "name": "2a15d8d917"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Buying",
         "parent": "Buying",
         "parenttype": "Workspace",
@@ -180,7 +180,7 @@
         "name": "2a7f15c74a"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: CRM",
         "parent": "CRM",
         "parenttype": "Workspace",
@@ -189,7 +189,7 @@
         "name": "685926996a"
     },
     {
-        "doctype": "Role Permission",
+        "doctype": "DocPerm",
         "role": "Module: Accounts",
         "parent": "Accounts",
         "parenttype": "Workspace",
