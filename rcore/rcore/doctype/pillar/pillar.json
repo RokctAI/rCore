@@ -40,12 +40,6 @@
             "fieldtype": "Link",
             "label": "Vision",
             "options": "Vision"
-        },
-        {
-            "fieldname": "todos",
-            "fieldtype": "Table",
-            "label": "ToDos",
-            "options": "ToDo"
         }
     ]
 }
