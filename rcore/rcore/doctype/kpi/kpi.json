@@ -40,12 +40,6 @@
             "fieldtype": "Link",
             "label": "Strategic Objective",
             "options": "Strategic Objective"
-        },
-        {
-            "fieldname": "todos",
-            "fieldtype": "Table",
-            "label": "ToDos",
-            "options": "ToDo"
         }
     ]
 }
