@@ -34,12 +34,6 @@
             "fieldname": "description",
             "fieldtype": "Text Editor",
             "label": "Description"
-        },
-        {
-            "fieldname": "todos",
-            "fieldtype": "Table",
-            "label": "ToDos",
-            "options": "ToDo"
         }
     ]
 }
