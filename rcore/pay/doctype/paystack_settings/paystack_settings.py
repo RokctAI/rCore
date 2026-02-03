@@ -13,9 +13,7 @@ class PaystackSettings(Document):
                 "doctype": "Payment Gateway",
                 "gateway": "Paystack",
                 "gateway_settings": "Paystack Settings",
-                "gateway_controller": "rcore.pay.doctype.paystack_settings.paystack_settings.PaystackSettings",
-                # Force module to 'payments' to avoid legacy 'frappe.core' lookup error
-                "module": "payments"
+                "gateway_controller": "rcore.pay.doctype.paystack_settings.paystack_settings.PaystackSettings"
             }).insert(ignore_permissions=True)
             frappe.db.commit()
 
