@@ -27,7 +27,7 @@ class TestPillar(FrappeTestCase):
         }).insert(ignore_permissions=True)
 
         self.assertTrue(frappe.db.exists("Pillar", pillar.name))
-        self.assertEqual(pillar.vision, "Test Vision")
+        self.assertEqual(pillar.vision, self.vision.name)
 
     def test_update_pillar(self):
         pillar = frappe.get_doc({
