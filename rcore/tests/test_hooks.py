@@ -4,6 +4,9 @@ from frappe.tests.utils import FrappeTestCase
 
 class TestRcoreHooks(FrappeTestCase):
     def setUp(self):
+        if not frappe.db.exists("DocType", "Customer"):
+            self.skipTest("ERPNext not installed (Customer missing)")
+            return
         # Create a test customer
         if not frappe.db.exists("Customer", "Test Rcore Customer"):
             self.customer = frappe.get_doc({
