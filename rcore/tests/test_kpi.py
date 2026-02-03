@@ -39,7 +39,7 @@ class TestKPI(FrappeTestCase):
         }).insert(ignore_permissions=True)
 
         self.assertTrue(frappe.db.exists("KPI", kpi.name))
-        self.assertEqual(kpi.strategic_objective, "Test Strat Obj")
+        self.assertEqual(kpi.strategic_objective, self.strat_obj.name)
 
     def test_update_kpi(self):
         kpi = frappe.get_doc({
