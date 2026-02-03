@@ -7,7 +7,8 @@ from unittest.mock import patch
 
 class TestPlanOnAPage(FrappeTestCase):
     def setUp(self):
-        frappe.db.delete("Engram", {"reference_doctype": "Plan On A Page"})
+        if frappe.db.exists("DocType", "Engram"):
+            frappe.db.delete("Engram", {"reference_doctype": "Plan On A Page"})
 
         # Setup hierarchy: Vision -> Pillar -> Strat Obj -> KPI
         self.vision = frappe.get_doc({"doctype": "Vision", "title": "POAP Vision", "description": "V-Desc"}).insert(ignore_permissions=True)
