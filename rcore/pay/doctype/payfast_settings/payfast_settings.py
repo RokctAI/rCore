@@ -15,9 +15,7 @@ class PayFastSettings(Document):
                 "doctype": "Payment Gateway",
                 "gateway": "PayFast",
                 "gateway_settings": "PayFast Settings",
-                "gateway_controller": "rcore.pay.doctype.payfast_settings.payfast_settings.PayFastSettings",
-                # Force module to 'payments' to avoid legacy 'frappe.core' lookup error
-                "module": "payments"
+                "gateway_controller": "rcore.pay.doctype.payfast_settings.payfast_settings.PayFastSettings"
             }).insert(ignore_permissions=True)
             frappe.db.commit()
 
