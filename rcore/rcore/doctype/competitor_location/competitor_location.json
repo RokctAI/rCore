@@ -1,0 +1,48 @@
+{
+    "actions": [],
+    "autoname": "hash",
+    "creation": "2025-09-18 05:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "location_type",
+        "location_name",
+        "location_geolocation"
+    ],
+    "fields": [
+        {
+            "fieldname": "location_type",
+            "fieldtype": "Link",
+            "label": "Location Type",
+            "options": "Location Type",
+            "in_list_view": 1,
+            "reqd": 1
+        },
+        {
+            "fieldname": "location_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Location Name",
+            "reqd": 1
+        },
+        {
+            "fieldname": "location_geolocation",
+            "fieldtype": "Geolocation",
+            "in_list_view": 1,
+            "label": "Location Geolocation",
+            "reqd": 1
+        }
+    ],
+    "istable": 1,
+    "links": [],
+    "modified": "2025-09-18 05:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "rcore",
+    "name": "Competitor Location",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

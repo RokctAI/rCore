@@ -1,0 +1,103 @@
+{
+    "actions": [],
+    "creation": "2024-01-01 00:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "title",
+        "status",
+        "sb_datetime",
+        "start_date",
+        "end_date",
+        "sb_details",
+        "agenda",
+        "minutes",
+        "sb_attendees",
+        "attendees_list"
+    ],
+    "fields": [
+        {
+            "fieldname": "title",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Title",
+            "reqd": 1
+        },
+        {
+            "default": "Planned",
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Status",
+            "options": "Planned\nHeld\nCancelled"
+        },
+        {
+            "fieldname": "sb_datetime",
+            "fieldtype": "Section Break",
+            "label": "Date & Time"
+        },
+        {
+            "fieldname": "start_date",
+            "fieldtype": "Datetime",
+            "label": "Start Date",
+            "reqd": 1
+        },
+        {
+            "fieldname": "end_date",
+            "fieldtype": "Datetime",
+            "label": "End Date",
+            "reqd": 1
+        },
+        {
+            "fieldname": "sb_details",
+            "fieldtype": "Section Break",
+            "label": "Details"
+        },
+        {
+            "fieldname": "agenda",
+            "fieldtype": "Text Editor",
+            "label": "Agenda"
+        },
+        {
+            "fieldname": "minutes",
+            "fieldtype": "Text Editor",
+            "label": "Minutes"
+        },
+        {
+            "fieldname": "sb_attendees",
+            "fieldtype": "Section Break",
+            "label": "Attendees"
+        },
+        {
+            "description": "Enter email addresses separated by commas.",
+            "fieldname": "attendees_list",
+            "fieldtype": "Small Text",
+            "label": "Attendees List"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2024-01-01 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "rcore",
+    "name": "Meeting",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+}

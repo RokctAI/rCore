@@ -1,0 +1,51 @@
+{
+    "doctype": "DocType",
+    "name": "Pillar",
+    "engine": "InnoDB",
+    "is_submittable": 0,
+    "issingle": 0,
+    "istable": 0,
+    "module": "rcore",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1,
+    "fields": [
+        {
+            "fieldname": "title",
+            "fieldtype": "Data",
+            "label": "Title",
+            "reqd": 1
+        },
+        {
+            "fieldname": "description",
+            "fieldtype": "Text Editor",
+            "label": "Description"
+        },
+        {
+            "fieldname": "vision",
+            "fieldtype": "Link",
+            "label": "Vision",
+            "options": "Vision"
+        },
+        {
+            "fieldname": "todos",
+            "fieldtype": "Table",
+            "label": "ToDos",
+            "options": "ToDo"
+        }
+    ]
+}

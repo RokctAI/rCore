@@ -1,0 +1,27 @@
+{
+    "name": "Storage Tracker",
+    "engine": "InnoDB",
+    "creation": "2025-10-03 07:09:00.000000",
+    "doctype": "DocType",
+    "issingle": 1,
+    "fields": [
+        {
+            "fieldname": "current_storage_usage_mb",
+            "fieldtype": "Float",
+            "label": "Current Storage Usage (MB)",
+            "read_only": 1,
+            "description": "The total storage used by files, updated daily by a background job."
+        }
+    ],
+    "modified": "2025-10-03 07:09:00.000000",
+    "modified_by": "Administrator",
+    "module": "rcore",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "role": "System Manager",
+            "read": 1
+        }
+    ],
+    "track_changes": 1
+}

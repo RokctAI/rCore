@@ -1,0 +1,50 @@
+{
+    "doctype": "DocType",
+    "name": "Tenant Email Settings",
+    "issingle": 1,
+    "module": "rcore",
+    "fields": [
+        {
+            "fieldname": "enable_custom_smtp",
+            "fieldtype": "Check",
+            "label": "Enable Custom SMTP Provider"
+        },
+        {
+            "fieldname": "smtp_server",
+            "fieldtype": "Data",
+            "label": "SMTP Server",
+            "depends_on": "eval:doc.enable_custom_smtp"
+        },
+        {
+            "fieldname": "smtp_port",
+            "fieldtype": "Int",
+            "label": "SMTP Port",
+            "depends_on": "eval:doc.enable_custom_smtp"
+        },
+        {
+            "fieldname": "use_tls",
+            "fieldtype": "Check",
+            "label": "Use TLS",
+            "depends_on": "eval:doc.enable_custom_smtp"
+        },
+        {
+            "fieldname": "username",
+            "fieldtype": "Data",
+            "label": "Username",
+            "depends_on": "eval:doc.enable_custom_smtp"
+        },
+        {
+            "fieldname": "password",
+            "fieldtype": "Password",
+            "label": "Password",
+            "depends_on": "eval:doc.enable_custom_smtp"
+        }
+    ],
+    "permissions": [
+        {
+            "role": "System Manager",
+            "read": 1,
+            "write": 1
+        }
+    ]
+}
