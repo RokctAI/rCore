@@ -6,9 +6,10 @@ class TestHrmsHooks(FrappeTestCase):
     def test_employee_publish_update_hook(self):
         # Verify employee on_update hook triggers publish_update
         
-        # We Mock the internal import/call inside publish_update
-        # Logic: publish_update imports rcore.rhrms
-        
+        if not frappe.db.exists("DocType", "HR Settings") or not frappe.db.exists("DocType", "Employee"):
+            self.skipTest("HRMS app not installed")
+            return
+
         frappe.db.set_value("HR Settings", None, "emp_created_by", "Naming Series")
 
         with patch.dict("sys.modules", {"rcore.rhrms": MagicMock()}):
