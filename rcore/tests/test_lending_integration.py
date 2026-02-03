@@ -17,8 +17,16 @@ class TestLendingIntegration(FrappeTestCase):
         mock_loan.disbursed_amount = 1000
         mock_loan.name = "LOAN-1"
 
-        # Mock Wallet existence check (returns None -> creates new)
-        mock_get_value.return_value = None
+        # Mock Customer resolving User
+        # Logic: frappe.db.get_value("Customer", customer, "user") -> "test_user"
+        def mock_get_value_side_effect(*args, **kwargs):
+            if args[0] == "Customer" and args[1] == "Test Customer" and args[2] == "user":
+                return "test_user"
+            if args[0] == "Wallet" and args[1] == {"user": "test_user"}:
+                return None # Wallet not found
+            return None
+        
+        mock_get_value.side_effect = mock_get_value_side_effect
 
         # Mock Wallet creation
         mock_wallet = MagicMock()
@@ -29,25 +37,28 @@ class TestLendingIntegration(FrappeTestCase):
         mock_history = MagicMock()
 
         # Configure get_doc to return our mocks
-        # First call creates Wallet, Second call creates History
-        # We need side_effect to return different mocks
-        mock_get_doc.side_effect = [mock_wallet, mock_history]
+        # We need to handle the dict call for Wallet creation
+        def mock_get_doc_side_effect(*args, **kwargs):
+            if isinstance(args[0], dict) and args[0].get("doctype") == "Wallet":
+                return mock_wallet
+            if isinstance(args[0], dict) and args[0].get("doctype") == "Wallet History":
+                return mock_history
+            return MagicMock() # fallback
+
+        mock_get_doc.side_effect = mock_get_doc_side_effect
 
         # 2. Call the function
         credit_wallet_on_disbursement(mock_loan, "on_submit")
 
         # 3. Verify Interactions
-        # Check if Wallet was created
+        # Check if Wallet was created with USER
         mock_get_doc.assert_any_call({
             "doctype": "Wallet",
-            "customer": "Test Customer",
+            "user": "test_user",
             "balance": 0
         })
         
         # Check if Balance was updated
-        # 0 + 1000 = 1000. 
-        # Note: Since it's a mock method, += might not update the property in a way assertEqual sees if not configured,
-        # but we can check assignment.
         self.assertEqual(mock_wallet.balance, 1000)
         
         # Check if Wallet was saved
@@ -63,8 +74,15 @@ class TestLendingIntegration(FrappeTestCase):
         mock_repayment.amount_paid = 500
         mock_repayment.name = "REPAY-1"
 
-        # Mock Wallet existence check (returns Existing Wallet)
-        mock_get_value.return_value = "WALLET-EXISTING"
+        # Mock Customer resolving User
+        def mock_get_value_side_effect(*args, **kwargs):
+            if args[0] == "Customer" and args[1] == "Test Customer" and args[2] == "user":
+                return "test_user"
+            if args[0] == "Wallet" and args[1] == {"user": "test_user"}:
+                return "WALLET-EXISTING"
+            return None
+        
+        mock_get_value.side_effect = mock_get_value_side_effect
 
         # Mock Wallet retrieval
         mock_wallet = MagicMock()
@@ -75,7 +93,14 @@ class TestLendingIntegration(FrappeTestCase):
         mock_history = MagicMock()
 
         # Configure get_doc returns
-        mock_get_doc.side_effect = [mock_wallet, mock_history]
+        def mock_get_doc_side_effect(*args, **kwargs):
+            if args[0] == "Wallet" and args[1] == "WALLET-EXISTING":
+                return mock_wallet
+            if isinstance(args[0], dict) and args[0].get("doctype") == "Wallet History":
+                return mock_history
+            return MagicMock()
+
+        mock_get_doc.side_effect = mock_get_doc_side_effect
 
         # 2. Call the function
         debit_wallet_on_repayment(mock_repayment, "on_submit")
