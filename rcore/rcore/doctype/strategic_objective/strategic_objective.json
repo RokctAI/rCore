@@ -40,12 +40,6 @@
             "fieldtype": "Link",
             "label": "Pillar",
             "options": "Pillar"
-        },
-        {
-            "fieldname": "todos",
-            "fieldtype": "Table",
-            "label": "ToDos",
-            "options": "ToDo"
         }
     ]
 }
