@@ -8,6 +8,7 @@ app_publisher = "ROKCT INTELLIGENCE (PTY) LTD"
 app_description = "Core business logic and utilities"
 app_email = "admin@rokct.ai"
 app_license = "mit"
+required_apps = ["payments"]
 
 # Scheduler Events
 # ----------------
