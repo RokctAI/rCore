@@ -34,13 +34,32 @@ def debit_wallet_on_repayment(doc, method):
 	update_wallet(customer, amount, "Loan Repayment", description)
 
 def update_wallet(customer, amount, transaction_type, description):
-	# Find or Create Wallet for Customer
-	wallet_name = frappe.db.get_value("Wallet", {"customer": customer}, "name")
+	# Find User associated with Customer
+	# Try to get user from customer field first, else try to find user by email?
+	# Standard generic logic: Customer often links to a user via `user` field if Portal User.
+	# Or we can assume customer name is email?
+	# Let's check if customer doc has a user link.
+	if frappe.db.get_value("Customer", customer, "user"):
+		user = frappe.db.get_value("Customer", customer, "user")
+	else:
+		# Fallback: Assume customer ID might be email or link manually?
+		# For now, let's try to find a user with this email if customer ID is email.
+		if "@" in customer and frappe.db.exists("User", customer):
+			user = customer
+		else:
+			# If no user found, we can't credit wallet?
+			# Maybe create a user?
+			# For safety, let's return or log error.
+			frappe.log_error(f"Could not find User for Customer {customer} to credit/debit wallet.", "Wallet Integration Error")
+			return
+
+	# Find or Create Wallet for User
+	wallet_name = frappe.db.get_value("Wallet", {"user": user}, "name")
 	
 	if not wallet_name:
 		wallet = frappe.get_doc({
 			"doctype": "Wallet",
-			"customer": customer,
+			"user": user,
 			"balance": 0
 		})
 		wallet.insert(ignore_permissions=True)
