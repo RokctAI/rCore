@@ -28,6 +28,11 @@ class TestAPIAuth(FrappeTestCase):
 
     def test_login_success(self):
         # Test valid login
+        # LoginManager requires request object
+        frappe.local.request = frappe.mock("request")
+        frappe.local.request.method = "POST"
+        frappe.local.request.remote_addr = "127.0.0.1"
+
         response = login(self.user.email, "password")
         self.assertTrue(response.get("status"))
         self.assertEqual(response.get("message"), "Logged In")
@@ -40,6 +45,10 @@ class TestAPIAuth(FrappeTestCase):
 
     def test_login_failure(self):
         # Test invalid password
+        frappe.local.request = frappe.mock("request")
+        frappe.local.request.method = "POST"
+        frappe.local.request.remote_addr = "127.0.0.1"
+        
         response = login(self.user.email, "wrongpassword")
         self.assertFalse(response.get("status"))
         self.assertEqual(response.get("message"), "Invalid credentials")
@@ -57,7 +66,11 @@ class TestAPIAuth(FrappeTestCase):
         }).insert(ignore_permissions=True)
 
         # Login should auto-assign System Manager role
-        login(user_email, "password")
+        frappe.local.request = frappe.mock("request")
+        frappe.local.request.method = "POST"
+        frappe.local.request.remote_addr = "127.0.0.1"
+        
+        login(self.sys_user_email, "password")
         
         roles = frappe.get_roles(user.name)
         self.assertIn("System Manager", roles)
