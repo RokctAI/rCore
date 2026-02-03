@@ -46,13 +46,9 @@ class TestAPIAuth(FrappeTestCase):
 
     def test_system_user_role_assignment(self):
         # Create a system user without System Manager role
-        user_email = "sys_user_test@example.com"
-        if frappe.db.exists("User", user_email):
-            frappe.delete_doc("User", user_email, force=True)
-
         user = frappe.get_doc({
             "doctype": "User",
-            "email": user_email,
+            "email": self.sys_user_email,
             "first_name": "Sys",
             "last_name": "User",
             "user_type": "System User",
