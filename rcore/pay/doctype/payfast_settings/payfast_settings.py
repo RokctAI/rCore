@@ -10,14 +10,17 @@ from frappe.model.document import Document
 
 class PayFastSettings(Document):
     def on_update(self):
-        if not frappe.db.exists("Payment Gateway", "PayFast"):
-            frappe.get_doc({
-                "doctype": "Payment Gateway",
-                "gateway": "PayFast",
-                "gateway_settings": "PayFast Settings",
-                "gateway_controller": "rcore.pay.doctype.payfast_settings.payfast_settings.PayFastSettings"
-            }).insert(ignore_permissions=True)
-            frappe.db.commit()
+        try:
+            if not frappe.db.exists("Payment Gateway", "PayFast"):
+                frappe.get_doc({
+                    "doctype": "Payment Gateway",
+                    "gateway": "PayFast",
+                    "gateway_settings": "PayFast Settings",
+                    "gateway_controller": "rcore.pay.doctype.payfast_settings.payfast_settings.PayFastSettings"
+                }).insert(ignore_permissions=True)
+                frappe.db.commit()
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "PayFast Payment Gateway Creation Failed")
 
     def get_payment_url(self, **kwargs):
         """
