@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.tests.utils import FrappeTestCase
-from rcore.api.auth import login
+from unittest.mock import MagicMock
 
 class TestAPIAuth(FrappeTestCase):
     def setUp(self):
@@ -22,14 +22,19 @@ class TestAPIAuth(FrappeTestCase):
             self.user = frappe.get_doc("User", "test_auth_api@example.com")
             self.user.new_password = "password"
             self.user.save(ignore_permissions=True)
+        
+        self.sys_user_email = "sys_user_test@example.com"
+        if frappe.db.exists("User", self.sys_user_email):
+            frappe.delete_doc("User", self.sys_user_email, force=True)
 
     def tearDown(self):
         frappe.set_user("Administrator")
+        del frappe.local.request
 
     def test_login_success(self):
         # Test valid login
         # LoginManager requires request object
-        frappe.local.request = frappe.mock("request")
+        frappe.local.request = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
 
@@ -45,7 +50,7 @@ class TestAPIAuth(FrappeTestCase):
 
     def test_login_failure(self):
         # Test invalid password
-        frappe.local.request = frappe.mock("request")
+        frappe.local.request = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
         
@@ -66,7 +71,7 @@ class TestAPIAuth(FrappeTestCase):
         }).insert(ignore_permissions=True)
 
         # Login should auto-assign System Manager role
-        frappe.local.request = frappe.mock("request")
+        frappe.local.request = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
         
@@ -75,4 +80,4 @@ class TestAPIAuth(FrappeTestCase):
         roles = frappe.get_roles(user.name)
         self.assertIn("System Manager", roles)
         
-        frappe.delete_doc("User", user_email, force=True)
+        frappe.delete_doc("User", self.sys_user_email, force=True)
