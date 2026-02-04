@@ -15,6 +15,21 @@ on:
         options:
         - apk
         - appbundle
+      node-version:
+        type: string
+        default: '22'
+      python-version:
+        type: string
+        default: '3.14'
+      mariadb-version:
+        type: string
+        default: '10.6'
+      postgres-version:
+        type: string
+        default: '15'
+      db-type:
+        type: string
+        default: 'mariadb'
 
 jobs:
   # --- 1. DETECT PROJECT TYPE ---
@@ -48,10 +63,17 @@ jobs:
     uses: RokctAI/shared-workflows/.github/workflows/universal-pipeline.yml@main
     with:
       project_type: ${{ needs.detect.outputs.is_flutter == 'true' && 'flutter' || (needs.detect.outputs.is_node == 'true' && 'node' || 'frappe') }}
+      install-payments: true
       # Quality Gate Toggles
       run_security: true
       run_lint: true
       run_ci: true
       # Deployment Configuration (Immediate release on Main)
       release_strategy: 'immediate'
+      # Environment configuration
+      node-version: ${{ inputs.node-version }}
+      python-version: ${{ inputs.python-version }}
+      mariadb-version: ${{ inputs.mariadb-version }}
+      postgres-version: ${{ inputs.postgres-version }}
+      db-type: ${{ inputs.db-type }}
     secrets: inherit
