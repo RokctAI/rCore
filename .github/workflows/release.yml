@@ -1,4 +1,9 @@
 name: Auto Release (Weekly)
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [main, develop]
@@ -21,6 +26,10 @@ on:
       db-type:
         type: string
         default: 'postgres'
+      version_format:
+        type: string
+        default: '##.##.##'
+        description: "Format for version bumping (e.g. ##.##.## or ##.##.#)"
 
 jobs:
   release:
@@ -49,4 +58,5 @@ jobs:
       mariadb-version: ${{ inputs.mariadb-version || '10.6' }}
       postgres-version: ${{ inputs.postgres-version || '15' }}
       db-type: ${{ inputs.db-type || 'postgres' }}
+      version_format: ${{ inputs.version_format || '##.##.##' }}
     secrets: inherit
