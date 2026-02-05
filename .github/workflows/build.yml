@@ -29,7 +29,7 @@ on:
         default: '15'
       db-type:
         type: string
-        default: 'mariadb'
+        default: 'postgres'
 
 jobs:
   # --- 1. DETECT PROJECT TYPE ---
