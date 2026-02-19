@@ -794,14 +794,6 @@ def get_subscription_details():
 
 
 @frappe.whitelist()
-def save_email_settings(settings: dict):
-    """
-    Saves the tenant's custom email settings.
-    """
-    if "System Manager" not in frappe.get_roles():
-        frappe.throw("You are not authorized to perform this action.", frappe.PermissionError)
-
-@frappe.whitelist()
 def set_platform_secret(secret: str):
     """
     Sets the Platform Sync Secret in the site config.
@@ -829,6 +821,17 @@ def set_platform_secret(secret: str):
         frappe.log_error(f"Failed to set platform secret: {str(e)}")
         return {"status": "error", "message": str(e)}
 
+
+@frappe.whitelist()
+def save_email_settings(settings: dict):
+    """
+    Saves the tenant's custom email settings.
+    """
+    if str(frappe.conf.get("app_role")) != "tenant":
+        frappe.throw("This action can only be performed on a tenant site.", title="Action Not Allowed")
+
+    if "System Manager" not in frappe.get_roles():
+        frappe.throw("You are not authorized to perform this action.", frappe.PermissionError)
 
     if not isinstance(settings, dict):
         frappe.throw("Settings must be a dictionary.", frappe.ValidationError)
