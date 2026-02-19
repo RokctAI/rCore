@@ -4,6 +4,7 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 from unittest.mock import MagicMock
+from rcore.api.auth import login
 
 class TestAPIAuth(FrappeTestCase):
     def setUp(self):
