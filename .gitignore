@@ -33,3 +33,6 @@ sites/*/task-logs/
 # Logs
 *.log
 logs/
+
+# Private Modules
+rcore/security/
