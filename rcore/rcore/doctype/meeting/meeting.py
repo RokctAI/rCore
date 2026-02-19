@@ -4,6 +4,7 @@
 
 from frappe.model.document import Document
 from frappe import _
+import frappe
 
 class Meeting(Document):
 	def validate(self):
