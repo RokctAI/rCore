@@ -24,7 +24,7 @@ on:
         default: '24'
       python-version:
         type: string
-        default: '3.14'
+        default: '3.14.2'
       mariadb-version:
         type: string
         default: '10.6'
