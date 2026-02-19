@@ -1,3 +1,6 @@
+def _get_prompts():
+    return []
+
 def _construct_contextual_prompt(roadmap, feature, mode="Building"):
     """
     Constructs a prompt by replacing placeholders {stack}, {platform}, {dependency}, {feature_tags}
