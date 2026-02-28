@@ -80,7 +80,10 @@ class TestAPIAuth(FrappeTestCase):
                     "REQUEST_METHOD": "POST"
                 }
                 self.form = {}
+                self.args = {}
+                self.values = {}
                 self.cookies = {}
+                self.remote_user = None
             def get_data(self): return b""
             def get(self, key, default=None): return self.headers.get(key, default)
 
