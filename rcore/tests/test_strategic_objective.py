@@ -8,22 +8,27 @@ from frappe.tests.utils import FrappeTestCase
 class TestStrategicObjective(FrappeTestCase):
     def setUp(self):
         # Create a Vision link target if it doesn't exist
-        if not frappe.db.exists("Vision", "Test Vision"):
-            frappe.get_doc({
+        vision_name = frappe.db.get_value("Vision", {"title": "Test Vision"})
+        if not vision_name:
+            vision = frappe.get_doc({
                 "doctype": "Vision",
                 "title": "Test Vision",
                 "description": "Test Vision Description"
             }).insert(ignore_permissions=True)
+            vision_name = vision.name
 
         # Create a Pillar to link to
         if not frappe.db.exists("Pillar", "Test Pillar For Strat"):
             self.pillar = frappe.get_doc({
                 "doctype": "Pillar",
                 "title": "Test Pillar For Strat",
-                "vision": "Test Vision"
+                "vision": vision_name
             }).insert(ignore_permissions=True)
         else:
             self.pillar = frappe.get_doc("Pillar", "Test Pillar For Strat")
+            if self.pillar.vision != vision_name:
+                self.pillar.vision = vision_name
+                self.pillar.save(ignore_permissions=True)
 
     def tearDown(self):
         frappe.db.rollback()
