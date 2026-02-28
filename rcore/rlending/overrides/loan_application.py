@@ -2,7 +2,6 @@
 # For license information, please see license.txt
 
 
-
 import frappe
 from frappe import _
 from lending.loan_management.doctype.loan_application.loan_application import LoanApplication as BaseLoanApplication
