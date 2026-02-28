@@ -4,6 +4,7 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
+
 class TestVision(FrappeTestCase):
     def tearDown(self):
         frappe.db.rollback()
@@ -26,7 +27,12 @@ class TestVision(FrappeTestCase):
         vision.title = "New Vision"
         vision.save(ignore_permissions=True)
 
-        self.assertEqual(frappe.db.get_value("Vision", vision.name, "title"), "New Vision")
+        self.assertEqual(
+            frappe.db.get_value(
+                "Vision",
+                vision.name,
+                "title"),
+            "New Vision")
 
     def test_delete_vision(self):
         vision = frappe.get_doc({

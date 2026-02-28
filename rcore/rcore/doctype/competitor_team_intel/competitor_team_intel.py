@@ -6,5 +6,4 @@ from frappe.model.document import Document
 
 
 class CompetitorTeamIntel(Document):
-	pass
-
+    pass

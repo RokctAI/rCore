@@ -4,6 +4,7 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
+
 class TestPillar(FrappeTestCase):
     def setUp(self):
         # Create a Vision to link to
@@ -39,7 +40,12 @@ class TestPillar(FrappeTestCase):
         pillar.description = "Updated Description"
         pillar.save(ignore_permissions=True)
 
-        self.assertEqual(frappe.db.get_value("Pillar", pillar.name, "description"), "Updated Description")
+        self.assertEqual(
+            frappe.db.get_value(
+                "Pillar",
+                pillar.name,
+                "description"),
+            "Updated Description")
 
     def test_delete_pillar(self):
         pillar = frappe.get_doc({

@@ -6,6 +6,7 @@ from frappe.tests.utils import FrappeTestCase
 from unittest.mock import MagicMock
 from rcore.api.auth import login
 
+
 class TestAPIAuth(FrappeTestCase):
     def setUp(self):
         # Create a test user
@@ -23,7 +24,7 @@ class TestAPIAuth(FrappeTestCase):
             self.user = frappe.get_doc("User", "test_auth_api@example.com")
             self.user.new_password = "password"
             self.user.save(ignore_permissions=True)
-        
+
         self.sys_user_email = "sys_user_test@example.com"
         if frappe.db.exists("User", self.sys_user_email):
             frappe.delete_doc("User", self.sys_user_email, force=True)
@@ -43,7 +44,7 @@ class TestAPIAuth(FrappeTestCase):
         self.assertTrue(response.get("status"))
         self.assertEqual(response.get("message"), "Logged In")
         self.assertIn("access_token", response.get("data"))
-        
+
         # Verify API keys were generated
         user = frappe.get_doc("User", self.user.name)
         self.assertTrue(user.api_key)
@@ -54,7 +55,7 @@ class TestAPIAuth(FrappeTestCase):
         frappe.local.request = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
-        
+
         response = login(self.user.email, "wrongpassword")
         self.assertFalse(response.get("status"))
         self.assertEqual(response.get("message"), "Invalid credentials")
@@ -68,17 +69,17 @@ class TestAPIAuth(FrappeTestCase):
             "last_name": "User",
             "user_type": "System User",
             "new_password": "password",
-            "roles": [{"role": "Employee"}] 
+            "roles": [{"role": "Employee"}]
         }).insert(ignore_permissions=True)
 
         # Login should auto-assign System Manager role
         frappe.local.request = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
-        
+
         login(self.sys_user_email, "password")
-        
+
         roles = frappe.get_roles(user.name)
         self.assertIn("System Manager", roles)
-        
+
         frappe.delete_doc("User", self.sys_user_email, force=True)

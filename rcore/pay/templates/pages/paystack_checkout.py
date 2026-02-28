@@ -4,6 +4,7 @@
 import frappe
 from frappe import _
 
+
 def get_context(context):
     """
     Provides the context to the Paystack checkout page.
@@ -29,12 +30,17 @@ def get_context(context):
         # Pass the required details to the template
         context.public_key = public_key
         context.email = data.get("payer_email")
-        context.amount = int(float(data.get("amount")) * 100) # Convert to kobo
+        context.amount = int(
+            float(
+                data.get("amount")) *
+            100)  # Convert to kobo
         context.currency = data.get("currency")
-        context.reference = doc.name # Use the integration request name as the reference
+        context.reference = doc.name  # Use the integration request name as the reference
 
     except frappe.DoesNotExistError:
         frappe.throw(_("Invalid payment token."))
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Paystack Checkout Context Error")
+        frappe.log_error(
+            frappe.get_traceback(),
+            "Paystack Checkout Context Error")
         frappe.throw(_("An error occurred while preparing the payment page."))

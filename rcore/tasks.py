@@ -1,9 +1,14 @@
 # Copyright (c) 2025 ROKCT INTELLIGENCE (PTY) LTD
 # For license information, please see license.txt
 
+from frappe.utils import now_datetime, get_datetime
+from datetime import timedelta
+import json
+import requests
 import frappe
 from frappe.utils import now_datetime, add_days, getdate, nowdate
 from rcore.tenant.utils import send_tenant_email
+
 
 def reset_monthly_token_usage():
     """
@@ -28,7 +33,10 @@ def reset_monthly_token_usage():
         frappe.log("No token trackers due for a reset.", "Token Usage Job")
         return
 
-    frappe.log(f"Found {len(trackers_to_reset)} token trackers to reset.", "Token Usage Job")
+    frappe.log(
+        f"Found {
+            len(trackers_to_reset)} token trackers to reset.",
+        "Token Usage Job")
 
     for item in trackers_to_reset:
         try:
@@ -42,7 +50,6 @@ def reset_monthly_token_usage():
                 "Token Usage Job Failed"
             )
 
-
     frappe.db.commit()
     frappe.log("Token Usage Reset Job Complete.", "Token Usage Job")
 
@@ -55,11 +62,14 @@ def update_storage_usage():
     if frappe.conf.get("app_role") != "tenant":
         return
 
-    frappe.log("Running Daily Storage Usage Calculation Job...", "Storage Usage Job")
+    frappe.log(
+        "Running Daily Storage Usage Calculation Job...",
+        "Storage Usage Job")
 
     try:
         # Calculate total file size in bytes from the database
-        total_size_bytes = frappe.db.sql("SELECT SUM(file_size) FROM `tabFile`")[0][0] or 0
+        total_size_bytes = frappe.db.sql(
+            "SELECT SUM(file_size) FROM `tabFile`")[0][0] or 0
 
         # Convert bytes to megabytes for storing
         total_size_mb = total_size_bytes / (1024 * 1024)
@@ -70,14 +80,18 @@ def update_storage_usage():
         storage_tracker.save(ignore_permissions=True)
         frappe.db.commit()
 
-        frappe.log(f"Successfully updated storage usage to {total_size_mb:.2f} MB.", "Storage Usage Job")
+        frappe.log(
+            f"Successfully updated storage usage to {
+                total_size_mb:.2f} MB.",
+            "Storage Usage Job")
 
     except Exception as e:
         frappe.db.rollback()
         frappe.log_error(
-            f"An unexpected error occurred during storage usage calculation: {e}\\n{frappe.get_traceback()}",
-            "Storage Usage Job Failed"
-        )
+            f"An unexpected error occurred during storage usage calculation: {e}\\n{
+                frappe.get_traceback()}",
+            "Storage Usage Job Failed")
+
 
 def disable_expired_support_users():
     """
@@ -89,13 +103,11 @@ def disable_expired_support_users():
 
     print("Running Daily Expired Support User Cleanup Job...")
 
-    expired_users = frappe.get_all("User",
-        filters={
-            "enabled": 1,
-            "temporary_user_expires_on": ["<", now_datetime()]
-        },
-        fields=["name", "email", "first_name"]
-    )
+    expired_users = frappe.get_all(
+        "User", filters={
+            "enabled": 1, "temporary_user_expires_on": [
+                "<", now_datetime()]}, fields=[
+            "name", "email", "first_name"])
 
     if not expired_users:
         print("No expired support users to disable.")
@@ -104,17 +116,20 @@ def disable_expired_support_users():
     print(f"Found {len(expired_users)} expired support users to disable...")
 
     # Get all system managers to notify them
-    system_managers = frappe.get_all("User",
-        filters={"role_profile_name": "System Manager", "enabled": 1},
-        fields=["email"]
-    )
+    system_managers = frappe.get_all(
+        "User",
+        filters={
+            "role_profile_name": "System Manager",
+            "enabled": 1},
+        fields=["email"])
     recipients = [user.email for user in system_managers]
 
     if not recipients:
         print("No System Managers found to notify.")
         # Still proceed to disable the user, but log it
-        frappe.log_error("No System Managers found to notify about expired support user.", "Support User Expiration")
-
+        frappe.log_error(
+            "No System Managers found to notify about expired support user.",
+            "Support User Expiration")
 
     for user_info in expired_users:
         try:
@@ -137,22 +152,23 @@ def disable_expired_support_users():
                     args=email_context,
                     now=True
                 )
-                print(f"  - Sent expiration notification to System Managers for {user.email}")
+                print(
+                    f"  - Sent expiration notification to System Managers for {user.email}")
 
         except Exception as e:
             frappe.db.rollback()
-            frappe.log_error(frappe.get_traceback(), f"Failed to disable expired support user {user_info.email}")
+            frappe.log_error(
+                frappe.get_traceback(),
+                f"Failed to disable expired support user {
+                    user_info.email}")
 
     print("Expired Support User Cleanup Job Complete.")
-import frappe
-import requests
-import json
-from datetime import timedelta
-from frappe.utils import now_datetime, get_datetime
+
 
 # ------------------------------------------------------------------------------
 # Daily Job (General)
 # ------------------------------------------------------------------------------
+
 
 def manage_daily_tenders():
     """
@@ -169,7 +185,8 @@ def manage_daily_tenders():
             subscription_details = get_cached_subscription_details()
 
             if not subscription_details.get("enable_tenders"):
-                print("Tender feature is not enabled for this subscription plan. Skipping job.")
+                print(
+                    "Tender feature is not enabled for this subscription plan. Skipping job.")
                 return
 
             allowed_country = subscription_details.get("tender_country")
@@ -177,24 +194,30 @@ def manage_daily_tenders():
                 print("Tender country not configured on control panel. Skipping job.")
                 return
 
-            default_company = frappe.get_single("Global Defaults").default_company
+            default_company = frappe.get_single(
+                "Global Defaults").default_company
             if not default_company:
                 print("No default company set for this site. Skipping tender job.")
                 return
 
-            company_country = frappe.db.get_value("Company", default_company, "country")
+            company_country = frappe.db.get_value(
+                "Company", default_company, "country")
             if company_country != allowed_country:
-                print(f"Company country '{company_country}' does not match the allowed tender country '{allowed_country}'. Skipping job.")
+                print(
+                    f"Company country '{company_country}' does not match the allowed tender country '{allowed_country}'. Skipping job.")
                 return
 
         except Exception as e:
-            frappe.log_error(f"Failed to verify tender access permissions: {e}", "Tender Access Check Failed")
+            frappe.log_error(
+                f"Failed to verify tender access permissions: {e}",
+                "Tender Access Check Failed")
             return
 
         print("Running Daily Tender Management Job on tenant...")
         _fetch_and_upsert_stimuli()
         _delete_expired_stimuli()
         print("Daily Tender Management Job Complete on tenant.")
+
 
 def _fetch_and_cache_tenders_on_control():
     """
@@ -204,7 +227,9 @@ def _fetch_and_cache_tenders_on_control():
     print("Fetching and caching new tenders on control panel...")
     etenders_api_url = frappe.conf.get("etenders_api_url")
     if not etenders_api_url:
-        frappe.log_error("`etenders_api_url` not set in site_config.json. Skipping tender fetch.", "Tender API Fetch Failed")
+        frappe.log_error(
+            "`etenders_api_url` not set in site_config.json. Skipping tender fetch.",
+            "Tender API Fetch Failed")
         return
 
     page_number = 1
@@ -223,7 +248,8 @@ def _fetch_and_cache_tenders_on_control():
     while True:
         try:
             params["PageNumber"] = page_number
-            response = requests.get(etenders_api_url, params=params, timeout=60)
+            response = requests.get(
+                etenders_api_url, params=params, timeout=60)
             response.raise_for_status()
             release_package = response.json()
 
@@ -232,7 +258,9 @@ def _fetch_and_cache_tenders_on_control():
                 break
 
             for release in releases:
-                if not frappe.db.exists("Raw Tender Cache", {"data": json.dumps(release)}):
+                if not frappe.db.exists(
+                    "Raw Tender Cache", {
+                        "data": json.dumps(release)}):
                     frappe.get_doc({
                         "doctype": "Raw Tender Cache",
                         "retrieved_on": now_datetime(),
@@ -243,11 +271,14 @@ def _fetch_and_cache_tenders_on_control():
             page_number += 1
 
         except requests.exceptions.RequestException as e:
-            frappe.log_error(f"API request failed on page {page_number}: {e}", "Tender API Fetch Failed")
+            frappe.log_error(
+                f"API request failed on page {page_number}: {e}",
+                "Tender API Fetch Failed")
             break
         except Exception as e:
             frappe.db.rollback()
-            frappe.log_error(frappe.get_traceback(), f"Tender Caching Failed on page {page_number}")
+            frappe.log_error(frappe.get_traceback(),
+                             f"Tender Caching Failed on page {page_number}")
             break
 
     frappe.db.commit()
@@ -272,10 +303,11 @@ def _fetch_and_upsert_stimuli():
         # Fetch tenant-specific filters from Synaptic Convergence Settings
         stimulus_settings = frappe.get_single("Synaptic Convergence Settings")
         filters = {
-            "mainProcurementCategory": stimulus_settings.main_procurement_category
-        }
+            "mainProcurementCategory": stimulus_settings.main_procurement_category}
 
-        relevant_tenders = frappe.call("control.control.api.tenders.get_relevant_tenders", filters=json.dumps(filters))
+        relevant_tenders = frappe.call(
+            "control.control.api.tenders.get_relevant_tenders",
+            filters=json.dumps(filters))
 
         if not relevant_tenders:
             print("No new relevant tenders found.")
@@ -292,9 +324,13 @@ def _fetch_and_upsert_stimuli():
                 if frappe.db.exists("Stimulus", {"ocid": release.get("ocid")}):
                     continue
 
-                category = _get_linked_doc_name("Stimulus Category", tender_data.get("mainProcurementCategory"))
-                organ_of_state = _get_linked_doc_name("Organ of State", tender_data.get("procuringEntity", {}).get("name"))
-                stimulus_type = _get_linked_doc_name("Stimulus Type", tender_data.get("procurementMethod"))
+                category = _get_linked_doc_name(
+                    "Stimulus Category", tender_data.get("mainProcurementCategory"))
+                organ_of_state = _get_linked_doc_name(
+                    "Organ of State", tender_data.get(
+                        "procuringEntity", {}).get("name"))
+                stimulus_type = _get_linked_doc_name(
+                    "Stimulus Type", tender_data.get("procurementMethod"))
                 province = _find_province_from_parties(release)
 
                 stimulus_doc_data = {
@@ -302,18 +338,36 @@ def _fetch_and_upsert_stimuli():
                     "ocid": release.get("ocid"),
                     "title": tender_data.get("title"),
                     "status": tender_data.get("status"),
-                    "publisher_name": release.get("publisher", {}).get("name"),
-                    "published_date": _format_datetime_str(get_datetime(release.get("date"))),
-                    "stimulus_start_date": _format_datetime_str(get_datetime(tender_data.get("tenderPeriod", {}).get("startDate"))),
-                    "stimulus_end_date": _format_datetime_str(get_datetime(tender_data.get("tenderPeriod", {}).get("endDate"))),
-                    "value_amount": tender_data.get("value", {}).get("amount"),
-                    "value_currency": tender_data.get("value", {}).get("currency"),
+                    "publisher_name": release.get(
+                        "publisher",
+                        {}).get("name"),
+                    "published_date": _format_datetime_str(
+                        get_datetime(
+                            release.get("date"))),
+                    "stimulus_start_date": _format_datetime_str(
+                        get_datetime(
+                            tender_data.get(
+                                "tenderPeriod",
+                                {}).get("startDate"))),
+                    "stimulus_end_date": _format_datetime_str(
+                        get_datetime(
+                            tender_data.get(
+                                "tenderPeriod",
+                                {}).get("endDate"))),
+                    "value_amount": tender_data.get(
+                        "value",
+                        {}).get("amount"),
+                    "value_currency": tender_data.get(
+                        "value",
+                        {}).get("currency"),
                     "description": tender_data.get("description"),
                     "stimulus_category": category,
                     "organ_of_state": organ_of_state,
                     "stimulus_type": stimulus_type,
                     "province": province,
-                    "esubmission": 1 if "electronicSubmission" in tender_data.get("submissionMethod", []) else 0,
+                    "esubmission": 1 if "electronicSubmission" in tender_data.get(
+                        "submissionMethod",
+                        []) else 0,
                 }
 
                 doc = frappe.new_doc("Stimulus")
@@ -322,7 +376,10 @@ def _fetch_and_upsert_stimuli():
                 total_upserted += 1
 
             except Exception as e:
-                frappe.log_error(f"Failed to process release {release.get('ocid')}: {e}", "Tender Release Processing Failed")
+                frappe.log_error(
+                    f"Failed to process release {
+                        release.get('ocid')}: {e}",
+                    "Tender Release Processing Failed")
 
         frappe.db.commit()
         print(f"Successfully created {total_upserted} new Stimuli.")
@@ -344,13 +401,18 @@ def _get_linked_doc_name(doctype, value):
     }
     fieldname = doctype_field_map.get(doctype)
     if not fieldname:
-        frappe.log_error(f"No field mapping found for Doctype {doctype}", "Stimulus Linking Error")
+        frappe.log_error(
+            f"No field mapping found for Doctype {doctype}",
+            "Stimulus Linking Error")
         return None
     try:
         return frappe.db.get_value(doctype, {fieldname: value}, "name")
     except Exception:
-        frappe.log_error(f"Could not find matching document for {doctype} with value '{value}'", "Stimulus Linking Warning")
+        frappe.log_error(
+            f"Could not find matching document for {doctype} with value '{value}'",
+            "Stimulus Linking Warning")
         return None
+
 
 def _find_province_from_parties(release):
     if not release or not release.get("parties"):
@@ -373,23 +435,30 @@ def _delete_expired_stimuli():
     from frappe.utils import getdate, nowdate
     try:
         today = getdate(nowdate())
-        expired_stimuli = frappe.get_all("Stimulus",
-            filters={"stimulus_end_date": ["<", today]},
-            fields=["name"]
-        )
+        expired_stimuli = frappe.get_all(
+            "Stimulus", filters={
+                "stimulus_end_date": [
+                    "<", today]}, fields=["name"])
 
         if not expired_stimuli:
             print("No expired stimuli to delete.")
             return
 
         for stimulus in expired_stimuli:
-            frappe.delete_doc("Stimulus", stimulus.name, ignore_permissions=True, force=True)
+            frappe.delete_doc(
+                "Stimulus",
+                stimulus.name,
+                ignore_permissions=True,
+                force=True)
 
         frappe.db.commit()
         print(f"Successfully deleted {len(expired_stimuli)} expired stimuli.")
     except Exception as e:
         frappe.db.rollback()
-        frappe.log_error(frappe.get_traceback(), "Expired Stimulus Deletion Failed")
+        frappe.log_error(
+            frappe.get_traceback(),
+            "Expired Stimulus Deletion Failed")
+
 
 def manage_daily_funding():
     """
@@ -402,10 +471,13 @@ def manage_daily_funding():
             from rcore.utils.subscription_checker import get_cached_subscription_details
             subscription_details = get_cached_subscription_details()
             if not subscription_details.get("enable_funding"):
-                print("Funding feature is not enabled for this subscription plan. Skipping job.")
+                print(
+                    "Funding feature is not enabled for this subscription plan. Skipping job.")
                 return
         except Exception as e:
-            frappe.log_error(f"Failed to verify funding access permissions: {e}", "Funding Access Check Failed")
+            frappe.log_error(
+                f"Failed to verify funding access permissions: {e}",
+                "Funding Access Check Failed")
             return
 
         print("Running Daily Funding Management Job on tenant...")
@@ -426,7 +498,9 @@ def _fetch_and_cache_funding_on_control():
         response.raise_for_status()
 
         # We will cache the entire page content
-        if not frappe.db.exists("Raw Neurotrophin Cache", {"data": response.text}):
+        if not frappe.db.exists(
+            "Raw Neurotrophin Cache", {
+                "data": response.text}):
             frappe.get_doc({
                 "doctype": "Raw Neurotrophin Cache",
                 "retrieved_on": now_datetime(),
@@ -443,6 +517,7 @@ def _fetch_and_cache_funding_on_control():
         frappe.db.rollback()
         frappe.log_error(frappe.get_traceback(), "Funding Caching Failed")
 
+
 def _process_funding_cache():
     """
     Processes the raw HTML from the cache and creates Neurotrophin documents.
@@ -451,7 +526,13 @@ def _process_funding_cache():
     from dateutil.parser import parse
 
     print("Processing funding cache...")
-    raw_cache = frappe.get_all("Raw Neurotrophin Cache", fields=["data", "name"], order_by="retrieved_on desc", limit=1)
+    raw_cache = frappe.get_all(
+        "Raw Neurotrophin Cache",
+        fields=[
+            "data",
+            "name"],
+        order_by="retrieved_on desc",
+        limit=1)
     if not raw_cache:
         print("No funding cache to process.")
         return
@@ -479,7 +560,8 @@ def _process_funding_cache():
             if deadline_str:
                 try:
                     # Attempt to parse dates like "15-Nov-25"
-                    deadline = parse(deadline_str).strftime('%Y-%m-%d %H:%M:%S')
+                    deadline = parse(deadline_str).strftime(
+                        '%Y-%m-%d %H:%M:%S')
                 except ValueError:
                     print(f"Could not parse date: {deadline_str}")
 
@@ -493,12 +575,18 @@ def _process_funding_cache():
             total_created += 1
 
         except Exception as e:
-            frappe.log_error(f"Failed to process funding item: {e}", "Funding Processing Failed")
+            frappe.log_error(
+                f"Failed to process funding item: {e}",
+                "Funding Processing Failed")
 
     frappe.db.commit()
     print(f"Successfully created {total_created} new Neurotrophins.")
     # Delete the cache after processing
-    frappe.delete_doc("Raw Neurotrophin Cache", raw_cache[0].name, ignore_permissions=True, force=True)
+    frappe.delete_doc(
+        "Raw Neurotrophin Cache",
+        raw_cache[0].name,
+        ignore_permissions=True,
+        force=True)
     frappe.db.commit()
 
 
@@ -510,19 +598,27 @@ def _delete_expired_funding():
     try:
         today = getdate(nowdate())
         expired_funding = frappe.get_all("Neurotrophin",
-            filters={"deadline": ["<", today]},
-            fields=["name"]
-        )
+                                         filters={"deadline": ["<", today]},
+                                         fields=["name"]
+                                         )
 
         if not expired_funding:
             print("No expired funding to delete.")
             return
 
         for fund in expired_funding:
-            frappe.delete_doc("Neurotrophin", fund.name, ignore_permissions=True, force=True)
+            frappe.delete_doc(
+                "Neurotrophin",
+                fund.name,
+                ignore_permissions=True,
+                force=True)
 
         frappe.db.commit()
-        print(f"Successfully deleted {len(expired_funding)} expired funding opportunities.")
+        print(
+            f"Successfully deleted {
+                len(expired_funding)} expired funding opportunities.")
     except Exception as e:
         frappe.db.rollback()
-        frappe.log_error(frappe.get_traceback(), "Expired Funding Deletion Failed")
+        frappe.log_error(
+            frappe.get_traceback(),
+            "Expired Funding Deletion Failed")

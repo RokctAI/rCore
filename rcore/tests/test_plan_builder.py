@@ -6,6 +6,7 @@ import json
 from frappe.tests.utils import FrappeTestCase
 from rcore.api.plan_builder import commit_plan
 
+
 class TestPlanBuilder(FrappeTestCase):
     def tearDown(self):
         frappe.db.rollback()
@@ -39,16 +40,30 @@ class TestPlanBuilder(FrappeTestCase):
         self.assertEqual(response.get("status"), "success")
 
         # Verify Hierarchy
-        self.assertTrue(frappe.db.exists("Vision", {"title": "Builder Vision"}))
+        self.assertTrue(
+            frappe.db.exists(
+                "Vision", {
+                    "title": "Builder Vision"}))
         vision = frappe.get_doc("Vision", {"title": "Builder Vision"})
 
-        self.assertTrue(frappe.db.exists("Pillar", {"title": "Builder Pillar 1", "vision": vision.name}))
+        self.assertTrue(
+            frappe.db.exists(
+                "Pillar", {
+                    "title": "Builder Pillar 1", "vision": vision.name}))
         pillar = frappe.get_doc("Pillar", {"title": "Builder Pillar 1"})
 
-        self.assertTrue(frappe.db.exists("Strategic Objective", {"title": "Builder Obj 1.1", "pillar": pillar.name}))
-        obj = frappe.get_doc("Strategic Objective", {"title": "Builder Obj 1.1"})
+        self.assertTrue(
+            frappe.db.exists(
+                "Strategic Objective", {
+                    "title": "Builder Obj 1.1", "pillar": pillar.name}))
+        obj = frappe.get_doc(
+            "Strategic Objective", {
+                "title": "Builder Obj 1.1"})
 
-        self.assertTrue(frappe.db.exists("KPI", {"title": "Builder KPI 1.1.1", "strategic_objective": obj.name}))
+        self.assertTrue(
+            frappe.db.exists(
+                "KPI", {
+                    "title": "Builder KPI 1.1.1", "strategic_objective": obj.name}))
 
         # Verify Global Link
         plan = frappe.get_doc("Plan On A Page")

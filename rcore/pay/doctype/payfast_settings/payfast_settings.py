@@ -8,6 +8,7 @@ import socket
 from urllib.parse import urlencode
 from frappe.model.document import Document
 
+
 class PayFastSettings(Document):
     def on_update(self):
         try:
@@ -20,7 +21,9 @@ class PayFastSettings(Document):
                 }).insert(ignore_permissions=True)
                 frappe.db.commit()
         except Exception:
-            frappe.log_error(frappe.get_traceback(), "PayFast Payment Gateway Creation Failed")
+            frappe.log_error(
+                frappe.get_traceback(),
+                "PayFast Payment Gateway Creation Failed")
 
     def get_payment_url(self, **kwargs):
         """
@@ -51,25 +54,28 @@ class PayFastSettings(Document):
             "name_first": kwargs.get("payer_name"),
             "email_address": kwargs.get("payer_email"),
             "m_payment_id": integration_request.name,
-            "amount": str(kwargs.get("amount")),
-            "item_name": kwargs.get("title")
-        }
+            "amount": str(
+                kwargs.get("amount")),
+            "item_name": kwargs.get("title")}
 
         # Generate the signature
         passphrase = self.get_password("passphrase")
 
         # Create a string by concatenating the POST data
-        # The data needs to be sorted by key for consistent signature generation
-        pf_param_string = urlencode({k: str(v) for k, v in sorted(payment_data.items())})
+        # The data needs to be sorted by key for consistent signature
+        # generation
+        pf_param_string = urlencode({k: str(v)
+                                    for k, v in sorted(payment_data.items())})
 
         if passphrase:
-             pf_param_string += f"&passphrase={passphrase}"
+            pf_param_string += f"&passphrase={passphrase}"
 
         signature = hashlib.md5(pf_param_string.encode('utf-8')).hexdigest()
         payment_data["signature"] = signature
 
         # Append the encoded data to the redirect URL
         return f"{redirect_url}?{urlencode(payment_data)}"
+
 
 def validate_payfast_ip(request_ip):
     """
@@ -87,19 +93,24 @@ def validate_payfast_ip(request_ip):
         '102.216.36.0/28',
         '144.126.193.139/32'
     ]
-    
+
     try:
         ip_obj = ipaddress.ip_address(request_ip)
         for net in valid_networks:
             if ip_obj in ipaddress.ip_network(net):
                 return True
     except ValueError:
-        frappe.log_error(f"Invalid IP format: {request_ip}", "PayFast IP Validation")
+        frappe.log_error(
+            f"Invalid IP format: {request_ip}",
+            "PayFast IP Validation")
         return False
 
     # Dynamic DNS Check for GCP/New Infrastructure
     # PayFast publishes outbound IPs via A records on these domains
-    domains = ['www.payfast.co.za', 'sandbox.payfast.co.za', 'wpes.payfast.co.za']
+    domains = [
+        'www.payfast.co.za',
+        'sandbox.payfast.co.za',
+        'wpes.payfast.co.za']
     for domain in domains:
         try:
             # Use getaddrinfo to get all IPv4 addresses
@@ -108,10 +119,11 @@ def validate_payfast_ip(request_ip):
             if request_ip in resolved_ips:
                 return True
         except Exception:
-             # DNS lookup failed, continue to next domain
-             pass
-             
+            # DNS lookup failed, continue to next domain
+            pass
+
     return False
+
 
 @frappe.whitelist(allow_guest=True)
 def handle_payfast_callback():
@@ -120,13 +132,15 @@ def handle_payfast_callback():
     Verifies the payment signature and updates the Integration Request.
     """
     data = frappe.form_dict
-    
+
     # 1. Verify the source of the request
     # Get the client IP, handling proxies if configured in Frappe
     client_ip = frappe.local.request.remote_addr
-    
+
     if not validate_payfast_ip(client_ip):
-        frappe.log_error(f"PayFast callback rejected from unauthorized IP: {client_ip}", "PayFast Security Warning")
+        frappe.log_error(
+            f"PayFast callback rejected from unauthorized IP: {client_ip}",
+            "PayFast Security Warning")
         # Fail securely
         frappe.throw("Unauthorized Request Source", frappe.PermissionError)
 
@@ -135,7 +149,8 @@ def handle_payfast_callback():
     passphrase = settings.get_password("passphrase")
 
     # Create a string by concatenating the POST data
-    pf_param_string = urlencode({k: str(v) for k, v in sorted(data.items()) if k != 'signature'})
+    pf_param_string = urlencode(
+        {k: str(v) for k, v in sorted(data.items()) if k != 'signature'})
 
     if passphrase:
         pf_param_string += f"&passphrase={passphrase}"
@@ -143,14 +158,18 @@ def handle_payfast_callback():
     signature = hashlib.md5(pf_param_string.encode('utf-8')).hexdigest()
 
     if signature != data.get("signature"):
-        frappe.log_error("PayFast callback signature mismatch", "PayFast Error")
+        frappe.log_error(
+            "PayFast callback signature mismatch",
+            "PayFast Error")
         # A 400 Bad Request response is appropriate here
         frappe.throw("Signature mismatch", frappe.AuthenticationError)
 
     # 3. Get the Integration Request
     integration_request_name = data.get("m_payment_id")
     if not integration_request_name:
-        frappe.log_error("PayFast callback received without m_payment_id", "PayFast Error")
+        frappe.log_error(
+            "PayFast callback received without m_payment_id",
+            "PayFast Error")
         return
 
     try:
@@ -170,8 +189,11 @@ def handle_payfast_callback():
         frappe.db.commit()
 
     except frappe.DoesNotExistError:
-        frappe.log_error(f"Integration Request '{integration_request_name}' not found for PayFast callback.", "PayFast Error")
+        frappe.log_error(
+            f"Integration Request '{integration_request_name}' not found for PayFast callback.",
+            "PayFast Error")
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "PayFast Callback Error")
-        # It's important to commit any changes even if a later part of the hook fails
+        # It's important to commit any changes even if a later part of the hook
+        # fails
         frappe.db.commit()

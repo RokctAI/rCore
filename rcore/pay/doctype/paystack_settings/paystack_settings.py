@@ -5,9 +5,11 @@ import frappe
 import requests
 from frappe.model.document import Document
 
+
 class PaystackSettings(Document):
     def on_update(self):
-        # This ensures that the Payment Gateway record is created if it doesn't exist.
+        # This ensures that the Payment Gateway record is created if it doesn't
+        # exist.
         try:
             if not frappe.db.table_exists("Payment Gateway"):
                 return
@@ -21,20 +23,33 @@ class PaystackSettings(Document):
                 frappe.db.commit()
         except Exception:
             frappe.db.rollback()
-            frappe.log_error(frappe.get_traceback(), "Paystack Payment Gateway Creation Failed")
+            frappe.log_error(
+                frappe.get_traceback(),
+                "Paystack Payment Gateway Creation Failed")
 
-    def charge_customer(self, customer_email, amount_in_base_unit, currency, **kwargs):
+    def charge_customer(
+            self,
+            customer_email,
+            amount_in_base_unit,
+            currency,
+            **kwargs):
         """
         Charges a customer using their saved payment token (authorization code) on Paystack.
         """
         secret_key = self.get_password("secret_key")
         if not secret_key:
-            return {"success": False, "message": "Paystack secret key is not configured."}
+            return {
+                "success": False,
+                "message": "Paystack secret key is not configured."}
 
-        customer = frappe.get_doc("Customer", {"customer_primary_email": customer_email})
+        customer = frappe.get_doc("Customer",
+                                  {"customer_primary_email": customer_email})
         auth_code = customer.get("paystack_authorization_code")
         if not auth_code:
-            return {"success": False, "message": f"No Paystack authorization code found for customer {customer.name}."}
+            return {
+                "success": False,
+                "message": f"No Paystack authorization code found for customer {
+                    customer.name}."}
 
         amount_in_kobo = int(float(amount_in_base_unit) * 100)
         base_url = "https://api.paystack.co"
@@ -52,22 +67,36 @@ class PaystackSettings(Document):
         url = f"{base_url}/transaction/charge_authorization"
 
         try:
-            response = requests.post(url, json=payload, headers=headers, timeout=30)
+            response = requests.post(
+                url, json=payload, headers=headers, timeout=30)
             response.raise_for_status()
             response_data = response.json()
 
-            if response_data.get("status") and response_data.get("data", {}).get("status") == "success":
+            if response_data.get("status") and response_data.get(
+                    "data", {}).get("status") == "success":
                 return {"success": True, "message": "Payment successful."}
             else:
-                failure_reason = response_data.get("data", {}).get("gateway_response", "Unknown reason.")
-                return {"success": False, "message": f"Payment failed: {failure_reason}"}
+                failure_reason = response_data.get(
+                    "data", {}).get(
+                    "gateway_response", "Unknown reason.")
+                return {
+                    "success": False,
+                    "message": f"Payment failed: {failure_reason}"}
 
         except requests.exceptions.RequestException as e:
-            frappe.log_error(f"Paystack API request failed: {e}", "Paystack Integration Error")
-            return {"success": False, "message": f"Failed to connect to Paystack: {e}"}
+            frappe.log_error(
+                f"Paystack API request failed: {e}",
+                "Paystack Integration Error")
+            return {
+                "success": False,
+                "message": f"Failed to connect to Paystack: {e}"}
         except Exception as e:
-            frappe.log_error(f"An unexpected error occurred during Paystack charge: {e}", "Paystack Integration Error")
-            return {"success": False, "message": f"An unexpected error occurred: {e}"}
+            frappe.log_error(
+                f"An unexpected error occurred during Paystack charge: {e}",
+                "Paystack Integration Error")
+            return {
+                "success": False,
+                "message": f"An unexpected error occurred: {e}"}
 
     def get_payment_url(self, **kwargs):
         """
@@ -103,7 +132,9 @@ def verify_transaction_and_get_auth(reference):
     base_url = "https://api.paystack.co"
 
     if not secret_key:
-        return {"success": False, "message": "Paystack secret key is not configured."}
+        return {
+            "success": False,
+            "message": "Paystack secret key is not configured."}
 
     headers = {"Authorization": f"Bearer {secret_key}"}
     url = f"{base_url}/transaction/verify/{reference}"
@@ -120,11 +151,23 @@ def verify_transaction_and_get_auth(reference):
                 "customer_email": data.get("customer", {}).get("email")
             }
         else:
-            return {"success": False, "message": data.get("gateway_response", "Verification failed.")}
+            return {
+                "success": False,
+                "message": data.get(
+                    "gateway_response",
+                    "Verification failed.")}
 
     except requests.exceptions.RequestException as e:
-        frappe.log_error(f"Paystack API request failed: {e}", "Paystack Integration Error")
-        return {"success": False, "message": f"Failed to connect to Paystack: {e}"}
+        frappe.log_error(
+            f"Paystack API request failed: {e}",
+            "Paystack Integration Error")
+        return {
+            "success": False,
+            "message": f"Failed to connect to Paystack: {e}"}
     except Exception as e:
-        frappe.log_error(f"An unexpected error occurred during Paystack verification: {e}", "Paystack Integration Error")
-        return {"success": False, "message": f"An unexpected error occurred: {e}"}
+        frappe.log_error(
+            f"An unexpected error occurred during Paystack verification: {e}",
+            "Paystack Integration Error")
+        return {
+            "success": False,
+            "message": f"An unexpected error occurred: {e}"}
