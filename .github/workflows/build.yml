@@ -1,9 +1,10 @@
 name: Build (Smart)
 
 concurrency:
-permissions: write-all
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions: write-all
 
 on:
   push:
