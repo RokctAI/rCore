@@ -19,7 +19,6 @@ class PayFastSettings(Document):
                     "gateway_settings": "PayFast Settings",
                     "gateway_controller": "rcore.pay.doctype.payfast_settings.payfast_settings.PayFastSettings"
                 }).insert(ignore_permissions=True)
-                frappe.db.commit()
         except Exception:
             frappe.log_error(
                 frappe.get_traceback(),
