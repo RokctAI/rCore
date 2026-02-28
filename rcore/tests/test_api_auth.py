@@ -44,10 +44,21 @@ class TestAPIAuth(FrappeTestCase):
         class MockResponse:
             def __init__(self):
                 self.cookies = {}
+                self.headers = {}
             def set_cookie(self, key, value, expires=None, secure=False, httponly=False, samesite="Lax", **kwargs):
                 self.cookies[key] = value
             def delete_cookie(self, key, **kwargs):
                 if key in self.cookies: del self.cookies[key]
+            def __setitem__(self, key, value):
+                self.headers[key] = value
+            def __getitem__(self, key):
+                return self.headers.get(key)
+
+        class MockUserAgent:
+            def __init__(self, string):
+                self.string = string
+            def __str__(self):
+                return self.string
 
         class MockRequest:
             def __init__(self):
@@ -55,6 +66,7 @@ class TestAPIAuth(FrappeTestCase):
                 self.remote_addr = "127.0.0.1"
                 self.host = "localhost"
                 self.path = "/api/method/rcore.api.auth.login"
+                self.user_agent = MockUserAgent("Mozilla/5.0 (CI)")
                 self.headers = {
                     "User-Agent": "Mozilla/5.0 (CI)",
                     "X-Forwarded-For": "127.0.0.1",
