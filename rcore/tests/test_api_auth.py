@@ -33,8 +33,9 @@ class TestAPIAuth(FrappeTestCase):
         if frappe.db.exists("User", self.sys_user_email):
             frappe.delete_doc("User", self.sys_user_email, force=True)
 
-        # Mock cookie_manager which is used by LoginManager
+        # Mock cookie_manager and response which are used by LoginManager
         frappe.local.cookie_manager = MagicMock()
+        frappe.local.response = MagicMock()
 
         # Create a real-looking request object to avoid PyMySQL "tuple item" errors
         # PyMySQL fails when it encounters a MagicMock object as a query parameter
@@ -42,14 +43,20 @@ class TestAPIAuth(FrappeTestCase):
             def __init__(self):
                 self.method = "POST"
                 self.remote_addr = "127.0.0.1"
+                self.host = "localhost"
+                self.path = "/api/method/rcore.api.auth.login"
                 self.headers = MagicMock()
                 self.headers.get.side_effect = lambda k, d=None: {
                     "User-Agent": "Mozilla/5.0 (CI)",
-                    "X-Forwarded-For": "127.0.0.1"
+                    "X-Forwarded-For": "127.0.0.1",
+                    "Host": "localhost"
                 }.get(k, d)
                 self.environ = {
                     "HTTP_USER_AGENT": "Mozilla/5.0 (CI)",
-                    "REMOTE_ADDR": "127.0.0.1"
+                    "REMOTE_ADDR": "127.0.0.1",
+                    "HTTP_HOST": "localhost",
+                    "PATH_INFO": "/api/method/rcore.api.auth.login",
+                    "REQUEST_METHOD": "POST"
                 }
                 self.form = {}
                 self.cookies = {}
