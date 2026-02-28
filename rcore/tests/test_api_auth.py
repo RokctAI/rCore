@@ -60,7 +60,10 @@ class TestAPIAuth(FrappeTestCase):
         frappe.local.request.environ = {"HTTP_USER_AGENT": "Mozilla/5.0 (CI)"}
 
         response = login(self.user.email, "password")
-        self.assertTrue(response.get("status"), f"Login failed: {response.get('message')}")
+        self.assertTrue(
+            response.get("status"),
+            f"Login failed: {
+                response.get('message')}")
         self.assertEqual(response.get("message"), "Logged In")
         self.assertIn("access_token", response.get("data"))
 
@@ -95,10 +98,12 @@ class TestAPIAuth(FrappeTestCase):
             "user_type": "System User",
             "new_password": "password"
         }).insert(ignore_permissions=True)
-        
+
         # Ensure only Employee role is present initially
         user.add_roles("Employee")
-        frappe.db.delete("Has Role", {"parent": user.name, "role": "System Manager"})
+        frappe.db.delete(
+            "Has Role", {
+                "parent": user.name, "role": "System Manager"})
         frappe.clear_cache(user=user.name)
 
         # Login should auto-assign System Manager role

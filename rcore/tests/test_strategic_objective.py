@@ -8,7 +8,8 @@ from frappe.tests.utils import FrappeTestCase
 class TestStrategicObjective(FrappeTestCase):
     def setUp(self):
         # Create a Vision link target if it doesn't exist
-        vision_name = frappe.db.get_value("Vision", {"title": "Test Vision"}, "name")
+        vision_name = frappe.db.get_value(
+            "Vision", {"title": "Test Vision"}, "name")
         if not vision_name:
             vision = frappe.get_doc({
                 "doctype": "Vision",
