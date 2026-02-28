@@ -35,14 +35,18 @@ class TestAPIAuth(FrappeTestCase):
 
     def tearDown(self):
         frappe.set_user("Administrator")
-        frappe.local.pop("request", None)
-        frappe.local.pop("response", None)
+        if hasattr(frappe.local, "request"):
+            del frappe.local.request
+        if hasattr(frappe.local, "response"):
+            del frappe.local.response
 
     def test_login_success(self):
         # Test valid login
         # LoginManager requires request and response objects
         frappe.local.request = MagicMock()
         frappe.local.response = MagicMock()
+        frappe.local.response.set_cookie = MagicMock()
+        frappe.local.response.delete_cookie = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
 
@@ -60,6 +64,8 @@ class TestAPIAuth(FrappeTestCase):
         # Test invalid password
         frappe.local.request = MagicMock()
         frappe.local.response = MagicMock()
+        frappe.local.response.set_cookie = MagicMock()
+        frappe.local.response.delete_cookie = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
 
@@ -82,12 +88,18 @@ class TestAPIAuth(FrappeTestCase):
         # Login should auto-assign System Manager role
         frappe.local.request = MagicMock()
         frappe.local.response = MagicMock()
+        frappe.local.response.set_cookie = MagicMock()
+        frappe.local.response.delete_cookie = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
 
         login(self.sys_user_email, "password")
 
-        roles = frappe.get_roles(user.name)
-        self.assertIn("System Manager", roles)
+        # Verify role assignment directly from DB to avoid caching issues
+        has_role = frappe.db.exists("Has Role", {
+            "parent": user.name,
+            "role": "System Manager"
+        })
+        self.assertTrue(has_role, f"System Manager role was not assigned to {user.name}")
 
         frappe.delete_doc("User", self.sys_user_email, force=True)
