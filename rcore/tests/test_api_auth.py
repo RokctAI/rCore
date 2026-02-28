@@ -54,11 +54,13 @@ class TestAPIAuth(FrappeTestCase):
             def __getitem__(self, key):
                 return self.headers.get(key)
 
-        class MockUserAgent:
-            def __init__(self, string):
-                self.string = string
-            def __str__(self):
-                return self.string
+        # MockUserAgent MUST be a str subclass to satisfy PyMySQL (which expects base types)
+        # while also providing the .string attribute that Frappe/Werkzeug expects.
+        class MockUserAgent(str):
+            def __new__(cls, value):
+                return super(MockUserAgent, cls).__new__(cls, value)
+            def __init__(self, value):
+                self.string = value
 
         class MockRequest:
             def __init__(self):
