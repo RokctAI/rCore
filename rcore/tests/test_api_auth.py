@@ -38,15 +38,15 @@ class TestAPIAuth(FrappeTestCase):
         class MockCookieManager:
             def __init__(self): pass
             def init_cookies(self): pass
-            def set_cookie(self, key, value, expires=None, secure=False, httponly=False, samesite="Lax"): pass
-            def delete_cookie(self, key): pass
+            def set_cookie(self, key, value, expires=None, secure=False, httponly=False, samesite="Lax", **kwargs): pass
+            def delete_cookie(self, key, **kwargs): pass
 
         class MockResponse:
             def __init__(self):
                 self.cookies = {}
-            def set_cookie(self, key, value, expires=None, secure=False, httponly=False, samesite="Lax"):
+            def set_cookie(self, key, value, expires=None, secure=False, httponly=False, samesite="Lax", **kwargs):
                 self.cookies[key] = value
-            def delete_cookie(self, key):
+            def delete_cookie(self, key, **kwargs):
                 if key in self.cookies: del self.cookies[key]
 
         class MockRequest:
