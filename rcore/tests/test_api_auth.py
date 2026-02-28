@@ -10,7 +10,8 @@ from rcore.api.auth import login
 class TestAPIAuth(FrappeTestCase):
     def setUp(self):
         if not frappe.db.exists("Role", "Employee"):
-            frappe.get_doc({"doctype": "Role", "role_name": "Employee"}).insert(ignore_permissions=True)
+            frappe.get_doc({"doctype": "Role", "role_name": "Employee"}).insert(
+                ignore_permissions=True)
 
         # Create a test user
         if not frappe.db.exists("User", "test_auth_api@example.com"):
