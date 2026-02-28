@@ -9,6 +9,8 @@ class PaystackSettings(Document):
     def on_update(self):
         # This ensures that the Payment Gateway record is created if it doesn't exist.
         try:
+            if not frappe.db.table_exists("Payment Gateway"):
+                return
             if not frappe.db.exists("Payment Gateway", "Paystack"):
                 frappe.get_doc({
                     "doctype": "Payment Gateway",
@@ -18,6 +20,7 @@ class PaystackSettings(Document):
                 }).insert(ignore_permissions=True)
                 frappe.db.commit()
         except Exception:
+            frappe.db.rollback()
             frappe.log_error(frappe.get_traceback(), "Paystack Payment Gateway Creation Failed")
 
     def charge_customer(self, customer_email, amount_in_base_unit, currency, **kwargs):
