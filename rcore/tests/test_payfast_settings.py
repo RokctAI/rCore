@@ -20,6 +20,8 @@ class TestPayFastSettings(unittest.TestCase):
         self.payfast_settings.save(ignore_permissions=True)
 
     def tearDown(self):
+        if frappe.db.exists("Payment Gateway", "PayFast"):
+            frappe.delete_doc("Payment Gateway", "PayFast", force=True)
         self.payfast_settings.delete(ignore_permissions=True)
 
     def test_get_payment_url(self):
