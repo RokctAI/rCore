@@ -33,12 +33,17 @@ class TestAPIAuth(FrappeTestCase):
         if frappe.db.exists("User", self.sys_user_email):
             frappe.delete_doc("User", self.sys_user_email, force=True)
 
+        # Mock cookie_manager which is used by LoginManager
+        frappe.local.cookie_manager = MagicMock()
+
     def tearDown(self):
         frappe.set_user("Administrator")
         if hasattr(frappe.local, "request"):
             del frappe.local.request
         if hasattr(frappe.local, "response"):
             del frappe.local.response
+        if hasattr(frappe.local, "cookie_manager"):
+            del frappe.local.cookie_manager
 
     def test_login_success(self):
         # Test valid login
