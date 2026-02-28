@@ -7,13 +7,19 @@ from frappe.tests.utils import FrappeTestCase
 
 class TestStrategicObjective(FrappeTestCase):
     def setUp(self):
+        # Create a Vision link target if it doesn't exist
+        if not frappe.db.exists("Vision", "Test Vision"):
+            frappe.get_doc({
+                "doctype": "Vision",
+                "title": "Test Vision",
+                "description": "Test Vision Description"
+            }).insert(ignore_permissions=True)
+
         # Create a Pillar to link to
         if not frappe.db.exists("Pillar", "Test Pillar For Strat"):
             self.pillar = frappe.get_doc({
                 "doctype": "Pillar",
                 "title": "Test Pillar For Strat",
-                # Assuming Vision exists or not strictly required for this unit
-                # test if loose link
                 "vision": "Test Vision"
             }).insert(ignore_permissions=True)
         else:
