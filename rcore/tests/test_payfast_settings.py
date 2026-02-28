@@ -18,11 +18,9 @@ class TestPayFastSettings(unittest.TestCase):
         self.payfast_settings.insert(ignore_permissions=True)
         self.payfast_settings.set("passphrase", "test_passphrase")
         self.payfast_settings.save(ignore_permissions=True)
-        frappe.db.commit()
 
     def tearDown(self):
         self.payfast_settings.delete(ignore_permissions=True)
-        frappe.db.commit()
 
     def test_get_payment_url(self):
         payment_details = {
