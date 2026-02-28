@@ -8,7 +8,7 @@ from frappe.tests.utils import FrappeTestCase
 class TestStrategicObjective(FrappeTestCase):
     def setUp(self):
         # Create a Vision link target if it doesn't exist
-        vision_name = frappe.db.get_value("Vision", {"title": "Test Vision"})
+        vision_name = frappe.db.get_value("Vision", {"title": "Test Vision"}, "name")
         if not vision_name:
             vision = frappe.get_doc({
                 "doctype": "Vision",
@@ -18,14 +18,15 @@ class TestStrategicObjective(FrappeTestCase):
             vision_name = vision.name
 
         # Create a Pillar to link to
-        if not frappe.db.exists("Pillar", "Test Pillar For Strat"):
+        pillar_name = "Test Pillar For Strat"
+        if not frappe.db.exists("Pillar", pillar_name):
             self.pillar = frappe.get_doc({
                 "doctype": "Pillar",
-                "title": "Test Pillar For Strat",
+                "title": pillar_name,
                 "vision": vision_name
             }).insert(ignore_permissions=True)
         else:
-            self.pillar = frappe.get_doc("Pillar", "Test Pillar For Strat")
+            self.pillar = frappe.get_doc("Pillar", pillar_name)
             if self.pillar.vision != vision_name:
                 self.pillar.vision = vision_name
                 self.pillar.save(ignore_permissions=True)
