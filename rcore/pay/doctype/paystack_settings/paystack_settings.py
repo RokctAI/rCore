@@ -20,7 +20,6 @@ class PaystackSettings(Document):
                     "gateway_settings": "Paystack Settings",
                     "gateway_controller": "rcore.pay.doctype.paystack_settings.paystack_settings.PaystackSettings"
                 }).insert(ignore_permissions=True)
-                frappe.db.commit()
         except Exception:
             frappe.db.rollback()
             frappe.log_error(
