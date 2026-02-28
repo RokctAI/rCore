@@ -9,6 +9,9 @@ from rcore.api.auth import login
 
 class TestAPIAuth(FrappeTestCase):
     def setUp(self):
+        if not frappe.db.exists("Role", "Employee"):
+            frappe.get_doc({"doctype": "Role", "role_name": "Employee"}).insert(ignore_permissions=True)
+
         # Create a test user
         if not frappe.db.exists("User", "test_auth_api@example.com"):
             self.user = frappe.get_doc({
@@ -19,7 +22,7 @@ class TestAPIAuth(FrappeTestCase):
                 "enabled": 1,
                 "new_password": "password"
             }).insert(ignore_permissions=True)
-            self.user.add_roles("System Manager")
+            self.user.add_roles("System Manager", "Employee")
         else:
             self.user = frappe.get_doc("User", "test_auth_api@example.com")
             self.user.new_password = "password"
@@ -31,12 +34,14 @@ class TestAPIAuth(FrappeTestCase):
 
     def tearDown(self):
         frappe.set_user("Administrator")
-        del frappe.local.request
+        frappe.local.pop("request", None)
+        frappe.local.pop("response", None)
 
     def test_login_success(self):
         # Test valid login
-        # LoginManager requires request object
+        # LoginManager requires request and response objects
         frappe.local.request = MagicMock()
+        frappe.local.response = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
 
@@ -53,6 +58,7 @@ class TestAPIAuth(FrappeTestCase):
     def test_login_failure(self):
         # Test invalid password
         frappe.local.request = MagicMock()
+        frappe.local.response = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
 
@@ -74,6 +80,7 @@ class TestAPIAuth(FrappeTestCase):
 
         # Login should auto-assign System Manager role
         frappe.local.request = MagicMock()
+        frappe.local.response = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
 
