@@ -54,9 +54,13 @@ class TestAPIAuth(FrappeTestCase):
         frappe.local.response.delete_cookie = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
+        # Mock headers to return string to avoid PyMySQL encoding errors
+        frappe.local.request.headers = MagicMock()
+        frappe.local.request.headers.get.return_value = "Mozilla/5.0 (CI)"
+        frappe.local.request.environ = {"HTTP_USER_AGENT": "Mozilla/5.0 (CI)"}
 
         response = login(self.user.email, "password")
-        self.assertTrue(response.get("status"))
+        self.assertTrue(response.get("status"), f"Login failed: {response.get('message')}")
         self.assertEqual(response.get("message"), "Logged In")
         self.assertIn("access_token", response.get("data"))
 
@@ -73,6 +77,9 @@ class TestAPIAuth(FrappeTestCase):
         frappe.local.response.delete_cookie = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
+        frappe.local.request.headers = MagicMock()
+        frappe.local.request.headers.get.return_value = "Mozilla/5.0 (CI)"
+        frappe.local.request.environ = {"HTTP_USER_AGENT": "Mozilla/5.0 (CI)"}
 
         response = login(self.user.email, "wrongpassword")
         self.assertFalse(response.get("status"))
@@ -86,9 +93,13 @@ class TestAPIAuth(FrappeTestCase):
             "first_name": "Sys",
             "last_name": "User",
             "user_type": "System User",
-            "new_password": "password",
-            "roles": [{"role": "Employee"}]
+            "new_password": "password"
         }).insert(ignore_permissions=True)
+        
+        # Ensure only Employee role is present initially
+        user.add_roles("Employee")
+        frappe.db.delete("Has Role", {"parent": user.name, "role": "System Manager"})
+        frappe.clear_cache(user=user.name)
 
         # Login should auto-assign System Manager role
         frappe.local.request = MagicMock()
@@ -97,17 +108,19 @@ class TestAPIAuth(FrappeTestCase):
         frappe.local.response.delete_cookie = MagicMock()
         frappe.local.request.method = "POST"
         frappe.local.request.remote_addr = "127.0.0.1"
+        frappe.local.request.headers = MagicMock()
+        frappe.local.request.headers.get.return_value = "Mozilla/5.0 (CI)"
+        frappe.local.request.environ = {"HTTP_USER_AGENT": "Mozilla/5.0 (CI)"}
 
         login(self.sys_user_email, "password")
 
-        # Verify role assignment directly from DB to avoid caching issues
-        has_role = frappe.db.exists("Has Role", {
+        # Verify role assignment directly from DB
+        has_role = frappe.db.get_value("Has Role", {
             "parent": user.name,
             "role": "System Manager"
         })
         self.assertTrue(
             has_role,
-            f"System Manager role was not assigned to {
-                user.name}")
+            f"System Manager role was not assigned to {user.name}")
 
         frappe.delete_doc("User", self.sys_user_email, force=True)
