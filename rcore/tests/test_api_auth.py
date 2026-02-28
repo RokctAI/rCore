@@ -34,23 +34,32 @@ class TestAPIAuth(FrappeTestCase):
             frappe.delete_doc("User", self.sys_user_email, force=True)
 
         # Mock cookie_manager and response which are used by LoginManager
-        frappe.local.cookie_manager = MagicMock()
-        frappe.local.response = MagicMock()
+        # Using native classes instead of MagicMock to avoid PyMySQL "tuple item" errors
+        class MockCookieManager:
+            def __init__(self): pass
+            def init_cookies(self): pass
+            def set_cookie(self, key, value, expires=None, secure=False, httponly=False, samesite="Lax"): pass
+            def delete_cookie(self, key): pass
 
-        # Create a real-looking request object to avoid PyMySQL "tuple item" errors
-        # PyMySQL fails when it encounters a MagicMock object as a query parameter
+        class MockResponse:
+            def __init__(self):
+                self.cookies = {}
+            def set_cookie(self, key, value, expires=None, secure=False, httponly=False, samesite="Lax"):
+                self.cookies[key] = value
+            def delete_cookie(self, key):
+                if key in self.cookies: del self.cookies[key]
+
         class MockRequest:
             def __init__(self):
                 self.method = "POST"
                 self.remote_addr = "127.0.0.1"
                 self.host = "localhost"
                 self.path = "/api/method/rcore.api.auth.login"
-                self.headers = MagicMock()
-                self.headers.get.side_effect = lambda k, d=None: {
+                self.headers = {
                     "User-Agent": "Mozilla/5.0 (CI)",
                     "X-Forwarded-For": "127.0.0.1",
                     "Host": "localhost"
-                }.get(k, d)
+                }
                 self.environ = {
                     "HTTP_USER_AGENT": "Mozilla/5.0 (CI)",
                     "REMOTE_ADDR": "127.0.0.1",
@@ -61,7 +70,10 @@ class TestAPIAuth(FrappeTestCase):
                 self.form = {}
                 self.cookies = {}
             def get_data(self): return b""
+            def get(self, key, default=None): return self.headers.get(key, default)
 
+        frappe.local.cookie_manager = MockCookieManager()
+        frappe.local.response = MockResponse()
         frappe.local.request = MockRequest()
         frappe.local.user_agent = "Mozilla/5.0 (CI)"
 
@@ -77,10 +89,7 @@ class TestAPIAuth(FrappeTestCase):
     def test_login_success(self):
         # Test valid login
         response = login(self.user.email, "password")
-        self.assertTrue(
-            response.get("status"),
-            f"Login failed: {
-                response.get('message')}")
+        self.assertTrue(response.get("status"), f"Login failed: {response.get('message')}")
         self.assertEqual(response.get("message"), "Logged In")
         self.assertIn("access_token", response.get("data"))
 
@@ -114,7 +123,8 @@ class TestAPIAuth(FrappeTestCase):
         frappe.clear_cache(user=user.name)
 
         # Login should auto-assign System Manager role
-        login(self.sys_user_email, "password")
+        response = login(self.sys_user_email, "password")
+        self.assertTrue(response.get("status"), f"Login failed: {response.get('message')}")
 
         # Verify role assignment directly from DB - use get_roles carefully
         # We check both DB and cache
