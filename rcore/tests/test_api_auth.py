@@ -36,6 +36,28 @@ class TestAPIAuth(FrappeTestCase):
         # Mock cookie_manager which is used by LoginManager
         frappe.local.cookie_manager = MagicMock()
 
+        # Create a real-looking request object to avoid PyMySQL "tuple item" errors
+        # PyMySQL fails when it encounters a MagicMock object as a query parameter
+        class MockRequest:
+            def __init__(self):
+                self.method = "POST"
+                self.remote_addr = "127.0.0.1"
+                self.headers = MagicMock()
+                self.headers.get.side_effect = lambda k, d=None: {
+                    "User-Agent": "Mozilla/5.0 (CI)",
+                    "X-Forwarded-For": "127.0.0.1"
+                }.get(k, d)
+                self.environ = {
+                    "HTTP_USER_AGENT": "Mozilla/5.0 (CI)",
+                    "REMOTE_ADDR": "127.0.0.1"
+                }
+                self.form = {}
+                self.cookies = {}
+            def get_data(self): return b""
+
+        frappe.local.request = MockRequest()
+        frappe.local.user_agent = "Mozilla/5.0 (CI)"
+
     def tearDown(self):
         frappe.set_user("Administrator")
         if hasattr(frappe.local, "request"):
@@ -47,18 +69,6 @@ class TestAPIAuth(FrappeTestCase):
 
     def test_login_success(self):
         # Test valid login
-        # LoginManager requires request and response objects
-        frappe.local.request = MagicMock()
-        frappe.local.response = MagicMock()
-        frappe.local.response.set_cookie = MagicMock()
-        frappe.local.response.delete_cookie = MagicMock()
-        frappe.local.request.method = "POST"
-        frappe.local.request.remote_addr = "127.0.0.1"
-        # Mock headers to return string to avoid PyMySQL encoding errors
-        frappe.local.request.headers = MagicMock()
-        frappe.local.request.headers.get.return_value = "Mozilla/5.0 (CI)"
-        frappe.local.request.environ = {"HTTP_USER_AGENT": "Mozilla/5.0 (CI)"}
-
         response = login(self.user.email, "password")
         self.assertTrue(
             response.get("status"),
@@ -74,16 +84,6 @@ class TestAPIAuth(FrappeTestCase):
 
     def test_login_failure(self):
         # Test invalid password
-        frappe.local.request = MagicMock()
-        frappe.local.response = MagicMock()
-        frappe.local.response.set_cookie = MagicMock()
-        frappe.local.response.delete_cookie = MagicMock()
-        frappe.local.request.method = "POST"
-        frappe.local.request.remote_addr = "127.0.0.1"
-        frappe.local.request.headers = MagicMock()
-        frappe.local.request.headers.get.return_value = "Mozilla/5.0 (CI)"
-        frappe.local.request.environ = {"HTTP_USER_AGENT": "Mozilla/5.0 (CI)"}
-
         response = login(self.user.email, "wrongpassword")
         self.assertFalse(response.get("status"))
         self.assertEqual(response.get("message"), "Invalid credentials")
@@ -107,25 +107,12 @@ class TestAPIAuth(FrappeTestCase):
         frappe.clear_cache(user=user.name)
 
         # Login should auto-assign System Manager role
-        frappe.local.request = MagicMock()
-        frappe.local.response = MagicMock()
-        frappe.local.response.set_cookie = MagicMock()
-        frappe.local.response.delete_cookie = MagicMock()
-        frappe.local.request.method = "POST"
-        frappe.local.request.remote_addr = "127.0.0.1"
-        frappe.local.request.headers = MagicMock()
-        frappe.local.request.headers.get.return_value = "Mozilla/5.0 (CI)"
-        frappe.local.request.environ = {"HTTP_USER_AGENT": "Mozilla/5.0 (CI)"}
-
         login(self.sys_user_email, "password")
 
-        # Verify role assignment directly from DB
-        has_role = frappe.db.get_value("Has Role", {
-            "parent": user.name,
-            "role": "System Manager"
-        })
-        self.assertTrue(
-            has_role,
-            f"System Manager role was not assigned to {user.name}")
+        # Verify role assignment directly from DB - use get_roles carefully
+        # We check both DB and cache
+        frappe.clear_cache(user=user.name)
+        roles = frappe.get_roles(user.name)
+        self.assertIn("System Manager", roles, f"System Manager role was not assigned to {user.name}. Roles found: {roles}")
 
         frappe.delete_doc("User", self.sys_user_email, force=True)
