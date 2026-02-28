@@ -4,6 +4,7 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
+
 class TestStrategicObjective(FrappeTestCase):
     def setUp(self):
         # Create a Pillar to link to
@@ -11,7 +12,9 @@ class TestStrategicObjective(FrappeTestCase):
             self.pillar = frappe.get_doc({
                 "doctype": "Pillar",
                 "title": "Test Pillar For Strat",
-                "vision": "Test Vision" # Assuming Vision exists or not strictly required for this unit test if loose link
+                # Assuming Vision exists or not strictly required for this unit
+                # test if loose link
+                "vision": "Test Vision"
             }).insert(ignore_permissions=True)
         else:
             self.pillar = frappe.get_doc("Pillar", "Test Pillar For Strat")
@@ -38,5 +41,10 @@ class TestStrategicObjective(FrappeTestCase):
 
         obj.description = "New Desc"
         obj.save(ignore_permissions=True)
-        
-        self.assertEqual(frappe.db.get_value("Strategic Objective", obj.name, "description"), "New Desc")
+
+        self.assertEqual(
+            frappe.db.get_value(
+                "Strategic Objective",
+                obj.name,
+                "description"),
+            "New Desc")

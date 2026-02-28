@@ -13,21 +13,23 @@ required_apps = ["payments"]
 # Scheduler Events
 # ----------------
 
-def get_scheduler_events():
-	if not hasattr(frappe, "conf") or not frappe.conf:
-		return {}
 
-	events = {
-		"all": ["rcore.roadmap.tasks.process_pending_ai_sessions"],
-		"hourly": ["rcore.roadmap.tasks.jules_task_monitor"],
-		"daily": [
+def get_scheduler_events():
+    if not hasattr(frappe, "conf") or not frappe.conf:
+        return {}
+
+    events = {
+        "all": ["rcore.roadmap.tasks.process_pending_ai_sessions"],
+        "hourly": ["rcore.roadmap.tasks.jules_task_monitor"],
+        "daily": [
             "rcore.roadmap.tasks.populate_roadmap_with_ai_ideas",
             "rcore.roadmap.tasks.process_building_queue",
             "rcore.roadmap.tasks.cleanup_archived_sessions"
         ]
-	}
+    }
 
-	return events
+    return events
+
 
 scheduler_events = get_scheduler_events()
 
@@ -50,7 +52,6 @@ before_uninstall = [
 # Conditional Hooks based on installed apps
 # -----------------------------------------
 
-import frappe
 try:
     installed_apps = frappe.get_installed_apps()
 except Exception:
@@ -63,23 +64,25 @@ if "crm" in installed_apps:
 # --- HRMS Hooks ---
 if "hrms" in installed_apps:
     # Append if already defined (which it is not, but good practice)
-    if "after_install" not in locals(): after_install = []
+    if "after_install" not in locals():
+        after_install = []
     after_install.append("rcore.rhrms.install.after_install")
 
     on_migrate = [
         "rcore.rhrms.setup.update_select_perm_after_install",
         "rcore.rhrms.setup.add_non_standard_user_types",
     ]
-    
+
     # Setup Wizard
     setup_wizard_complete = "rcore.rhrms.subscription_utils.update_erpnext_access"
 
     # Integration Hooks
     after_app_install = "rcore.rhrms.setup.after_app_install"
     before_app_uninstall = "rcore.rhrms.setup.before_app_uninstall"
-    
+
     # Uninstallation
-    if "before_uninstall" not in locals(): before_uninstall = []
+    if "before_uninstall" not in locals():
+        before_uninstall = []
     before_uninstall.append("rcore.rhrms.uninstall.before_uninstall")
 
     # HRMS Overrides
@@ -108,7 +111,8 @@ if "hrms" in installed_apps:
     }
 
     # Extending accounting lists conditionally
-    # Need to verify if accounting_dimension_doctypes is defined in locals/global scope often
+    # Need to verify if accounting_dimension_doctypes is defined in
+    # locals/global scope often
     accounting_dimension_doctypes = [
         "Expense Claim",
         "Expense Claim Detail",
@@ -119,24 +123,26 @@ if "hrms" in installed_apps:
 
 # --- Lending Module Hooks ---
 if "lending" in installed_apps:
-    if "override_doctype_class" not in locals(): override_doctype_class = {}
+    if "override_doctype_class" not in locals():
+        override_doctype_class = {}
     override_doctype_class.update({
         "Loan Application": "rcore.rlending.overrides.loan_application.LoanApplication"
     })
-    
-    if "doc_events" not in locals(): doc_events = {}
+
+    if "doc_events" not in locals():
+        doc_events = {}
     doc_events.update({
         "Loan Disbursement": {
-            "on_submit": "rcore.rlending.wallet_integration.credit_wallet_on_disbursement" 
+            "on_submit": "rcore.rlending.wallet_integration.credit_wallet_on_disbursement"
         },
         "Loan Repayment": {
-            "on_submit": "rcore.rlending.wallet_integration.debit_wallet_on_repayment" 
+            "on_submit": "rcore.rlending.wallet_integration.debit_wallet_on_repayment"
         }
     })
 
 # Fixtures
 # --------
 fixtures = [
-    "Province", "Organ of State", "Role", "Custom Field", 
+    "Province", "Organ of State", "Role", "Custom Field",
     "Email Template"
 ]

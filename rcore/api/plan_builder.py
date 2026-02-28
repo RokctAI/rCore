@@ -4,6 +4,7 @@
 import frappe
 import json
 
+
 @frappe.whitelist()
 def commit_plan(plan_data):
     """
@@ -43,9 +44,12 @@ def commit_plan(plan_data):
         # 3. Link the Vision to the main Plan On A Page singleton document
         plan_doc = frappe.get_doc("Plan On A Page")
         plan_doc.vision = vision_doc.name
-        plan_doc.save(ignore_permissions=True) # This will trigger the on_update hook
+        # This will trigger the on_update hook
+        plan_doc.save(ignore_permissions=True)
 
-        return {"status": "success", "message": "Plan on a Page created successfully."}
+        return {
+            "status": "success",
+            "message": "Plan on a Page created successfully."}
 
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "commit_plan Error")

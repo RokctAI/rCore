@@ -2,6 +2,7 @@ import frappe
 import json
 from frappe.tests.utils import FrappeTestCase
 
+
 class TestRcoreHooks(FrappeTestCase):
     def setUp(self):
         if not frappe.db.exists("DocType", "Customer"):
@@ -21,7 +22,12 @@ class TestRcoreHooks(FrappeTestCase):
 
     def tearDown(self):
         # Cleanup
-        frappe.db.delete("Wallet History", {"wallet": ["in", frappe.get_all("Wallet", {"customer": self.customer.name}, pluck="name")]})
+        frappe.db.delete(
+            "Wallet History", {
+                "wallet": [
+                    "in", frappe.get_all(
+                        "Wallet", {
+                            "customer": self.customer.name}, pluck="name")]})
         frappe.db.delete("Wallet", {"customer": self.customer.name})
         # Customer cleanup if safe
         pass
@@ -31,9 +37,9 @@ class TestRcoreHooks(FrappeTestCase):
         # Note: We are testing the hook, so we can pass a dummy doc to the hook function directly
         # or create a document if we want to test the actual event trigger.
         # Since rcore hooks rely on doc_events, let's test the trigger.
-        
+
         from rcore.rlending.wallet_integration import credit_wallet_on_disbursement
-        
+
         loan_doc = frappe.get_doc({
             "doctype": "Loan Disbursement",
             "applicant_type": "Customer",
@@ -41,16 +47,20 @@ class TestRcoreHooks(FrappeTestCase):
             "disbursed_amount": 5000,
             "name": "TEST-LOAN-DISB-001"
         })
-        
-        # Manually trigger the hook to verify logic (since insert might require complex dependencies)
+
+        # Manually trigger the hook to verify logic (since insert might require
+        # complex dependencies)
         credit_wallet_on_disbursement(loan_doc, "on_submit")
-        
+
         # Verify wallet exists and balance is 5000
         wallet = frappe.get_doc("Wallet", {"customer": self.customer.name})
         self.assertEqual(wallet.balance, 5000)
-        
+
         # Verify history record
-        history = frappe.get_all("Wallet History", filters={"wallet": wallet.name}, fields=["transaction_type", "amount"])
+        history = frappe.get_all(
+            "Wallet History", filters={
+                "wallet": wallet.name}, fields=[
+                "transaction_type", "amount"])
         self.assertEqual(len(history), 1)
         self.assertEqual(history[0].transaction_type, "Loan Disbursement")
         self.assertEqual(history[0].amount, 5000)
@@ -62,9 +72,9 @@ class TestRcoreHooks(FrappeTestCase):
             "customer": self.customer.name,
             "balance": 1000
         }).insert(ignore_permissions=True)
-        
+
         from rcore.rlending.wallet_integration import debit_wallet_on_repayment
-        
+
         repayment_doc = frappe.get_doc({
             "doctype": "Loan Repayment",
             "applicant_type": "Customer",
@@ -72,9 +82,9 @@ class TestRcoreHooks(FrappeTestCase):
             "amount_paid": 200,
             "name": "TEST-LOAN-REPAY-001"
         })
-        
+
         debit_wallet_on_repayment(repayment_doc, "on_submit")
-        
+
         wallet.reload()
         self.assertEqual(wallet.balance, 800)
 
@@ -87,7 +97,7 @@ class TestRcoreHooks(FrappeTestCase):
             "gender": "Male",
             "date_of_birth": "1990-01-01"
         }).insert(ignore_permissions=True)
-        
+
         # Trigger on_update
         employee.save()
         # If it doesn't crash, and we can mock publish_update if needed.

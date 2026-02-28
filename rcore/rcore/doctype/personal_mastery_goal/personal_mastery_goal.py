@@ -6,5 +6,4 @@ from frappe.model.document import Document
 
 
 class PersonalMasteryGoal(Document):
-	pass
-
+    pass
