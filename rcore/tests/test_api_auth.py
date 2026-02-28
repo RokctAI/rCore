@@ -100,6 +100,9 @@ class TestAPIAuth(FrappeTestCase):
             "parent": user.name,
             "role": "System Manager"
         })
-        self.assertTrue(has_role, f"System Manager role was not assigned to {user.name}")
+        self.assertTrue(
+            has_role,
+            f"System Manager role was not assigned to {
+                user.name}")
 
         frappe.delete_doc("User", self.sys_user_email, force=True)
