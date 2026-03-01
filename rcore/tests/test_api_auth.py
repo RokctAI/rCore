@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.tests.utils import FrappeTestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from rcore.api.auth import login
 
 
@@ -54,13 +54,9 @@ class TestAPIAuth(FrappeTestCase):
             def __getitem__(self, key):
                 return self.headers.get(key)
 
-        # MockUserAgent MUST be a str subclass to satisfy PyMySQL (which expects base types)
-        # while also providing the .string attribute that Frappe/Werkzeug expects.
-        class MockUserAgent(str):
-            def __new__(cls, value):
-                return super(MockUserAgent, cls).__new__(cls, value)
-            def __init__(self, value):
-                self.string = value
+        # Use a patch to ensure frappe.get_user_agent returns a primitive string for the DB
+        self.ua_patcher = patch("frappe.get_user_agent", return_value="Mozilla/5.0 (CI)")
+        self.ua_patcher.start()
 
         class MockRequest:
             def __init__(self):
@@ -68,7 +64,7 @@ class TestAPIAuth(FrappeTestCase):
                 self.remote_addr = "127.0.0.1"
                 self.host = "localhost"
                 self.path = "/api/method/rcore.api.auth.login"
-                self.user_agent = MockUserAgent("Mozilla/5.0 (CI)")
+                self.user_agent = "Mozilla/5.0 (CI)"
                 self.headers = {
                     "User-Agent": "Mozilla/5.0 (CI)",
                     "X-Forwarded-For": "127.0.0.1",
@@ -95,6 +91,8 @@ class TestAPIAuth(FrappeTestCase):
         frappe.local.user_agent = "Mozilla/5.0 (CI)"
 
     def tearDown(self):
+        if hasattr(self, "ua_patcher"):
+            self.ua_patcher.stop()
         frappe.set_user("Administrator")
         if hasattr(frappe.local, "request"):
             del frappe.local.request
