@@ -86,11 +86,15 @@ class TestAPIAuth(FrappeTestCase):
 
     def test_login_success(self):
         response = login(self.user.email, "password")
-        self.assertTrue(response.get("status"), f"Login failed: {response.get('message')}")
+        self.assertTrue(
+            response.get("status"),
+            f"Login failed: {
+                response.get('message')}")
         self.assertEqual(response.get("message"), "Logged In")
         self.assertIn("access_token", response.get("data"))
 
-        # Verify API keys were generated (reload from DB since auth.py uses set_value)
+        # Verify API keys were generated (reload from DB since auth.py uses
+        # set_value)
         user = frappe.get_doc("User", self.user.name)
         self.assertTrue(user.api_key)
         self.assertTrue(user.api_secret)
@@ -117,11 +121,17 @@ class TestAPIAuth(FrappeTestCase):
         frappe.clear_cache(user=user.name)
 
         response = login(self.sys_user_email, "password")
-        self.assertTrue(response.get("status"), f"Login failed: {response.get('message')}")
+        self.assertTrue(
+            response.get("status"),
+            f"Login failed: {
+                response.get('message')}")
 
         frappe.clear_cache(user=user.name)
         roles = frappe.get_roles(user.name)
-        self.assertIn("System Manager", roles,
-                       f"System Manager role was not assigned to {user.name}. Roles found: {roles}")
+        self.assertIn(
+            "System Manager",
+            roles,
+            f"System Manager role was not assigned to {
+                user.name}. Roles found: {roles}")
 
         frappe.delete_doc("User", self.sys_user_email, force=True)
