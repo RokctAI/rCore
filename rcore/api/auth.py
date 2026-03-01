@@ -100,4 +100,7 @@ def login(usr, pwd):
     except Exception as e:
         tb = frappe.get_traceback()
         frappe.log_error(tb, "Login API System Error")
-        return {"status": False, "message": f"Login Error: {str(e)} | TRACEBACK: {tb}"}
+        return {
+            "status": False,
+            "message": f"Login Error: {
+                str(e)} | TRACEBACK: {tb}"}
