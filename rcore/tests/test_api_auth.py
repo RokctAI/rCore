@@ -87,6 +87,7 @@ class TestAPIAuth(FrappeTestCase):
         self.assertEqual(response.get("message"), "Logged In")
         self.assertIn("access_token", response.get("data"))
 
+        # Verify API keys were generated (reload from DB since auth.py uses set_value)
         user = frappe.get_doc("User", self.user.name)
         self.assertTrue(user.api_key)
         self.assertTrue(user.api_secret)
