@@ -26,26 +26,29 @@ def login(usr, pwd):
 
         user = frappe.get_doc("User", usr)
 
-        # Generate API keys if missing
-        api_secret = None
-        if not user.api_key:
-            api_secret = frappe.generate_hash(length=15)
-            user.api_key = frappe.generate_hash(length=15)
-            user.api_secret = api_secret
-            user.save(ignore_permissions=True)
-        else:
-            # If keys exist, we cannot retrieve the secret.
-            # We must regenerate them to provide a valid token.
-            # WARNING: This invalidates previous sessions using the old key.
-            api_secret = frappe.generate_hash(length=15)
-            user.api_key = frappe.generate_hash(length=15)
-            user.api_secret = api_secret
-            user.save(ignore_permissions=True)
+        # Generate API keys — always regenerate to provide a valid token.
+        # WARNING: This invalidates previous sessions using the old key.
+        # Uses db.set_value to avoid triggering on_update hooks which
+        # require a full HTTP request context (fails in headless/CI).
+        api_secret = frappe.generate_hash(length=15)
+        api_key = frappe.generate_hash(length=15)
+        frappe.db.set_value("User", usr, {
+            "api_key": api_key,
+            "api_secret": api_secret
+        }, update_modified=False)
 
         # Self-Healing: Ensure System Users have System Manager role
         user_roles = frappe.get_roles(user.name)
         if user.user_type == "System User" and "System Manager" not in user_roles:
-            user.add_roles("System Manager")
+            # Direct insert to avoid triggering User on_update hooks
+            frappe.get_doc({
+                "doctype": "Has Role",
+                "parent": user.name,
+                "parenttype": "User",
+                "parentfield": "roles",
+                "role": "System Manager"
+            }).insert(ignore_permissions=True)
+            frappe.clear_cache(user=user.name)
             user_roles = frappe.get_roles(user.name)  # Refresh roles
 
         # Determine Primary Role for Frontend Logic
@@ -57,7 +60,7 @@ def login(usr, pwd):
         elif user.user_type == "System User":
             primary_role = "System Manager"
 
-        token = f"{user.api_key}:{api_secret}"
+        token = f"{api_key}:{api_secret}"
 
         return {
             "status": True,
