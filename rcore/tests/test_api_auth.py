@@ -61,6 +61,9 @@ class TestAPIAuth(FrappeTestCase):
             "set_cookie": lambda *a, **kw: None,
             "delete_cookie": lambda *a, **kw: None,
         })
+        # IP tracker uses frappe.local.request_ip for Redis cache keys.
+        # Must be a primitive string or Redis hdel will fail.
+        frappe.local.request_ip = "127.0.0.1"
 
         # Patch post_login to skip session/cookie DB writes.
         # The real post_login creates DB sessions using request attributes,
