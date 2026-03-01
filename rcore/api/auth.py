@@ -98,5 +98,6 @@ def login(usr, pwd):
             "Login API Auth Error")
         return {"status": False, "message": "Invalid credentials"}
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Login API System Error")
-        return {"status": False, "message": f"Login Error: {str(e)}"}
+        tb = frappe.get_traceback()
+        frappe.log_error(tb, "Login API System Error")
+        return {"status": False, "message": f"Login Error: {str(e)} | TRACEBACK: {tb}"}
