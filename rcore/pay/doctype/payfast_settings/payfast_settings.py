@@ -12,6 +12,8 @@ from frappe.model.document import Document
 class PayFastSettings(Document):
     def on_update(self):
         try:
+            if not frappe.db.table_exists("Payment Gateway"):
+                return
             if not frappe.db.exists("Payment Gateway", "PayFast"):
                 frappe.get_doc({
                     "doctype": "Payment Gateway",
@@ -20,9 +22,7 @@ class PayFastSettings(Document):
                     "gateway_controller": "rcore.pay.doctype.payfast_settings.payfast_settings.PayFastSettings"
                 }).insert(ignore_permissions=True)
         except Exception:
-            frappe.log_error(
-                frappe.get_traceback(),
-                "PayFast Payment Gateway Creation Failed")
+            print("PayFast Payment Gateway creation deferred (will retry on next migrate)")
 
     def get_payment_url(self, **kwargs):
         """
