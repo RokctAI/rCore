@@ -22,7 +22,8 @@ class PayFastSettings(Document):
                     "gateway_controller": "rcore.pay.doctype.payfast_settings.payfast_settings.PayFastSettings"
                 }).insert(ignore_permissions=True)
         except Exception:
-            print("PayFast Payment Gateway creation deferred (will retry on next migrate)")
+            print(
+                "PayFast Payment Gateway creation deferred (will retry on next migrate)")
 
     def get_payment_url(self, **kwargs):
         """
