@@ -19,7 +19,7 @@ class PaystackSettings(Document):
                     return
             except Exception:
                 return
-            
+
             if not frappe.db.exists("Payment Gateway", "Paystack"):
                 frappe.get_doc({
                     "doctype": "Payment Gateway",
