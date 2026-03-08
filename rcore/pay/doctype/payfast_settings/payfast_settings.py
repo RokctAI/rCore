@@ -12,14 +12,14 @@ from frappe.model.document import Document
 class PayFastSettings(Document):
     def after_insert(self):
         try:
-            # Skip during site creation / migration to prevent transactional errors 
+            # Skip during site creation / migration to prevent transactional errors
             # when tables don't exist yet!
             if frappe.flags.in_migrate or frappe.flags.in_install:
                 return
 
             if not frappe.db.table_exists("Payment Gateway"):
                 return
-            
+
             if not frappe.db.exists("Payment Gateway", "PayFast"):
                 frappe.get_doc({
                     "doctype": "Payment Gateway",
