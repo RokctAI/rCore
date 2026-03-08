@@ -11,8 +11,12 @@ class PaystackSettings(Document):
         # This ensures that the Payment Gateway record is created if it doesn't
         # exist.
         try:
-            if not frappe.db.table_exists("Payment Gateway"):
+            try:
+                if not frappe.db.table_exists("Payment Gateway"):
+                    return
+            except Exception:
                 return
+            
             if not frappe.db.exists("Payment Gateway", "Paystack"):
                 frappe.get_doc({
                     "doctype": "Payment Gateway",

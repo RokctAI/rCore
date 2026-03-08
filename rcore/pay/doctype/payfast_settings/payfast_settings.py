@@ -12,8 +12,14 @@ from frappe.model.document import Document
 class PayFastSettings(Document):
     def on_update(self):
         try:
-            if not frappe.db.table_exists("Payment Gateway"):
+            # [FIX] Wrap table_exists in a try block because Frappe's PostgreSQL adapter 
+            # throws transactional errors during init_singles if the table doesn't exist yet!
+            try:
+                if not frappe.db.table_exists("Payment Gateway"):
+                    return
+            except Exception:
                 return
+            
             if not frappe.db.exists("Payment Gateway", "PayFast"):
                 frappe.get_doc({
                     "doctype": "Payment Gateway",
