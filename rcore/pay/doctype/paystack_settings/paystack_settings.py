@@ -7,10 +7,13 @@ from frappe.model.document import Document
 
 
 class PaystackSettings(Document):
-    def on_update(self):
+    def after_insert(self):
         # This ensures that the Payment Gateway record is created if it doesn't
         # exist.
         try:
+            if frappe.flags.in_migrate or frappe.flags.in_install:
+                return
+
             try:
                 if not frappe.db.table_exists("Payment Gateway"):
                     return

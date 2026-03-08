@@ -10,14 +10,14 @@ from frappe.model.document import Document
 
 
 class PayFastSettings(Document):
-    def on_update(self):
+    def after_insert(self):
         try:
-            # [FIX] Wrap table_exists in a try block because Frappe's PostgreSQL adapter 
-            # throws transactional errors during init_singles if the table doesn't exist yet!
-            try:
-                if not frappe.db.table_exists("Payment Gateway"):
-                    return
-            except Exception:
+            # Skip during site creation / migration to prevent transactional errors 
+            # when tables don't exist yet!
+            if frappe.flags.in_migrate or frappe.flags.in_install:
+                return
+
+            if not frappe.db.table_exists("Payment Gateway"):
                 return
             
             if not frappe.db.exists("Payment Gateway", "PayFast"):
@@ -29,7 +29,7 @@ class PayFastSettings(Document):
                 }).insert(ignore_permissions=True)
         except Exception:
             print(
-                "PayFast Payment Gateway creation deferred (will retry on next migrate)")
+                "PayFast Payment Gateway creation deferred (will retry manually)")
 
     def get_payment_url(self, **kwargs):
         """
