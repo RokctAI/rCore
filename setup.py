@@ -5,7 +5,7 @@
 from setuptools import setup, find_packages
 
 name = "rcore"
-version = "1.4.8"
+version = "1.4.9"
 description = "Core ROKCT Logic"
 author = "RokctAI"
 author_email = "admin@rokct.ai"
