@@ -1,6 +1,6 @@
 [project]
 name = "rcore"
-version = "1.4.8"
+version = "1.4.9"
 description = "Core ROKCT Logic"
 authors = [
     { name = "RokctAI", email = "admin@rokct.ai"}
