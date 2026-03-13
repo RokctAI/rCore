@@ -1,13 +1,15 @@
 # Copyright (c) 2025 ROKCT INTELLIGENCE (PTY) LTD
 # For license information, please see license.txt
 
-from frappe.utils import now_datetime, get_datetime
-from datetime import timedelta
-import json
-import requests
 import frappe
-from frappe.utils import now_datetime, add_days, getdate, nowdate
+from frappe.utils import now_datetime, add_days, getdate, nowdate, get_datetime
 from rcore.tenant.utils import send_tenant_email
+import re
+import os
+import shutil
+import subprocess
+import tempfile
+from pathlib import Path
 
 
 def reset_monthly_token_usage():
@@ -219,70 +221,123 @@ def manage_daily_tenders():
         print("Daily Tender Management Job Complete on tenant.")
 
 
+def _fetch_monorepo_via_ssh(repo_path, target_root):
+    """
+    (Helper) Uses SSH to fetch a specific directory from the Monorepo
+    without a full clone.
+    """
+    repo_url = "git@github.com:RokctAI/Monorepo.git"
+    print(f"Fetching {repo_path} from {repo_url} via SSH...")
+    
+    try:
+        # 1. Create a temporary clone (shallow and no checkout)
+        temp_repo = tempfile.mkdtemp()
+        subprocess.run(
+            ["git", "clone", "--depth", "1", "--no-checkout", repo_url, "."],
+            cwd=temp_repo, check=True, capture_output=True
+        )
+        
+        # 2. Checkout only the requested path
+        subprocess.run(
+            ["git", "checkout", "main", "--", repo_path],
+            cwd=temp_repo, check=True, capture_output=True
+        )
+        
+        # 3. Move the fetched directory to our target root
+        src_path = Path(temp_repo) / repo_path
+        if src_path.exists():
+            if target_root.exists():
+                shutil.rmtree(target_root)
+            shutil.copytree(src_path, target_root)
+            return True
+            
+    except subprocess.CalledProcessError as e:
+        frappe.log_error(f"SSH Fetch Failed: {e.stderr.decode()}", "Monorepo SSH Sync Error")
+    except Exception as e:
+        frappe.log_error(f"Unexpected error during SSH sync: {e}", "Monorepo SSH Sync Error")
+    finally:
+        if 'temp_repo' in locals() and os.path.exists(temp_repo):
+            shutil.rmtree(temp_repo)
+            
+    return False
+
+
 def _fetch_and_cache_tenders_on_control():
     """
-    (Control Panel only) Fetches all new tenders from the eTenders API
-    and stores them in the Raw Tender Cache.
+    (Control Panel only) Pivoted: Now fetches from Monorepo via SSH.
     """
-    print("Fetching and caching new tenders on control panel...")
-    etenders_api_url = frappe.conf.get("etenders_api_url")
-    if not etenders_api_url:
-        frappe.log_error(
-            "`etenders_api_url` not set in site_config.json. Skipping tender fetch.",
-            "Tender API Fetch Failed")
-        return
+    print("Syncing tenders from Monorepo via SSH...")
+    
+    # Use a temporary directory for the sync session
+    with tempfile.TemporaryDirectory() as sync_dir:
+        sync_path = Path(sync_dir) / "tenders"
+        if not _fetch_monorepo_via_ssh("opportunities/03_tenders", sync_path):
+            return
 
-    page_number = 1
-    page_size = 100
-    total_cached = 0
+        total_cached = 0
+        for md_file in sync_path.glob("*.md"):
+            if md_file.name == "template.md":
+                continue
+                
+            try:
+                with open(md_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                
+                # Use regex to extract data into the OCDS-like structure control expects
+                ocid_match = re.search(r'-\s+\*\*Tender Number\*\*:\s*(.+)$', content, re.M)
+                title_match = re.search(r'^#\s+Tender Opportunity:\s*(.+)$', content, re.M)
+                institution_match = re.search(r'-\s+\*\*Institution\*\*:\s*(.+)$', content, re.M)
+                closing_match = re.search(r'-\s+\*\*Closing Date\*\*:\s*(.+)$', content, re.M)
+                
+                if not ocid_match: continue
+                
+                # --- Freshness Guard ---
+                if closing_match:
+                    try:
+                        date_part = closing_match.group(1).split(" - ")[0].strip()
+                        closing_datetime = get_datetime(date_part)
+                        if closing_datetime < now_datetime():
+                            continue
+                    except: pass
+                
+                ocid = ocid_match.group(1).strip()
+                release = {
+                    "ocid": ocid,
+                    "date": now_datetime().isoformat(),
+                    "tender": {
+                        "title": title_match.group(1).strip() if title_match else "Unknown",
+                        "procuringEntity": {"name": institution_match.group(1).strip() if institution_match else "Unknown"},
+                        "tenderPeriod": {"endDate": closing_match.group(1).strip() if closing_match else ""}
+                    }
+                }
+                
+                release_json = json.dumps(release)
+                
+                # Deduplicate by OCID: Find existing cache entry containing this OCID
+                # Since 'ocid' is a key in the 'data' JSON blob, we query by data content
+                existing_cache = frappe.db.sql("""
+                    SELECT name, data FROM `tabRaw Tender Cache` 
+                    WHERE JSON_EXTRACT(data, '$.ocid') = %s
+                """, ocid, as_dict=1)
 
-    to_date = now_datetime()
-    from_date = to_date - timedelta(days=1)
-
-    params = {
-        "dateFrom": from_date.strftime('%Y-%m-%d'),
-        "dateTo": to_date.strftime('%Y-%m-%d'),
-        "PageSize": page_size
-    }
-
-    while True:
-        try:
-            params["PageNumber"] = page_number
-            response = requests.get(
-                etenders_api_url, params=params, timeout=60)
-            response.raise_for_status()
-            release_package = response.json()
-
-            releases = release_package.get("releases", [])
-            if not releases:
-                break
-
-            for release in releases:
-                if not frappe.db.exists(
-                    "Raw Tender Cache", {
-                        "data": json.dumps(release)}):
+                if not existing_cache:
                     frappe.get_doc({
                         "doctype": "Raw Tender Cache",
                         "retrieved_on": now_datetime(),
-                        "data": json.dumps(release)
+                        "data": release_json
                     }).insert(ignore_permissions=True)
                     total_cached += 1
+                else:
+                    # Update if content has changed
+                    if existing_cache[0].data != release_json:
+                        frappe.db.set_value("Raw Tender Cache", existing_cache[0].name, "data", release_json)
+                        print(f"Updated cache record for OCID: {ocid}")
+                    
+            except Exception as e:
+                frappe.log_error(f"Failed to process fetched tender {md_file.name}: {e}", "Tender Sync Error")
 
-            page_number += 1
-
-        except requests.exceptions.RequestException as e:
-            frappe.log_error(
-                f"API request failed on page {page_number}: {e}",
-                "Tender API Fetch Failed")
-            break
-        except Exception as e:
-            frappe.db.rollback()
-            frappe.log_error(frappe.get_traceback(),
-                             f"Tender Caching Failed on page {page_number}")
-            break
-
-    frappe.db.commit()
-    print(f"Successfully cached {total_cached} new tenders.")
+        frappe.db.commit()
+        print(f"Successfully synced {total_cached} tenders from Monorepo.")
 
 
 def _format_datetime_str(datetime_obj):
@@ -320,10 +375,9 @@ def _fetch_and_upsert_stimuli():
                 if not tender_data or not release.get("ocid"):
                     continue
 
-                # Avoid creating duplicates
-                if frappe.db.exists("Stimulus", {"ocid": release.get("ocid")}):
-                    continue
-
+                # Check for existing Stimulus by OCID
+                existing_stimulus = frappe.db.get_value("Stimulus", {"ocid": release.get("ocid")}, "name")
+                
                 category = _get_linked_doc_name(
                     "Stimulus Category", tender_data.get("mainProcurementCategory"))
                 organ_of_state = _get_linked_doc_name(
@@ -334,8 +388,6 @@ def _fetch_and_upsert_stimuli():
                 province = _find_province_from_parties(release)
 
                 stimulus_doc_data = {
-                    "doctype": "Stimulus",
-                    "ocid": release.get("ocid"),
                     "title": tender_data.get("title"),
                     "status": tender_data.get("status"),
                     "publisher_name": release.get(
@@ -370,10 +422,17 @@ def _fetch_and_upsert_stimuli():
                         []) else 0,
                 }
 
-                doc = frappe.new_doc("Stimulus")
-                doc.update(stimulus_doc_data)
-                doc.insert(ignore_permissions=True)
-                total_upserted += 1
+                if not existing_stimulus:
+                    doc = frappe.new_doc("Stimulus")
+                    doc.ocid = release.get("ocid")
+                    doc.update(stimulus_doc_data)
+                    doc.insert(ignore_permissions=True)
+                    total_upserted += 1
+                else:
+                    # Update existing stimulus with new data
+                    frappe.db.set_value("Stimulus", existing_stimulus, stimulus_doc_data)
+                    print(f"Updated Stimulus for OCID: {release.get('ocid')}")
+                    total_upserted += 1
 
             except Exception as e:
                 frappe.log_error(
@@ -489,33 +548,47 @@ def manage_daily_funding():
 
 def _fetch_and_cache_funding_on_control():
     """
-    (Control Panel only) Scrapes funding opportunities and stores them in the Raw Neurotrophin Cache.
+    (Control Panel only) Pivoted: Now synchronizes from curated Monorepo grants via SSH.
     """
-    print("Scraping and caching new funding opportunities on control panel...")
-    funding_url = "https://www2.fundsforngos.org/"
-    try:
-        response = requests.get(funding_url, timeout=60)
-        response.raise_for_status()
+    print("Syncing funding opportunities from Monorepo via SSH...")
+    
+    with tempfile.TemporaryDirectory() as sync_dir:
+        sync_path = Path(sync_dir) / "grants"
+        if not _fetch_monorepo_via_ssh("opportunities/02_grants", sync_path):
+            return
 
-        # We will cache the entire page content
-        if not frappe.db.exists(
-            "Raw Neurotrophin Cache", {
-                "data": response.text}):
-            frappe.get_doc({
-                "doctype": "Raw Neurotrophin Cache",
-                "retrieved_on": now_datetime(),
-                "data": response.text
-            }).insert(ignore_permissions=True)
-            frappe.db.commit()
-            print("Successfully cached new funding opportunities page.")
-        else:
-            print("Funding opportunities page content has not changed.")
+        total_cached = 0
+        for md_file in sync_path.glob("*.md"):
+            if md_file.name == "grant_template.md":
+                continue
+                
+            try:
+                with open(md_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                
+                # --- Freshness Guard ---
+                deadline_match = re.search(r'-\s+\*\*Deadline\*\*:\s*(\d{4}-\d{2}-\d{2})', content)
+                if deadline_match:
+                    try:
+                        deadline_date = get_datetime(deadline_match.group(1))
+                        if deadline_date < now_datetime():
+                            continue
+                    except: pass
 
-    except requests.exceptions.RequestException as e:
-        frappe.log_error(f"Scraping failed: {e}", "Funding Scraping Failed")
-    except Exception as e:
-        frappe.db.rollback()
-        frappe.log_error(frappe.get_traceback(), "Funding Caching Failed")
+                # Simple content change check
+                if not frappe.db.exists("Raw Neurotrophin Cache", {"data": content}):
+                    frappe.get_doc({
+                        "doctype": "Raw Neurotrophin Cache",
+                        "retrieved_on": now_datetime(),
+                        "data": content
+                    }).insert(ignore_permissions=True)
+                    total_cached += 1
+                    
+            except Exception as e:
+                frappe.log_error(f"Failed to process fetched grant {md_file.name}: {e}", "Funding Sync Error")
+
+        frappe.db.commit()
+        print(f"Successfully synced {total_cached} grants from Monorepo.")
 
 
 def _process_funding_cache():
