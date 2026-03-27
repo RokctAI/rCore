@@ -45,6 +45,9 @@ whitelisted_methods = {
     "rcore.api.setup.update_naming_series": "rcore.api.setup.update_naming_series",
     # Plan Builder
     "rcore.api.plan_builder.commit_plan": "rcore.api.plan_builder.commit_plan",
+    # The two universal entry points for the platform
+    "rokct.platform.api.tenant": "rcore.platform.api.execute_tenant",
+    "rokct.platform.api.control": "rcore.platform.api.execute_control",
 }
 
 # Uninstallation
