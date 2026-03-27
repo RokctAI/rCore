@@ -35,4 +35,4 @@ sites/*/task-logs/
 logs/
 
 # Private Modules
-rcore/security/
+rcore/platform/
