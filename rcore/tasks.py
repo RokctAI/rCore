@@ -289,6 +289,17 @@ def _fetch_and_cache_tenders_on_control():
                 institution_match = re.search(r'-\s+\*\*Institution\*\*:\s*(.+)$', content, re.M)
                 closing_match = re.search(r'-\s+\*\*Closing Date\*\*:\s*(.+)$', content, re.M)
                 
+                # --- AI Checklist Parsing ---
+                checklist = []
+                checklist_section = re.search(r'## AI Checklist \(Jules\)\s*(.*?)(?:\n##|$)', content, re.S)
+                if checklist_section:
+                    items = re.findall(r'-\s+\[\s*\]\s*(.*?)\|\s*(\d+)', checklist_section.group(1))
+                    for subject, offset in items:
+                        checklist.append({
+                            "subject": subject.strip(),
+                            "due_date_offset_days": int(offset)
+                        })
+
                 if not ocid_match: continue
                 
                 # --- Freshness Guard ---
@@ -307,7 +318,8 @@ def _fetch_and_cache_tenders_on_control():
                     "tender": {
                         "title": title_match.group(1).strip() if title_match else "Unknown",
                         "procuringEntity": {"name": institution_match.group(1).strip() if institution_match else "Unknown"},
-                        "tenderPeriod": {"endDate": closing_match.group(1).strip() if closing_match else ""}
+                        "tenderPeriod": {"endDate": closing_match.group(1).strip() if closing_match else ""},
+                        "custom_tasks": checklist
                     }
                 }
                 
@@ -420,6 +432,7 @@ def _fetch_and_upsert_stimuli():
                     "esubmission": 1 if "electronicSubmission" in tender_data.get(
                         "submissionMethod",
                         []) else 0,
+                    "custom_workflow_json": json.dumps(tender_data.get("custom_tasks", []))
                 }
 
                 if not existing_stimulus:
