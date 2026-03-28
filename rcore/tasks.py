@@ -228,7 +228,7 @@ def _fetch_monorepo_via_ssh(repo_path, target_root):
     """
     repo_url = "git@github.com:RokctAI/Monorepo.git"
     print(f"Fetching {repo_path} from {repo_url} via SSH...")
-    
+
     try:
         # 1. Create a temporary clone (shallow and no checkout)
         temp_repo = tempfile.mkdtemp()
@@ -236,13 +236,13 @@ def _fetch_monorepo_via_ssh(repo_path, target_root):
             ["git", "clone", "--depth", "1", "--no-checkout", repo_url, "."],
             cwd=temp_repo, check=True, capture_output=True
         )
-        
+
         # 2. Checkout only the requested path
         subprocess.run(
             ["git", "checkout", "main", "--", repo_path],
             cwd=temp_repo, check=True, capture_output=True
         )
-        
+
         # 3. Move the fetched directory to our target root
         src_path = Path(temp_repo) / repo_path
         if src_path.exists():
@@ -250,15 +250,20 @@ def _fetch_monorepo_via_ssh(repo_path, target_root):
                 shutil.rmtree(target_root)
             shutil.copytree(src_path, target_root)
             return True
-            
+
     except subprocess.CalledProcessError as e:
-        frappe.log_error(f"SSH Fetch Failed: {e.stderr.decode()}", "Monorepo SSH Sync Error")
+        frappe.log_error(
+            f"SSH Fetch Failed: {
+                e.stderr.decode()}",
+            "Monorepo SSH Sync Error")
     except Exception as e:
-        frappe.log_error(f"Unexpected error during SSH sync: {e}", "Monorepo SSH Sync Error")
+        frappe.log_error(
+            f"Unexpected error during SSH sync: {e}",
+            "Monorepo SSH Sync Error")
     finally:
         if 'temp_repo' in locals() and os.path.exists(temp_repo):
             shutil.rmtree(temp_repo)
-            
+
     return False
 
 
@@ -267,7 +272,7 @@ def _fetch_and_cache_tenders_on_control():
     (Control Panel only) Pivoted: Now fetches from Monorepo via SSH.
     """
     print("Syncing tenders from Monorepo via SSH...")
-    
+
     # Use a temporary directory for the sync session
     with tempfile.TemporaryDirectory() as sync_dir:
         sync_path = Path(sync_dir) / "tenders"
@@ -278,57 +283,69 @@ def _fetch_and_cache_tenders_on_control():
         for md_file in sync_path.glob("*.md"):
             if md_file.name == "template.md":
                 continue
-                
+
             try:
                 with open(md_file, "r", encoding="utf-8") as f:
                     content = f.read()
-                
-                # Use regex to extract data into the OCDS-like structure control expects
-                ocid_match = re.search(r'-\s+\*\*Tender Number\*\*:\s*(.+)$', content, re.M)
-                title_match = re.search(r'^#\s+Tender Opportunity:\s*(.+)$', content, re.M)
-                institution_match = re.search(r'-\s+\*\*Institution\*\*:\s*(.+)$', content, re.M)
-                closing_match = re.search(r'-\s+\*\*Closing Date\*\*:\s*(.+)$', content, re.M)
-                
+
+                # Use regex to extract data into the OCDS-like structure
+                # control expects
+                ocid_match = re.search(
+                    r'-\s+\*\*Tender Number\*\*:\s*(.+)$', content, re.M)
+                title_match = re.search(
+                    r'^#\s+Tender Opportunity:\s*(.+)$', content, re.M)
+                institution_match = re.search(
+                    r'-\s+\*\*Institution\*\*:\s*(.+)$', content, re.M)
+                closing_match = re.search(
+                    r'-\s+\*\*Closing Date\*\*:\s*(.+)$', content, re.M)
+
                 # --- AI Checklist Parsing ---
                 checklist = []
-                checklist_section = re.search(r'## AI Checklist \(Jules\)\s*(.*?)(?:\n##|$)', content, re.S)
+                checklist_section = re.search(
+                    r'## AI Checklist \(Jules\)\s*(.*?)(?:\n##|$)', content, re.S)
                 if checklist_section:
-                    items = re.findall(r'-\s+\[\s*\]\s*(.*?)\|\s*(\d+)', checklist_section.group(1))
+                    items = re.findall(
+                        r'-\s+\[\s*\]\s*(.*?)\|\s*(\d+)',
+                        checklist_section.group(1))
                     for subject, offset in items:
                         checklist.append({
                             "subject": subject.strip(),
                             "due_date_offset_days": int(offset)
                         })
 
-                if not ocid_match: continue
-                
+                if not ocid_match:
+                    continue
+
                 # --- Freshness Guard ---
                 if closing_match:
                     try:
-                        date_part = closing_match.group(1).split(" - ")[0].strip()
+                        date_part = closing_match.group(
+                            1).split(" - ")[0].strip()
                         closing_datetime = get_datetime(date_part)
                         if closing_datetime < now_datetime():
                             continue
-                    except: pass
-                
+                    except BaseException:
+                        pass
+
                 ocid = ocid_match.group(1).strip()
                 release = {
                     "ocid": ocid,
                     "date": now_datetime().isoformat(),
                     "tender": {
                         "title": title_match.group(1).strip() if title_match else "Unknown",
-                        "procuringEntity": {"name": institution_match.group(1).strip() if institution_match else "Unknown"},
-                        "tenderPeriod": {"endDate": closing_match.group(1).strip() if closing_match else ""},
-                        "custom_tasks": checklist
-                    }
-                }
-                
+                        "procuringEntity": {
+                            "name": institution_match.group(1).strip() if institution_match else "Unknown"},
+                        "tenderPeriod": {
+                            "endDate": closing_match.group(1).strip() if closing_match else ""},
+                        "custom_tasks": checklist}}
+
                 release_json = json.dumps(release)
-                
+
                 # Deduplicate by OCID: Find existing cache entry containing this OCID
-                # Since 'ocid' is a key in the 'data' JSON blob, we query by data content
+                # Since 'ocid' is a key in the 'data' JSON blob, we query by
+                # data content
                 existing_cache = frappe.db.sql("""
-                    SELECT name, data FROM `tabRaw Tender Cache` 
+                    SELECT name, data FROM `tabRaw Tender Cache`
                     WHERE JSON_EXTRACT(data, '$.ocid') = %s
                 """, ocid, as_dict=1)
 
@@ -342,11 +359,18 @@ def _fetch_and_cache_tenders_on_control():
                 else:
                     # Update if content has changed
                     if existing_cache[0].data != release_json:
-                        frappe.db.set_value("Raw Tender Cache", existing_cache[0].name, "data", release_json)
+                        frappe.db.set_value(
+                            "Raw Tender Cache",
+                            existing_cache[0].name,
+                            "data",
+                            release_json)
                         print(f"Updated cache record for OCID: {ocid}")
-                    
+
             except Exception as e:
-                frappe.log_error(f"Failed to process fetched tender {md_file.name}: {e}", "Tender Sync Error")
+                frappe.log_error(
+                    f"Failed to process fetched tender {
+                        md_file.name}: {e}",
+                    "Tender Sync Error")
 
         frappe.db.commit()
         print(f"Successfully synced {total_cached} tenders from Monorepo.")
@@ -388,8 +412,9 @@ def _fetch_and_upsert_stimuli():
                     continue
 
                 # Check for existing Stimulus by OCID
-                existing_stimulus = frappe.db.get_value("Stimulus", {"ocid": release.get("ocid")}, "name")
-                
+                existing_stimulus = frappe.db.get_value(
+                    "Stimulus", {"ocid": release.get("ocid")}, "name")
+
                 category = _get_linked_doc_name(
                     "Stimulus Category", tender_data.get("mainProcurementCategory"))
                 organ_of_state = _get_linked_doc_name(
@@ -443,7 +468,8 @@ def _fetch_and_upsert_stimuli():
                     total_upserted += 1
                 else:
                     # Update existing stimulus with new data
-                    frappe.db.set_value("Stimulus", existing_stimulus, stimulus_doc_data)
+                    frappe.db.set_value(
+                        "Stimulus", existing_stimulus, stimulus_doc_data)
                     print(f"Updated Stimulus for OCID: {release.get('ocid')}")
                     total_upserted += 1
 
@@ -564,7 +590,7 @@ def _fetch_and_cache_funding_on_control():
     (Control Panel only) Pivoted: Now synchronizes from curated Monorepo grants via SSH.
     """
     print("Syncing funding opportunities from Monorepo via SSH...")
-    
+
     with tempfile.TemporaryDirectory() as sync_dir:
         sync_path = Path(sync_dir) / "grants"
         if not _fetch_monorepo_via_ssh("opportunities/02_grants", sync_path):
@@ -574,31 +600,38 @@ def _fetch_and_cache_funding_on_control():
         for md_file in sync_path.glob("*.md"):
             if md_file.name == "grant_template.md":
                 continue
-                
+
             try:
                 with open(md_file, "r", encoding="utf-8") as f:
                     content = f.read()
-                
+
                 # --- Freshness Guard ---
-                deadline_match = re.search(r'-\s+\*\*Deadline\*\*:\s*(\d{4}-\d{2}-\d{2})', content)
+                deadline_match = re.search(
+                    r'-\s+\*\*Deadline\*\*:\s*(\d{4}-\d{2}-\d{2})', content)
                 if deadline_match:
                     try:
                         deadline_date = get_datetime(deadline_match.group(1))
                         if deadline_date < now_datetime():
                             continue
-                    except: pass
+                    except BaseException:
+                        pass
 
                 # Simple content change check
-                if not frappe.db.exists("Raw Neurotrophin Cache", {"data": content}):
+                if not frappe.db.exists(
+                    "Raw Neurotrophin Cache", {
+                        "data": content}):
                     frappe.get_doc({
                         "doctype": "Raw Neurotrophin Cache",
                         "retrieved_on": now_datetime(),
                         "data": content
                     }).insert(ignore_permissions=True)
                     total_cached += 1
-                    
+
             except Exception as e:
-                frappe.log_error(f"Failed to process fetched grant {md_file.name}: {e}", "Funding Sync Error")
+                frappe.log_error(
+                    f"Failed to process fetched grant {
+                        md_file.name}: {e}",
+                    "Funding Sync Error")
 
         frappe.db.commit()
         print(f"Successfully synced {total_cached} grants from Monorepo.")
