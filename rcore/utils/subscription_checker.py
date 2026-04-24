@@ -61,11 +61,9 @@ def get_cached_subscription_details():
     if not subscription:
         subscription = get_subscription_details()
         if subscription:
-            cache_duration = subscription.get(
-                "subscription_cache_duration", 86400)
+            cache_duration = subscription.get("subscription_cache_duration", 86400)
             frappe.cache().set_value(
-                cache_key,
-                subscription,
-                expires_in_sec=cache_duration)
+                cache_key, subscription, expires_in_sec=cache_duration
+            )
 
     return subscription or {}
