@@ -166,7 +166,7 @@ def record_token_usage(tokens_used: int, model_name: str = "flash"):
 
         # Sync to Control Panel
         frappe.enqueue(
-            "control.control.tenant.api.sync_usage_to_control",
+            "rcore.tenant.api.sync_usage_to_control",
             queue="short",
             tokens_used=tokens_used,
             model_name=model_name
