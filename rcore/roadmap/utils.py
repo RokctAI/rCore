@@ -45,31 +45,34 @@ def construct_contextual_prompt(roadmap, feature, mode="Building"):
 
     # 2. Find Best Match Prompt
     feature_type = feature.get("type", "Feature")
-    template = next((p for p in prompts if p.type ==
-                    feature_type and p.mode == mode), None)
+    template = next(
+        (p for p in prompts if p.type == feature_type and p.mode == mode), None
+    )
 
     if not template:
-        base_msg = f"Task: {
-            feature.feature}\nDetails: {
-            feature.explanation or 'No details provided.'}\nType: {
-            feature.type}"
-        return f"{base_msg}\n\nIMPORTANT: IMPLEMENTATION MODE. Please implement the requested changes." if mode == "Building" else base_msg
+        base_msg = f"Task: {feature.feature}\nDetails: {
+            feature.explanation or 'No details provided.'
+        }\nType: {feature.type}"
+        return (
+            f"{base_msg}\n\nIMPORTANT: IMPLEMENTATION MODE. Please implement the requested changes."
+            if mode == "Building"
+            else base_msg
+        )
 
     prompt_text = template.prompt
 
     # 3. Gather Context
     stacks = [
-        c.value for c in roadmap.get(
-            "classifications",
-            []) if c.category == "Stack"]
+        c.value for c in roadmap.get("classifications", []) if c.category == "Stack"
+    ]
     platforms = [
-        c.value for c in roadmap.get(
-            "classifications",
-            []) if c.category == "Platform"]
+        c.value for c in roadmap.get("classifications", []) if c.category == "Platform"
+    ]
     dependencies = [
-        c.value for c in roadmap.get(
-            "classifications",
-            []) if c.category == "Dependency"]
+        c.value
+        for c in roadmap.get("classifications", [])
+        if c.category == "Dependency"
+    ]
 
     stack_str = ", ".join(stacks) if stacks else "Unknown"
     platform_str = ", ".join(platforms) if platforms else "Web"
@@ -102,7 +105,8 @@ def construct_contextual_prompt(roadmap, feature, mode="Building"):
         "Database": "Database: Maintain schema consistency. Use transactions for mutations.",
         "Security": "Security: Sanitize all inputs. Check permissions. Do not expose sensitive data.",
         "API": "API: Follow the existing API patterns (REST/RPC). Handle errors gracefully.",
-        "Mobile": "Mobile: Optimize for touch targets and platform-specific guidelines (iOS/Android)."}
+        "Mobile": "Mobile: Optimize for touch targets and platform-specific guidelines (iOS/Android).",
+    }
 
     injected_instructions = []
     for tag in ft_tags:
@@ -114,16 +118,16 @@ def construct_contextual_prompt(roadmap, feature, mode="Building"):
     if injected_instructions and "{tag_guidelines}" in prompt_text:
         # If placeholder exists, replace it
         prompt_text = prompt_text.replace(
-            "{tag_guidelines}", "\n".join(injected_instructions))
+            "{tag_guidelines}", "\n".join(injected_instructions)
+        )
     elif injected_instructions:
         # Otherwise append
-        prompt_text += "\n\nTargeted Guidelines:\n" + \
-            "\n".join(injected_instructions)
+        prompt_text += "\n\nTargeted Guidelines:\n" + "\n".join(injected_instructions)
 
     # 6. Append Task Specifics
-    final_prompt = f"{prompt_text}\n\nTask: {
-        feature.feature}\nDetails: {
-        feature.explanation or 'No details provided.'}"
+    final_prompt = f"{prompt_text}\n\nTask: {feature.feature}\nDetails: {
+        feature.explanation or 'No details provided.'
+    }"
 
     if mode == "Building":
         final_prompt += "\n\nIMPORTANT: IMPLEMENTATION MODE. Please implement the requested changes. You may create a Pull Request."

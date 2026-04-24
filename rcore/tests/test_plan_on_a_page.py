@@ -12,21 +12,33 @@ class TestPlanOnAPage(FrappeTestCase):
             frappe.db.delete("Engram", {"reference_doctype": "Plan On A Page"})
 
         # Setup hierarchy: Vision -> Pillar -> Strat Obj -> KPI
-        self.vision = frappe.get_doc({"doctype": "Vision",
-                                      "title": "POAP Vision",
-                                      "description": "V-Desc"}).insert(ignore_permissions=True)
-        self.pillar = frappe.get_doc({"doctype": "Pillar",
-                                      "title": "POAP Pillar",
-                                      "vision": self.vision.name,
-                                      "description": "P-Desc"}).insert(ignore_permissions=True)
-        self.obj = frappe.get_doc({"doctype": "Strategic Objective",
-                                   "title": "POAP Obj",
-                                   "pillar": self.pillar.name,
-                                   "description": "O-Desc"}).insert(ignore_permissions=True)
-        self.kpi = frappe.get_doc({"doctype": "KPI",
-                                   "title": "POAP KPI",
-                                   "strategic_objective": self.obj.name,
-                                   "description": "K-Desc"}).insert(ignore_permissions=True)
+        self.vision = frappe.get_doc(
+            {"doctype": "Vision", "title": "POAP Vision", "description": "V-Desc"}
+        ).insert(ignore_permissions=True)
+        self.pillar = frappe.get_doc(
+            {
+                "doctype": "Pillar",
+                "title": "POAP Pillar",
+                "vision": self.vision.name,
+                "description": "P-Desc",
+            }
+        ).insert(ignore_permissions=True)
+        self.obj = frappe.get_doc(
+            {
+                "doctype": "Strategic Objective",
+                "title": "POAP Obj",
+                "pillar": self.pillar.name,
+                "description": "O-Desc",
+            }
+        ).insert(ignore_permissions=True)
+        self.kpi = frappe.get_doc(
+            {
+                "doctype": "KPI",
+                "title": "POAP KPI",
+                "strategic_objective": self.obj.name,
+                "description": "K-Desc",
+            }
+        ).insert(ignore_permissions=True)
 
     def tearDown(self):
         frappe.db.rollback()

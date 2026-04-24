@@ -11,11 +11,11 @@ from erpnext.setup.doctype.employee.employee import Employee
 
 class EmployeeMaster(Employee):
     def autoname(self):
-        naming_method = frappe.db.get_single_value(
-            "HR Settings", "emp_created_by")
+        naming_method = frappe.db.get_single_value("HR Settings", "emp_created_by")
         if not naming_method:
             frappe.throw(
-                _("Please setup Employee Naming System in Human Resource > HR Settings"))
+                _("Please setup Employee Naming System in Human Resource > HR Settings")
+            )
         else:
             if naming_method == "Naming Series":
                 set_name_by_naming_series(self)
@@ -39,24 +39,24 @@ class EmployeeMaster(Employee):
         # Basic length check
         if len(self.id_number) != 13 or not self.id_number.isdigit():
             frappe.throw(
-                _("ID Number must be exactly 13 digits"),
-                title=_("Invalid ID"))
+                _("ID Number must be exactly 13 digits"), title=_("Invalid ID")
+            )
 
         # Luhn Checksum Validation
         if not self._luhn_checksum(self.id_number):
-            frappe.throw(
-                _("Invalid ID Number checksum"),
-                title=_("Invalid ID"))
+            frappe.throw(_("Invalid ID Number checksum"), title=_("Invalid ID"))
 
         # Ensure 18+
         from frappe.utils import getdate, date_diff, nowdate
+
         dob = self.get_dob_from_id()
         if dob:
             age_days = date_diff(nowdate(), dob)
             if age_days < (18 * 365.25):
                 frappe.throw(
                     _("Employee must be at least 18 years old"),
-                    title=_("Age Restriction"))
+                    title=_("Age Restriction"),
+                )
 
     def _luhn_checksum(self, id_num):
         digits = [int(d) for d in id_num]
@@ -79,28 +79,30 @@ class EmployeeMaster(Employee):
 
         # Determine century
         from frappe.utils import nowdate
+
         current_year = int(nowdate()[:4])
         century = 1900 if int(yy) > (current_year % 100) else 2000
         year = century + int(yy)
 
         try:
             from datetime import date
+
             return date(year, int(mm), int(dd))
         except ValueError:
             return None
 
     def validate_bank_details(self):
         if self.bank_account_no and (
-                len(self.bank_account_no) < 7 or not self.bank_account_no.isdigit()):
+            len(self.bank_account_no) < 7 or not self.bank_account_no.isdigit()
+        ):
             frappe.throw(
-                _("Invalid Bank Account Number"),
-                title=_("Invalid Bank Details"))
+                _("Invalid Bank Account Number"), title=_("Invalid Bank Details")
+            )
 
         if self.bank_branch_code and (
-                len(self.bank_branch_code) < 5 or not self.bank_branch_code.isdigit()):
-            frappe.throw(
-                _("Invalid Bank Branch Code"),
-                title=_("Invalid Bank Details"))
+            len(self.bank_branch_code) < 5 or not self.bank_branch_code.isdigit()
+        ):
+            frappe.throw(_("Invalid Bank Branch Code"), title=_("Invalid Bank Details"))
 
 
 def validate_onboarding_process(doc, method=None):
@@ -117,9 +119,7 @@ def validate_onboarding_process(doc, method=None):
         },
     )
     if employee_onboarding:
-        onboarding = frappe.get_doc(
-            "Employee Onboarding",
-            employee_onboarding[0].name)
+        onboarding = frappe.get_doc("Employee Onboarding", employee_onboarding[0].name)
         onboarding.validate_employee_creation()
         onboarding.db_set("employee", doc.name)
 
@@ -136,39 +136,41 @@ def update_job_applicant_and_offer(doc, method=None):
         return
 
     applicant_status_before_change = frappe.db.get_value(
-        "Job Applicant", doc.job_applicant, "status")
+        "Job Applicant", doc.job_applicant, "status"
+    )
     if applicant_status_before_change != "Accepted":
-        frappe.db.set_value(
-            "Job Applicant",
-            doc.job_applicant,
-            "status",
-            "Accepted")
+        frappe.db.set_value("Job Applicant", doc.job_applicant, "status", "Accepted")
         frappe.msgprint(
             _("Updated the status of linked Job Applicant {0} to {1}").format(
-                get_link_to_form(
-                    "Job Applicant", doc.job_applicant), frappe.bold(
-                    _("Accepted"))))
+                get_link_to_form("Job Applicant", doc.job_applicant),
+                frappe.bold(_("Accepted")),
+            )
+        )
     offer_status_before_change = frappe.db.get_value(
-        "Job Offer", {
-            "job_applicant": doc.job_applicant, "docstatus": [
-                "!=", 2]}, "status")
+        "Job Offer",
+        {"job_applicant": doc.job_applicant, "docstatus": ["!=", 2]},
+        "status",
+    )
     if offer_status_before_change and offer_status_before_change != "Accepted":
         job_offer = frappe.get_last_doc(
-            "Job Offer", filters={
-                "job_applicant": doc.job_applicant})
+            "Job Offer", filters={"job_applicant": doc.job_applicant}
+        )
         job_offer.status = "Accepted"
         job_offer.flags.ignore_mandatory = True
         job_offer.flags.ignore_permissions = True
         job_offer.save()
 
-        msg = _("Updated the status of Job Offer {0} for the linked Job Applicant {1} to {2}").format(
-            get_link_to_form(
-                "Job Offer", job_offer.name), frappe.bold(
-                doc.job_applicant), frappe.bold(
-                _("Accepted")), )
+        msg = _(
+            "Updated the status of Job Offer {0} for the linked Job Applicant {1} to {2}"
+        ).format(
+            get_link_to_form("Job Offer", job_offer.name),
+            frappe.bold(doc.job_applicant),
+            frappe.bold(_("Accepted")),
+        )
         if job_offer.docstatus == 0:
-            msg += "<br>" + \
-                _("You may add additional details, if any, and submit the offer.")
+            msg += "<br>" + _(
+                "You may add additional details, if any, and submit the offer."
+            )
 
         frappe.msgprint(msg)
 
@@ -201,11 +203,11 @@ def update_approver_user_roles(doc, method=None):
 def update_employee_transfer(doc, method=None):
     """Unsets Employee ID in Employee Transfer if doc is deleted"""
     if frappe.db.exists(
-            "Employee Transfer", {
-            "new_employee_id": doc.name, "docstatus": 1}):
+        "Employee Transfer", {"new_employee_id": doc.name, "docstatus": 1}
+    ):
         emp_transfer = frappe.get_doc(
-            "Employee Transfer", {
-                "new_employee_id": doc.name, "docstatus": 1})
+            "Employee Transfer", {"new_employee_id": doc.name, "docstatus": 1}
+        )
         emp_transfer.db_set("new_employee_id", "")
 
 
@@ -240,9 +242,8 @@ def get_retirement_date(date_of_birth=None):
     if date_of_birth:
         try:
             retirement_age = cint(
-                frappe.db.get_single_value(
-                    "HR Settings",
-                    "retirement_age") or 60)
+                frappe.db.get_single_value("HR Settings", "retirement_age") or 60
+            )
             dt = add_years(getdate(date_of_birth), retirement_age)
             return dt.strftime("%Y-%m-%d")
         except ValueError:

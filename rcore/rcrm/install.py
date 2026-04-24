@@ -25,10 +25,8 @@ def auto_enable_erpnext_integration():
                 # if fields are empty, is_erpnext_in_different_site defaults to
                 # 0
                 settings.save(ignore_permissions=True)
-                click.secho(
-                    "* Auto-enabled RCRM - ERPNext Integration",
-                    fg="green")
+                click.secho("* Auto-enabled RCRM - ERPNext Integration", fg="green")
         except Exception as e:
             click.secho(
-                f"* Failed to auto-enable RCRM - ERPNext Integration: {e}",
-                fg="yellow")
+                f"* Failed to auto-enable RCRM - ERPNext Integration: {e}", fg="yellow"
+            )

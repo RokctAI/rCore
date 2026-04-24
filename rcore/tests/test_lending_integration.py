@@ -4,12 +4,15 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 from unittest.mock import MagicMock, patch
-from rcore.rlending.wallet_integration import credit_wallet_on_disbursement, debit_wallet_on_repayment
+from rcore.rlending.wallet_integration import (
+    credit_wallet_on_disbursement,
+    debit_wallet_on_repayment,
+)
 
 
 class TestLendingIntegration(FrappeTestCase):
-    @patch('rcore.rlending.wallet_integration.frappe.get_doc')
-    @patch('rcore.rlending.wallet_integration.frappe.db.get_value')
+    @patch("rcore.rlending.wallet_integration.frappe.get_doc")
+    @patch("rcore.rlending.wallet_integration.frappe.db.get_value")
     def test_credit_wallet(self, mock_get_value, mock_get_doc):
         # 1. Setup Mock Data
         mock_loan = MagicMock()
@@ -22,7 +25,11 @@ class TestLendingIntegration(FrappeTestCase):
         # Logic: frappe.db.get_value("Customer", customer, "user") ->
         # "test_user"
         def mock_get_value_side_effect(*args, **kwargs):
-            if args[0] == "Customer" and args[1] == "Test Customer" and args[2] == "user":
+            if (
+                args[0] == "Customer"
+                and args[1] == "Test Customer"
+                and args[2] == "user"
+            ):
                 return "test_user"
             if args[0] == "Wallet" and args[1] == {"user": "test_user"}:
                 return None  # Wallet not found
@@ -41,11 +48,9 @@ class TestLendingIntegration(FrappeTestCase):
         # Configure get_doc to return our mocks
         # We need to handle the dict call for Wallet creation
         def mock_get_doc_side_effect(*args, **kwargs):
-            if isinstance(args[0], dict) and args[0].get(
-                    "doctype") == "Wallet":
+            if isinstance(args[0], dict) and args[0].get("doctype") == "Wallet":
                 return mock_wallet
-            if isinstance(args[0], dict) and args[0].get(
-                    "doctype") == "Wallet History":
+            if isinstance(args[0], dict) and args[0].get("doctype") == "Wallet History":
                 return mock_history
             return MagicMock()  # fallback
 
@@ -56,11 +61,9 @@ class TestLendingIntegration(FrappeTestCase):
 
         # 3. Verify Interactions
         # Check if Wallet was created with USER
-        mock_get_doc.assert_any_call({
-            "doctype": "Wallet",
-            "user": "test_user",
-            "balance": 0
-        })
+        mock_get_doc.assert_any_call(
+            {"doctype": "Wallet", "user": "test_user", "balance": 0}
+        )
 
         # Check if Balance was updated
         self.assertEqual(mock_wallet.balance, 1000)
@@ -68,8 +71,8 @@ class TestLendingIntegration(FrappeTestCase):
         # Check if Wallet was saved
         mock_wallet.save.assert_called()
 
-    @patch('rcore.rlending.wallet_integration.frappe.get_doc')
-    @patch('rcore.rlending.wallet_integration.frappe.db.get_value')
+    @patch("rcore.rlending.wallet_integration.frappe.get_doc")
+    @patch("rcore.rlending.wallet_integration.frappe.db.get_value")
     def test_debit_wallet(self, mock_get_value, mock_get_doc):
         # 1. Setup Mock Data
         mock_repayment = MagicMock()
@@ -80,7 +83,11 @@ class TestLendingIntegration(FrappeTestCase):
 
         # Mock Customer resolving User
         def mock_get_value_side_effect(*args, **kwargs):
-            if args[0] == "Customer" and args[1] == "Test Customer" and args[2] == "user":
+            if (
+                args[0] == "Customer"
+                and args[1] == "Test Customer"
+                and args[2] == "user"
+            ):
                 return "test_user"
             if args[0] == "Wallet" and args[1] == {"user": "test_user"}:
                 return "WALLET-EXISTING"
@@ -100,8 +107,7 @@ class TestLendingIntegration(FrappeTestCase):
         def mock_get_doc_side_effect(*args, **kwargs):
             if args[0] == "Wallet" and args[1] == "WALLET-EXISTING":
                 return mock_wallet
-            if isinstance(args[0], dict) and args[0].get(
-                    "doctype") == "Wallet History":
+            if isinstance(args[0], dict) and args[0].get("doctype") == "Wallet History":
                 return mock_history
             return MagicMock()
 

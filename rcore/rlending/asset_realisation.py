@@ -6,7 +6,9 @@ import frappe
 from frappe import _
 from frappe.utils import flt, nowdate
 from frappe.utils import flt, nowdate
-from lending.loan_management.doctype.loan_repayment.loan_repayment import get_pending_principal_amount
+from lending.loan_management.doctype.loan_repayment.loan_repayment import (
+    get_pending_principal_amount,
+)
 
 
 @frappe.whitelist()
@@ -24,9 +26,7 @@ def realise_pawn_asset(loan_name, asset_account):
 
     # 2. Transactional Locking (Prevent Race Conditions)
     # Lock the loan row for the duration of this transaction
-    frappe.db.sql(
-        "SELECT name FROM `tabLoan` WHERE name=%s FOR UPDATE",
-        loan_name)
+    frappe.db.sql("SELECT name FROM `tabLoan` WHERE name=%s FOR UPDATE", loan_name)
 
     try:
         loan = frappe.get_doc("Loan", loan_name)
@@ -39,8 +39,7 @@ def realise_pawn_asset(loan_name, asset_account):
             frappe.throw(_("Loan is already closed or in closure process."))
 
         if not loan.is_secured_loan:
-            frappe.throw(
-                _("Only Secured Loans can be realised via Asset Seizure."))
+            frappe.throw(_("Only Secured Loans can be realised via Asset Seizure."))
 
         pending_principal = get_pending_principal_amount(loan)
         if pending_principal <= 0:
@@ -60,17 +59,20 @@ def realise_pawn_asset(loan_name, asset_account):
         loan.add_comment(
             "Info",
             _("Asset Seized (Realised) by {0}. Value: {1}").format(
-                frappe.session.user,
-                flt(pending_principal)))
+                frappe.session.user, flt(pending_principal)
+            ),
+        )
 
         frappe.msgprint(
-            _("Asset Realised successfully. Loan settled and transferred to {0}.").format(asset_account))
+            _(
+                "Asset Realised successfully. Loan settled and transferred to {0}."
+            ).format(asset_account)
+        )
 
         return wo.name
 
     except Exception as e:
         frappe.log_error(
-            f"Asset Realisation Failed: {
-                str(e)}",
-            "Asset Realisation Error")
+            f"Asset Realisation Failed: {str(e)}", "Asset Realisation Error"
+        )
         raise e

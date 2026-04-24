@@ -24,26 +24,30 @@ def check_subscription_feature(feature_module):
                     # Use the cache duration from the subscription details, or
                     # default to 24 hours
                     cache_duration = subscription.get(
-                        "subscription_cache_duration", 86400)
-                    frappe.cache().set_value(cache_key, subscription, expires_in_sec=cache_duration)
+                        "subscription_cache_duration", 86400
+                    )
+                    frappe.cache().set_value(
+                        cache_key, subscription, expires_in_sec=cache_duration
+                    )
 
             if not subscription:
                 frappe.throw(
-                    "Could not retrieve subscription details.",
-                    frappe.PermissionError)
+                    "Could not retrieve subscription details.", frappe.PermissionError
+                )
 
             if subscription.get("status") not in ["Active", "Trialing"]:
-                frappe.throw(
-                    "Your subscription is not active.",
-                    frappe.PermissionError)
+                frappe.throw("Your subscription is not active.", frappe.PermissionError)
 
             if feature_module not in subscription.get("modules", []):
                 frappe.throw(
                     f"Your plan does not include the '{feature_module}' feature.",
-                    frappe.PermissionError)
+                    frappe.PermissionError,
+                )
 
             return fn(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -57,11 +61,9 @@ def get_cached_subscription_details():
     if not subscription:
         subscription = get_subscription_details()
         if subscription:
-            cache_duration = subscription.get(
-                "subscription_cache_duration", 86400)
+            cache_duration = subscription.get("subscription_cache_duration", 86400)
             frappe.cache().set_value(
-                cache_key,
-                subscription,
-                expires_in_sec=cache_duration)
+                cache_key, subscription, expires_in_sec=cache_duration
+            )
 
     return subscription or {}

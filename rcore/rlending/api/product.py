@@ -20,7 +20,9 @@ def get_loan_product_list():
             "currency",
             "is_term_loan",
             "maximum_loan_amount",
-            "min_days_bw_disbursement_first_repayment"])
+            "min_days_bw_disbursement_first_repayment",
+        ],
+    )
 
     result = []
     for p in products:
@@ -28,7 +30,7 @@ def get_loan_product_list():
         charges = frappe.get_all(
             "Loan Charges",
             filters={"parent": p.name},
-            fields=["charge_type", "amount", "percentage"]
+            fields=["charge_type", "amount", "percentage"],
         )
 
         # 2. Try to identify standard fees
@@ -44,22 +46,22 @@ def get_loan_product_list():
             elif "service" in c_name:
                 service_fee = c.amount
 
-        result.append({
-            "name": p.name,
-            "loan_product_name": p.product_name,  # Frontend Compatibility
-            "product_name": p.product_name,
-            "rate_of_interest": p.rate_of_interest,
-            "currency": p.currency,
-            "is_term_loan": p.is_term_loan,
-            "maximum_loan_amount": p.maximum_loan_amount,
-            "min_days_bw_disbursement_first_repayment": p.min_days_bw_disbursement_first_repayment,
-
-            # Flattened Fees for easy access
-            "initiation_fee": initiation_fee,
-            "monthly_service_fee": service_fee,
-
-            # Full charges array if needed
-            "charges": charges
-        })
+        result.append(
+            {
+                "name": p.name,
+                "loan_product_name": p.product_name,  # Frontend Compatibility
+                "product_name": p.product_name,
+                "rate_of_interest": p.rate_of_interest,
+                "currency": p.currency,
+                "is_term_loan": p.is_term_loan,
+                "maximum_loan_amount": p.maximum_loan_amount,
+                "min_days_bw_disbursement_first_repayment": p.min_days_bw_disbursement_first_repayment,
+                # Flattened Fees for easy access
+                "initiation_fee": initiation_fee,
+                "monthly_service_fee": service_fee,
+                # Full charges array if needed
+                "charges": charges,
+            }
+        )
 
     return result

@@ -24,8 +24,7 @@ class Meeting(Document):
         if not self.attendees_list:
             return
 
-        attendees = [x.strip()
-                     for x in self.attendees_list.split(",") if x.strip()]
+        attendees = [x.strip() for x in self.attendees_list.split(",") if x.strip()]
         # Logic to send email invites
         # frappe.sendmail(recipients=attendees, subject=f"Meeting:
         # {self.title}", ...)
