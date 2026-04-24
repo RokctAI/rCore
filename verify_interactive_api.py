@@ -13,8 +13,11 @@ API_KEY = "YOUR_JULES_API_KEY"  # <--- REPLACE THIS
 API_SECRET = "YOUR_FRAPPE_API_SECRET"  # <--- REPLACE THIS (if needed for auth)
 FRAPPE_API_KEY = "YOUR_FRAPPE_API_KEY"  # <--- REPLACE THIS
 
-HEADERS = {"Authorization": f"token {FRAPPE_API_KEY}:{API_SECRET}" if FRAPPE_API_KEY !=
-           "YOUR_FRAPPE_API_KEY" else None}
+HEADERS = {
+    "Authorization": f"token {FRAPPE_API_KEY}:{API_SECRET}"
+    if FRAPPE_API_KEY != "YOUR_FRAPPE_API_KEY"
+    else None
+}
 
 
 def verify_interactive_flow():
@@ -32,7 +35,7 @@ def verify_interactive_flow():
         "source_repo": "sources/github/RendaniSinyage/RokctAI_frontend",
         "api_key": API_KEY,
         "require_approval": True,
-        "title": "API Verification"
+        "title": "API Verification",
     }
 
     try:
@@ -55,10 +58,9 @@ def verify_interactive_flow():
     for i in range(20):
         resp = requests.post(
             status_url,
-            json={
-                "session_id": session_id,
-                "api_key": API_KEY},
-            headers=HEADERS)
+            json={"session_id": session_id, "api_key": API_KEY},
+            headers=HEADERS,
+        )
         state = resp.json().get("message", {}).get("state")
         print(f"   [{i + 1}/20] State: {state}")
 
@@ -75,21 +77,18 @@ def verify_interactive_flow():
     vote_url = f"{BASE_URL}/api/method/brain.api.vote_on_plan"
     requests.post(
         vote_url,
-        json={
-            "session_id": session_id,
-            "action": "approve",
-            "api_key": API_KEY},
-        headers=HEADERS)
+        json={"session_id": session_id, "action": "approve", "api_key": API_KEY},
+        headers=HEADERS,
+    )
     print("✅ Approval sent.")
 
     # 4. Cleanup
     print("\n4. Cleaning Up...")
     requests.post(
         f"{BASE_URL}/api/method/brain.api.delete_jules_session",
-        json={
-            "session_id": session_id,
-            "api_key": API_KEY},
-        headers=HEADERS)
+        json={"session_id": session_id, "api_key": API_KEY},
+        headers=HEADERS,
+    )
     print("✅ Session Deleted.")
 
 

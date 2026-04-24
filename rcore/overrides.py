@@ -18,11 +18,13 @@ class CustomFile(FrappeFile):
         # Attempt to get subscription details from the cache
         try:
             from rcore.tenant.api import get_subscription_details
+
             subscription_details = get_subscription_details()
         except Exception as e:
             frappe.log_error(
                 f"Could not fetch subscription details during file upload: {e}",
-                "Storage Quota Check Ignored")
+                "Storage Quota Check Ignored",
+            )
             # Fail open: If we can't get subscription details, allow the upload
             # to prevent blocking the user.
             return
@@ -35,8 +37,10 @@ class CustomFile(FrappeFile):
 
         # Get the pre-calculated storage usage from the singleton
         # Convert from MB to Bytes for an accurate comparison
-        current_usage_bytes = (frappe.db.get_single_value(
-            "Storage Tracker", "current_storage_usage_mb") or 0) * (1024**2)
+        current_usage_bytes = (
+            frappe.db.get_single_value("Storage Tracker", "current_storage_usage_mb")
+            or 0
+        ) * (1024**2)
         quota_in_bytes = storage_quota_gb * (1024**3)
         new_file_size_bytes = self.file_size
 
@@ -46,5 +50,5 @@ class CustomFile(FrappeFile):
             frappe.throw(
                 f"Storage quota exceeded. Your current usage is approximately {usage_in_gb} GB out of {storage_quota_gb} GB. "
                 "Please delete some files or upgrade your plan to upload new files.",
-                title="Storage Limit Reached"
+                title="Storage Limit Reached",
             )

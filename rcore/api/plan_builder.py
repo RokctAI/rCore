@@ -47,9 +47,7 @@ def commit_plan(plan_data):
         # This will trigger the on_update hook
         plan_doc.save(ignore_permissions=True)
 
-        return {
-            "status": "success",
-            "message": "Plan on a Page created successfully."}
+        return {"status": "success", "message": "Plan on a Page created successfully."}
 
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "commit_plan Error")

@@ -28,9 +28,10 @@ class ScoringEngine:
                     "condition",
                     "threshold",
                     "weight",
-                    "is_knockout"],
-                filters={
-                    "enabled": 1})
+                    "is_knockout",
+                ],
+                filters={"enabled": 1},
+            )
 
     def calculate_score(self):
         """
@@ -49,7 +50,7 @@ class ScoringEngine:
             "breakdown": self.breakdown,
             "decision": risk_profile.get("decision", "Review"),
             "risk_level": risk_profile.get("risk_level", "Unknown"),
-            "color": risk_profile.get("color", "Gray")
+            "color": risk_profile.get("color", "Gray"),
         }, self.breakdown
 
     def _apply_rules(self):
@@ -60,8 +61,7 @@ class ScoringEngine:
             self.score = 0
             return
 
-        total_weight = sum(
-            rule.weight for rule in self.rules if not rule.is_knockout)
+        total_weight = sum(rule.weight for rule in self.rules if not rule.is_knockout)
         # Avoid division by zero if all are knockouts (edge case) or no weights
         if total_weight == 0:
             total_weight = 1
@@ -94,23 +94,28 @@ class ScoringEngine:
                         "metric_name": rule.metric_name,
                         "score": 0,
                         "weight": 0,
-                        "description": f"KNOCKOUT FAILED: {
-                            rule.condition} {
-                            rule.threshold}, Value: {metric_value}"})
+                        "description": f"KNOCKOUT FAILED: {rule.condition} {
+                            rule.threshold
+                        }, Value: {metric_value}",
+                    }
+                )
                 break  # Stop processing
 
             if not rule.is_knockout:
-                weighted_score = (rule.weight / total_weight) * \
-                    100 if rule_passed else 0
+                weighted_score = (
+                    (rule.weight / total_weight) * 100 if rule_passed else 0
+                )
                 if weighted_score > 0:
                     self.score += weighted_score
 
-            self.breakdown.append({
-                "metric_name": rule.metric_name,
-                "score": 100 if rule_passed else 0,  # Raw success/fail
-                "weight": rule.weight,
-                "description": f"Condition: {rule.condition} {rule.threshold}, Value: {metric_value}"
-            })
+            self.breakdown.append(
+                {
+                    "metric_name": rule.metric_name,
+                    "score": 100 if rule_passed else 0,  # Raw success/fail
+                    "weight": rule.weight,
+                    "description": f"Condition: {rule.condition} {rule.threshold}, Value: {metric_value}",
+                }
+            )
 
         if knockout_triggered:
             self.score = 0
@@ -124,29 +129,20 @@ class ScoringEngine:
         if frappe.db.exists("DocType", "Risk Profile"):
             profiles = frappe.get_all(
                 "Risk Profile",
-                fields=[
-                    "risk_level",
-                    "min_score",
-                    "max_score",
-                    "decision",
-                    "color"],
-                order_by="min_score asc")
+                fields=["risk_level", "min_score", "max_score", "decision", "color"],
+                order_by="min_score asc",
+            )
             for p in profiles:
                 if p.min_score <= self.score <= p.max_score:
                     return p
 
         # Fallback Defaults
         if self.score >= 70:
-            return {
-                "decision": "Approve",
-                "risk_level": "Low Risk",
-                "color": "Green"}
+            return {"decision": "Approve", "risk_level": "Low Risk", "color": "Green"}
         if self.score >= 40:
             return {
                 "decision": "Review",
                 "risk_level": "Medium Risk",
-                "color": "Orange"}
-        return {
-            "decision": "Decline",
-            "risk_level": "High Risk",
-            "color": "Red"}
+                "color": "Orange",
+            }
+        return {"decision": "Decline", "risk_level": "High Risk", "color": "Red"}
