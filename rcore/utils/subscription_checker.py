@@ -45,3 +45,23 @@ def check_subscription_feature(feature_module):
             return fn(*args, **kwargs)
         return wrapper
     return decorator
+
+
+def get_cached_subscription_details():
+    """
+    Returns the subscription details, using the cache if available.
+    """
+    cache_key = "subscription_details"
+    subscription = frappe.cache().get_value(cache_key)
+
+    if not subscription:
+        subscription = get_subscription_details()
+        if subscription:
+            cache_duration = subscription.get(
+                "subscription_cache_duration", 86400)
+            frappe.cache().set_value(
+                cache_key,
+                subscription,
+                expires_in_sec=cache_duration)
+
+    return subscription or {}
