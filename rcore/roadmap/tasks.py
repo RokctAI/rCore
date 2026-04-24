@@ -4,7 +4,11 @@
 import frappe
 import json
 import time
-from rcore.roadmap.utils import check_queue_status, get_prompts, construct_contextual_prompt
+from rcore.roadmap.utils import (
+    check_queue_status,
+    get_prompts,
+    construct_contextual_prompt,
+)
 
 # --- Main Scheduled Tasks ---
 
@@ -24,11 +28,14 @@ def populate_roadmap_with_ai_ideas():
     try:
         # Fetch Roadmaps with Source Repo AND API Key configured
         roadmaps = frappe.get_all(
-            "Roadmap", filters={
-                "source_repository": [
-                    "is", "set"], "jules_api_key": [
-                    "is", "set"], "status": "Active"}, fields=[
-                "name", "source_repository", "jules_api_key"])
+            "Roadmap",
+            filters={
+                "source_repository": ["is", "set"],
+                "jules_api_key": ["is", "set"],
+                "status": "Active",
+            },
+            fields=["name", "source_repository", "jules_api_key"],
+        )
         prompts = get_prompts()
 
         if not prompts:
@@ -51,21 +58,24 @@ def populate_roadmap_with_ai_ideas():
             if not check_queue_status(api_key):
                 frappe.log_error(
                     f"Skipping Idea Gen for {roadmap_name}: Jules Queue is Full/Busy.",
-                    "Jules Concurrency")
+                    "Jules Concurrency",
+                )
                 continue
 
             # Don't spam: If we already have AI generated ideas in 'Ideas'
             # column, skip
             if frappe.db.exists(
-                "Roadmap Feature", {
-                    "parent": roadmap_name, "status": "Ideas", "is_ai_generated": 1}):
+                "Roadmap Feature",
+                {"parent": roadmap_name, "status": "Ideas", "is_ai_generated": 1},
+            ):
                 continue
 
             # Fetch existing context to prevent duplicates
             existing_features = frappe.get_all(
-                "Roadmap Feature", filters={
-                    "parent": roadmap_name}, fields=[
-                    "feature", "status", "type", "explanation"])
+                "Roadmap Feature",
+                filters={"parent": roadmap_name},
+                fields=["feature", "status", "type", "explanation"],
+            )
 
             for prompt in prompts:
                 # Filter Context based on Prompt Type
@@ -104,29 +114,34 @@ def populate_roadmap_with_ai_ideas():
                         # generation
                         system_instruction = ""
 
-                    full_prompt = f"{
-                        prompt.prompt}\n{context_str}\n{system_instruction}"
+                    full_prompt = (
+                        f"{prompt.prompt}\n{context_str}\n{system_instruction}"
+                    )
                     # Delegate to Brain
                     session = frappe.call(
                         "brain.api.start_jules_session",
                         prompt=full_prompt,
                         source_repo=roadmap.get("source_repository"),
                         api_key=api_key,
-                        automation_mode="AUTOMATION_MODE_UNSPECIFIED")
+                        automation_mode="AUTOMATION_MODE_UNSPECIFIED",
+                    )
 
                     if session and session.get("name"):  # name is session_id
-                        frappe.get_doc({
-                            "doctype": "AI Idea Session",
-                            "roadmap": roadmap_name,
-                            "session_id": session.get("name"),
-                            "status": "Pending",
-                            "prompt_title": prompt.title
-                        }).insert(ignore_permissions=True)
+                        frappe.get_doc(
+                            {
+                                "doctype": "AI Idea Session",
+                                "roadmap": roadmap_name,
+                                "session_id": session.get("name"),
+                                "status": "Pending",
+                                "prompt_title": prompt.title,
+                            }
+                        ).insert(ignore_permissions=True)
                         frappe.db.commit()
                 except Exception as e:
                     frappe.log_error(
                         f"Failed to start Brain session for '{roadmap_name}': {e}",
-                        "Jules Idea Generation")
+                        "Jules Idea Generation",
+                    )
 
     except Exception as e:
         frappe.log_error(f"AI idea task failed: {e}", "Jules Idea Generation")
@@ -139,8 +154,8 @@ def process_pending_ai_sessions():
     """
     try:
         pending_sessions = frappe.get_all(
-            "AI Idea Session", filters={
-                "status": "Pending"})
+            "AI Idea Session", filters={"status": "Pending"}
+        )
 
         for session_doc in pending_sessions:
             session = frappe.get_doc("AI Idea Session", session_doc.name)
@@ -156,24 +171,27 @@ def process_pending_ai_sessions():
 
                 if not api_key:
                     session.status = "Error"
-                    session.add_comment(
-                        "Comment", "Missing API Key (Roadmap & Global)")
+                    session.add_comment("Comment", "Missing API Key (Roadmap & Global)")
                     session.save(ignore_permissions=True)
                     continue
 
                 # TIMEOUT CHECK (30 Minutes)
                 # If session is pending for > 30 mins, kill it.
                 creation_time = frappe.utils.get_datetime(session.creation)
-                if frappe.utils.time_diff_in_seconds(
-                        frappe.utils.now_datetime(), creation_time) > 1800:
+                if (
+                    frappe.utils.time_diff_in_seconds(
+                        frappe.utils.now_datetime(), creation_time
+                    )
+                    > 1800
+                ):
                     session.status = "Error"
-                    session.add_comment(
-                        "Comment", "Session Timed Out (>30 mins)")
+                    session.add_comment("Comment", "Session Timed Out (>30 mins)")
                     try:
                         frappe.call(
                             "brain.api.delete_jules_session",
                             session_id=session.session_id,
-                            api_key=api_key)
+                            api_key=api_key,
+                        )
                     except BaseException:
                         pass
                     session.save(ignore_permissions=True)
@@ -181,10 +199,11 @@ def process_pending_ai_sessions():
                     continue
 
                 # Delegate to Brain
-                activities = frappe.call("brain.api.get_jules_activities",
-                                         session_id=session.session_id,
-                                         api_key=api_key
-                                         )
+                activities = frappe.call(
+                    "brain.api.get_jules_activities",
+                    session_id=session.session_id,
+                    api_key=api_key,
+                )
 
                 if activities:
                     latest_response = _get_latest_agent_message(activities)
@@ -193,8 +212,11 @@ def process_pending_ai_sessions():
                         if ideas:
                             original_prompt_title = session.prompt_title or ""
                             for idea in ideas:
-                                idea['type'] = "Bug" if "bug" in original_prompt_title.lower(
-                                ) else "Feature"
+                                idea["type"] = (
+                                    "Bug"
+                                    if "bug" in original_prompt_title.lower()
+                                    else "Feature"
+                                )
 
                             _save_ideas_to_roadmap(session.roadmap, ideas)
 
@@ -204,7 +226,8 @@ def process_pending_ai_sessions():
                         frappe.call(
                             "brain.api.delete_jules_session",
                             session_id=session.session_id,
-                            api_key=api_key)
+                            api_key=api_key,
+                        )
 
                         session.save(ignore_permissions=True)
                         frappe.db.commit()
@@ -213,13 +236,13 @@ def process_pending_ai_sessions():
                 session.save(ignore_permissions=True)
                 frappe.db.commit()
                 frappe.log_error(
-                    f"Failed to process session {
-                        session.session_id}: {e}",
-                    "Jules Idea Processing")
+                    f"Failed to process session {session.session_id}: {e}",
+                    "Jules Idea Processing",
+                )
     except Exception as e:
         frappe.log_error(
-            f"Pending Sessions task failed: {e}",
-            "Jules Pending Processor")
+            f"Pending Sessions task failed: {e}", "Jules Pending Processor"
+        )
 
 
 def process_building_queue():
@@ -229,15 +252,15 @@ def process_building_queue():
     """
     try:
         # Find features waiting for building
-        features = frappe.get_all("Roadmap Feature",
-                                  filters={
-                                      "status": ["in", ["Idea Passed", "Bugs"]],
-                                      # Don't double process
-                                      "jules_session_id": ["is", "not set"],
-                                  },
-                                  fields=["name", "status", "feature",
-                                          "explanation", "type", "parent"]
-                                  )
+        features = frappe.get_all(
+            "Roadmap Feature",
+            filters={
+                "status": ["in", ["Idea Passed", "Bugs"]],
+                # Don't double process
+                "jules_session_id": ["is", "not set"],
+            },
+            fields=["name", "status", "feature", "explanation", "type", "parent"],
+        )
 
         # Group by Roadmap to optimize API checks
         features_by_roadmap = {}
@@ -266,13 +289,13 @@ def process_building_queue():
                 if not check_queue_status(api_key):
                     frappe.log_error(
                         f"Skipping Building Queue for {roadmap_name}: Jules Queue is Full/Busy.",
-                        "Jules Concurrency")
+                        "Jules Concurrency",
+                    )
                     continue
 
                 for f in roadmap_features:
                     # Construct Building Prompt using roadmap context
-                    full_prompt = construct_contextual_prompt(
-                        roadmap, f, "Building")
+                    full_prompt = construct_contextual_prompt(roadmap, f, "Building")
 
                     # Start Jules Session
                     session = frappe.call(
@@ -282,13 +305,13 @@ def process_building_queue():
                         api_key=api_key,
                         automation_mode="AUTO_CREATE_PR",
                         require_approval=roadmap.require_jules_approval,
-                        title=f.feature)
+                        title=f.feature,
+                    )
 
                     if session and session.get("name"):
                         # Update Feature Status
                         doc = frappe.get_doc("Roadmap Feature", f.name)
-                        doc.jules_session_id = session.get(
-                            "name")  # session_id
+                        doc.jules_session_id = session.get("name")  # session_id
                         doc.status = "Doing"  # Move to Doing
                         doc.save(ignore_permissions=True)
                         frappe.db.commit()
@@ -296,12 +319,11 @@ def process_building_queue():
             except Exception as e:
                 frappe.log_error(
                     f"Building Queue failed for roadmap {roadmap_name}: {e}",
-                    "Jules Building Queue")
+                    "Jules Building Queue",
+                )
 
     except Exception as e:
-        frappe.log_error(
-            f"Building Queue task failed: {e}",
-            "Jules Building Queue")
+        frappe.log_error(f"Building Queue task failed: {e}", "Jules Building Queue")
 
 
 def jules_task_monitor():
@@ -310,14 +332,14 @@ def jules_task_monitor():
     Monitors Roadmap Features assigned to Jules (Push Flow).
     Checks for PRs and Moves to Done.
     """
-    features = frappe.get_all("Roadmap Feature",
-                              filters={
-                                  "jules_session_id": ["is", "set"],
-                                  "status": "Doing"  # Only check active ones
-                              },
-                              fields=[
-                                  "name", "jules_session_id", "status", "parent"]
-                              )
+    features = frappe.get_all(
+        "Roadmap Feature",
+        filters={
+            "jules_session_id": ["is", "set"],
+            "status": "Doing",  # Only check active ones
+        },
+        fields=["name", "jules_session_id", "status", "parent"],
+    )
 
     for f in features:
         try:
@@ -333,10 +355,11 @@ def jules_task_monitor():
                 continue
 
             # Check Status via Brain
-            session_data = frappe.call("brain.api.get_jules_status",
-                                       session_id=f.jules_session_id,
-                                       api_key=api_key
-                                       )
+            session_data = frappe.call(
+                "brain.api.get_jules_status",
+                session_id=f.jules_session_id,
+                api_key=api_key,
+            )
 
             state = session_data.get("state")
 
@@ -346,7 +369,8 @@ def jules_task_monitor():
                 if doc.ai_status != "Pending":  # Avoid spamming
                     doc.add_comment(
                         "Comment",
-                        "⚠️ Jules is waiting for your feedback. Please open the session to reply.")
+                        "⚠️ Jules is waiting for your feedback. Please open the session to reply.",
+                    )
                 doc.save(ignore_permissions=True)
                 frappe.db.commit()
                 continue
@@ -356,7 +380,8 @@ def jules_task_monitor():
                 if doc.ai_status != "Pending":
                     doc.add_comment(
                         "Comment",
-                        "⚠️ Jules Plan is ready for review. Please open the session to approve.")
+                        "⚠️ Jules Plan is ready for review. Please open the session to approve.",
+                    )
                 doc.save(ignore_permissions=True)
                 frappe.db.commit()
                 continue
@@ -368,7 +393,8 @@ def jules_task_monitor():
                 doc.ai_status = "Error"
                 doc.add_comment(
                     "Comment",
-                    f"Jules Session Failed/Cancelled. State: {state}. Please open session to investigate.")
+                    f"Jules Session Failed/Cancelled. State: {state}. Please open session to investigate.",
+                )
                 doc.save(ignore_permissions=True)
                 frappe.db.commit()
                 continue
@@ -377,14 +403,12 @@ def jules_task_monitor():
             pr_link = None
             for out in outputs:
                 if out.get("pullRequest"):
-                    pr_link = out.get("pullRequest").get(
-                        "url")  # Standardize on 'url'
+                    pr_link = out.get("pullRequest").get("url")  # Standardize on 'url'
                     break
 
             if pr_link:
                 doc = frappe.get_doc("Roadmap Feature", f.name)
-                doc.add_comment(
-                    "Comment", f"Jules completed the task. PR: {pr_link}")
+                doc.add_comment("Comment", f"Jules completed the task. PR: {pr_link}")
                 doc.status = "Done"  # Move to Done/Developed
                 doc.pull_request_url = pr_link
                 # doc.jules_session_id = None # Keep session alive for human
@@ -396,8 +420,8 @@ def jules_task_monitor():
 
         except Exception as e:
             frappe.log_error(
-                f"Monitor failed for Feature {
-                    f.name}: {e}", "Jules Monitor")
+                f"Monitor failed for Feature {f.name}: {e}", "Jules Monitor"
+            )
 
 
 def cleanup_archived_sessions():
@@ -408,13 +432,11 @@ def cleanup_archived_sessions():
     """
     try:
         # Find features in 'Archived' that still have a session ID
-        features = frappe.get_all("Roadmap Feature",
-                                  filters={
-                                      "status": "Archived",
-                                      "jules_session_id": ["is", "set"]
-                                  },
-                                  fields=["name", "jules_session_id", "parent"]
-                                  )
+        features = frappe.get_all(
+            "Roadmap Feature",
+            filters={"status": "Archived", "jules_session_id": ["is", "set"]},
+            fields=["name", "jules_session_id", "parent"],
+        )
 
         for f in features:
             try:
@@ -432,23 +454,25 @@ def cleanup_archived_sessions():
                     continue
 
                 # 1. Delete Session (Directly)
-                frappe.call("brain.api.delete_jules_session",
-                            session_id=f.jules_session_id,
-                            api_key=api_key
-                            )
+                frappe.call(
+                    "brain.api.delete_jules_session",
+                    session_id=f.jules_session_id,
+                    api_key=api_key,
+                )
 
                 # 2. Finalize Doc
                 doc = frappe.get_doc("Roadmap Feature", f.name)
                 doc.jules_session_id = None  # Clear it
                 doc.add_comment(
-                    "Comment", "Auto-Cleanup: Jules Session archived and deleted.")
+                    "Comment", "Auto-Cleanup: Jules Session archived and deleted."
+                )
                 doc.save(ignore_permissions=True)
                 frappe.db.commit()
 
             except Exception as e:
                 frappe.log_error(
-                    f"Cleanup failed for feature {
-                        f.name}: {e}", "Jules Cleanup")
+                    f"Cleanup failed for feature {f.name}: {e}", "Jules Cleanup"
+                )
 
     except Exception as e:
         frappe.log_error(f"Cleanup task failed: {e}", "Jules Cleanup")
@@ -484,15 +508,17 @@ def discover_roadmap_context(roadmap_name):
         "- description: A concise 1-2 sentence summary of what this project does.\n"
         "- classifications: A FLAT list of objects. Each object MUST have 'category' and 'value'. Do NOT nest. Limit to top 5 MAJOR technologies.\n"
         "- initial_ideas: A list of objects, each with 'title' (string), 'explanation' (string), and 'type' (string, e.g. 'Feature' or 'Bug'). Suggest 3-5 initial features based on the codebase.\n"
-        "Do NOT write code. Provide ONLY the JSON.")
+        "Do NOT write code. Provide ONLY the JSON."
+    )
 
     try:
-        session = frappe.call("brain.api.start_jules_session",
-                              prompt=prompt,
-                              source_repo=roadmap.source_repository,
-                              api_key=api_key,
-                              automation_mode="AUTOMATION_MODE_UNSPECIFIED"
-                              )
+        session = frappe.call(
+            "brain.api.start_jules_session",
+            prompt=prompt,
+            source_repo=roadmap.source_repository,
+            api_key=api_key,
+            automation_mode="AUTOMATION_MODE_UNSPECIFIED",
+        )
 
         session_id = session.get("name")
         if not session_id:
@@ -501,10 +527,9 @@ def discover_roadmap_context(roadmap_name):
         # 2. Poll for Result (Max 30 seconds - usually fast for pure text)
         for _ in range(10):
             time.sleep(3)
-            activities = frappe.call("brain.api.get_jules_activities",
-                                     session_id=session_id,
-                                     api_key=api_key
-                                     )
+            activities = frappe.call(
+                "brain.api.get_jules_activities", session_id=session_id, api_key=api_key
+            )
 
             latest_msg = _get_latest_agent_message(activities)
             if latest_msg:
@@ -526,34 +551,39 @@ def discover_roadmap_context(roadmap_name):
                                 # Clear existing? Or Append? Let's Append
                                 # unique.
                                 existing_tags = [
-                                    c.value for c in roadmap.classifications]
+                                    c.value for c in roadmap.classifications
+                                ]
                                 for c in data["classifications"]:
                                     if c.get("value") not in existing_tags:
                                         roadmap.append(
-                                            "classifications", {
-                                                "category": c.get(
-                                                    "category", "Tech"), "value": c.get("value")})
+                                            "classifications",
+                                            {
+                                                "category": c.get("category", "Tech"),
+                                                "value": c.get("value"),
+                                            },
+                                        )
                             roadmap.save(ignore_permissions=True)
 
                             # Handle Initial Ideas
                             if "initial_ideas" in data:
                                 _save_ideas_to_roadmap(
-                                    roadmap_name, data["initial_ideas"])
+                                    roadmap_name, data["initial_ideas"]
+                                )
 
                             # Success! Cleanup and Return.
                             frappe.call(
                                 "brain.api.delete_jules_session",
                                 session_id=session_id,
-                                api_key=api_key)
+                                api_key=api_key,
+                            )
                             return data
                 except BaseException:
                     continue
 
         # Timeout
         frappe.call(
-            "brain.api.delete_jules_session",
-            session_id=session_id,
-            api_key=api_key)
+            "brain.api.delete_jules_session", session_id=session_id, api_key=api_key
+        )
         frappe.throw("Jules took too long to analyze the repository.")
 
     except Exception as e:
@@ -562,6 +592,7 @@ def discover_roadmap_context(roadmap_name):
 
 
 # --- Helpers ---
+
 
 def _save_ideas_to_roadmap(roadmap_name, ideas):
     roadmap_doc = frappe.get_doc("Roadmap", roadmap_name)
@@ -584,8 +615,14 @@ def _save_ideas_to_roadmap(roadmap_name, ideas):
 
 
 def _get_latest_agent_message(activities):
-    return next((act.get("agentActivity", {}).get("message")
-                for act in reversed(activities) if act.get("agentActivity")), None)
+    return next(
+        (
+            act.get("agentActivity", {}).get("message")
+            for act in reversed(activities)
+            if act.get("agentActivity")
+        ),
+        None,
+    )
 
 
 def _parse_ideas_from_response(response_text):
@@ -615,17 +652,16 @@ def _create_jules_session(api_key, source_repo, title, prompt):
     Helper to start a Jules Session (typically for one-off tasks like workflow setup).
     """
     try:
-        session = frappe.call("brain.api.start_jules_session",
-                              prompt=prompt,
-                              source_repo=source_repo,
-                              api_key=api_key,
-                              automation_mode="AUTO_CREATE_PR",
-                              title=title
-                              )
+        session = frappe.call(
+            "brain.api.start_jules_session",
+            prompt=prompt,
+            source_repo=source_repo,
+            api_key=api_key,
+            automation_mode="AUTO_CREATE_PR",
+            title=title,
+        )
         if session:
             return session.get("name")
     except Exception as e:
-        frappe.log_error(
-            f"Failed to create Jules session: {e}",
-            "Jules API Helper")
+        frappe.log_error(f"Failed to create Jules session: {e}", "Jules API Helper")
     return None

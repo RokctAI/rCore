@@ -28,8 +28,8 @@ def get_scheduler_events():
         "daily": [
             "rcore.roadmap.tasks.populate_roadmap_with_ai_ideas",
             "rcore.roadmap.tasks.process_building_queue",
-            "rcore.roadmap.tasks.cleanup_archived_sessions"
-        ]
+            "rcore.roadmap.tasks.cleanup_archived_sessions",
+        ],
     }
 
     return events
@@ -114,7 +114,7 @@ if "hrms" in installed_apps:
             "after_insert": "rcore.rhrms.overrides.employee_master.update_job_applicant_and_offer",
             "on_trash": "rcore.rhrms.overrides.employee_master.update_employee_transfer",
             "after_delete": "rcore.rhrms.overrides.employee_master.publish_update",
-        }
+        },
     }
 
     # Extending accounting lists conditionally
@@ -132,24 +132,25 @@ if "hrms" in installed_apps:
 if "lending" in installed_apps:
     if "override_doctype_class" not in locals():
         override_doctype_class = {}
-    override_doctype_class.update({
-        "Loan Application": "rcore.rlending.overrides.loan_application.LoanApplication"
-    })
+    override_doctype_class.update(
+        {
+            "Loan Application": "rcore.rlending.overrides.loan_application.LoanApplication"
+        }
+    )
 
     if "doc_events" not in locals():
         doc_events = {}
-    doc_events.update({
-        "Loan Disbursement": {
-            "on_submit": "rcore.rlending.wallet_integration.credit_wallet_on_disbursement"
-        },
-        "Loan Repayment": {
-            "on_submit": "rcore.rlending.wallet_integration.debit_wallet_on_repayment"
+    doc_events.update(
+        {
+            "Loan Disbursement": {
+                "on_submit": "rcore.rlending.wallet_integration.credit_wallet_on_disbursement"
+            },
+            "Loan Repayment": {
+                "on_submit": "rcore.rlending.wallet_integration.debit_wallet_on_repayment"
+            },
         }
-    })
+    )
 
 # Fixtures
 # --------
-fixtures = [
-    "Province", "Organ of State", "Role", "Custom Field",
-    "Email Template"
-]
+fixtures = ["Province", "Organ of State", "Role", "Custom Field", "Email Template"]

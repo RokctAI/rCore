@@ -45,4 +45,5 @@ class Roadmap(Document):
             if not self.description or not self.classifications:
                 frappe.enqueue(
                     "rcore.roadmap.tasks.discover_roadmap_context",
-                    roadmap_name=self.name)
+                    roadmap_name=self.name,
+                )

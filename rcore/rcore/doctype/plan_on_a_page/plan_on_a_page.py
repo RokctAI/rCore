@@ -17,29 +17,30 @@ class PlanOnAPage(Document):
 
         # Fetch the Pillars linked to the Vision
         pillars = frappe.get_all(
-            "Pillar", filters={
-                "vision": vision.name}, fields=[
-                "name", "title", "description"])
+            "Pillar",
+            filters={"vision": vision.name},
+            fields=["name", "title", "description"],
+        )
         for p in pillars:
             pillar = frappe.get_doc("Pillar", p.name)
             content += f"Pillar: {pillar.title}\n{pillar.description}\n\n"
 
             # Fetch the Strategic Objectives linked to the Pillar
             objectives = frappe.get_all(
-                "Strategic Objective", filters={
-                    "pillar": pillar.name}, fields=[
-                    "name", "title", "description"])
+                "Strategic Objective",
+                filters={"pillar": pillar.name},
+                fields=["name", "title", "description"],
+            )
             for o in objectives:
                 objective = frappe.get_doc("Strategic Objective", o.name)
-                content += f"Objective: {
-                    objective.title}\n{
-                    objective.description}\n\n"
+                content += f"Objective: {objective.title}\n{objective.description}\n\n"
 
                 # Fetch the KPIs linked to the Strategic Objective
                 kpis = frappe.get_all(
-                    "KPI", filters={
-                        "strategic_objective": objective.name}, fields=[
-                        "name", "title", "description"])
+                    "KPI",
+                    filters={"strategic_objective": objective.name},
+                    fields=["name", "title", "description"],
+                )
                 for k in kpis:
                     kpi = frappe.get_doc("KPI", k.name)
                     content += f"KPI: {kpi.title}\n{kpi.description}\n\n"
