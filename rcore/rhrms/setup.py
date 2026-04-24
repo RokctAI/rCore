@@ -42,12 +42,11 @@ def before_app_uninstall(app_name):
 def create_salary_slip_loan_fields():
     if "lending" in frappe.get_installed_apps():
         if frappe.db.exists("DocType", "Salary Slip"):
-            create_custom_fields(
-                get_salary_slip_loan_fields(),
-                ignore_validate=True)
+            create_custom_fields(get_salary_slip_loan_fields(), ignore_validate=True)
         else:
             print(
-                "Skipping Salary Slip custom fields as DocType 'Salary Slip' is not found.")
+                "Skipping Salary Slip custom fields as DocType 'Salary Slip' is not found."
+            )
 
 
 def get_salary_slip_loan_fields():
@@ -134,8 +133,7 @@ def remove_lending_docperms_from_ess():
 
     # Filter out the lending doctypes
     doc.user_doctypes = [
-        row for row in doc.user_doctypes
-        if row.document_type not in loan_docperms
+        row for row in doc.user_doctypes if row.document_type not in loan_docperms
     ]
 
     if len(doc.user_doctypes) != original_len:

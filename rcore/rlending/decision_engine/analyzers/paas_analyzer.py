@@ -38,7 +38,7 @@ class PaasOrderAnalyzer:
             self.transactions = frappe.get_all(
                 "Wallet History",
                 filters={"wallet": wallet},
-                fields=["name", "type", "price", "status", "creation"]
+                fields=["name", "type", "price", "status", "creation"],
             )
 
     def _calculate_metrics(self):
@@ -47,11 +47,11 @@ class PaasOrderAnalyzer:
         """
         if not self.transactions:
             self.metrics = {
-                'total_transactions': 0,
-                'total_spent': 0,
-                'average_transaction_value': 0,
-                'transaction_frequency_days': 0,
-                'paid_transaction_rate': 0
+                "total_transactions": 0,
+                "total_spent": 0,
+                "average_transaction_value": 0,
+                "transaction_frequency_days": 0,
+                "paid_transaction_rate": 0,
             }
             return
 
@@ -60,36 +60,38 @@ class PaasOrderAnalyzer:
         # Spending transactions are those that are not top-ups or
         # disbursements.
         spending_transactions = [
-            t for t in self.transactions if t.type not in [
-                "Topup", "Loan Disbursement"]]
+            t for t in self.transactions if t.type not in ["Topup", "Loan Disbursement"]
+        ]
 
-        total_spent = sum(abs(t.price)
-                          for t in spending_transactions if t.price < 0)
-        average_transaction_value = total_spent / \
-            len(spending_transactions) if spending_transactions else 0
+        total_spent = sum(abs(t.price) for t in spending_transactions if t.price < 0)
+        average_transaction_value = (
+            total_spent / len(spending_transactions) if spending_transactions else 0
+        )
 
         # Transaction frequency
         if total_transactions > 1:
-            sorted_transactions = sorted(
-                self.transactions, key=lambda t: t.creation)
+            sorted_transactions = sorted(self.transactions, key=lambda t: t.creation)
             first_transaction_date = getdate(sorted_transactions[0].creation)
             last_transaction_date = getdate(sorted_transactions[-1].creation)
             days_diff = (last_transaction_date - first_transaction_date).days
-            transaction_frequency_days = days_diff / \
-                (total_transactions - 1) if total_transactions > 1 else 0
+            transaction_frequency_days = (
+                days_diff / (total_transactions - 1) if total_transactions > 1 else 0
+            )
         else:
             transaction_frequency_days = 0
 
         # Paid transaction rate
-        paid_transactions = sum(
-            1 for t in self.transactions if t.status == 'Paid')
+        paid_transactions = sum(1 for t in self.transactions if t.status == "Paid")
         paid_transaction_rate = (
-            paid_transactions / total_transactions) * 100 if total_transactions > 0 else 0
+            (paid_transactions / total_transactions) * 100
+            if total_transactions > 0
+            else 0
+        )
 
         self.metrics = {
-            'total_transactions': total_transactions,
-            'total_spent': total_spent,
-            'average_transaction_value': average_transaction_value,
-            'transaction_frequency_days': transaction_frequency_days,
-            'paid_transaction_rate': paid_transaction_rate
+            "total_transactions": total_transactions,
+            "total_spent": total_spent,
+            "average_transaction_value": average_transaction_value,
+            "transaction_frequency_days": transaction_frequency_days,
+            "paid_transaction_rate": paid_transaction_rate,
         }

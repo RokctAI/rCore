@@ -8,13 +8,15 @@ from rcore.pay.doctype.payfast_settings.payfast_settings import PayFastSettings
 class TestPayFastSettings(unittest.TestCase):
     def setUp(self):
         # Create a test PayFast Settings document
-        self.payfast_settings = frappe.get_doc({
-            "doctype": "PayFast Settings",
-            "gateway_name": "PayFast Test",
-            "merchant_id": "10000100",
-            "merchant_key": "46f0cd694581a",
-            "is_sandbox": 1
-        })
+        self.payfast_settings = frappe.get_doc(
+            {
+                "doctype": "PayFast Settings",
+                "gateway_name": "PayFast Test",
+                "merchant_id": "10000100",
+                "merchant_key": "46f0cd694581a",
+                "is_sandbox": 1,
+            }
+        )
         self.payfast_settings.insert(ignore_permissions=True)
         self.payfast_settings.set("passphrase", "test_passphrase")
         self.payfast_settings.save(ignore_permissions=True)
@@ -35,8 +37,7 @@ class TestPayFastSettings(unittest.TestCase):
 
         url = self.payfast_settings.get_payment_url(**payment_details)
 
-        self.assertTrue(url.startswith(
-            "https://sandbox.payfast.co.za/eng/process?"))
+        self.assertTrue(url.startswith("https://sandbox.payfast.co.za/eng/process?"))
         self.assertIn("merchant_id=10000100", url)
         self.assertIn("amount=100.00", url)
         self.assertIn("item_name=Test+Payment", url)

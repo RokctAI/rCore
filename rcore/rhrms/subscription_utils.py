@@ -126,9 +126,8 @@ def update_erpnext_roles(disable: bool = True):
 
 def set_app_logo():
     frappe.db.set_single_value(
-        "Navbar Settings",
-        "app_logo",
-        "/assets/hrms/images/frappe-hr-logo.svg")
+        "Navbar Settings", "app_logo", "/assets/hrms/images/frappe-hr-logo.svg"
+    )
 
 
 def get_erpnext_roles() -> set:
@@ -146,14 +145,13 @@ def get_roles_for_app(app_name: str) -> set:
 
 
 def get_modules_by_app(app_name: str) -> list:
-    return frappe.db.get_all(
-        "Module Def", filters={
-            "app_name": app_name}, pluck="name")
+    return frappe.db.get_all("Module Def", filters={"app_name": app_name}, pluck="name")
 
 
 def get_doctypes_by_modules(modules: list) -> list:
     return frappe.db.get_all(
-        "DocType", filters=[["module", "in", modules]], pluck="name")
+        "DocType", filters=[["module", "in", modules]], pluck="name"
+    )
 
 
 def roles_by_doctype(doctypes: list) -> set:
@@ -170,7 +168,8 @@ def roles_by_doctype(doctypes: list) -> set:
 def hide_erpnext() -> bool:
     hr_subscription = has_subscription(frappe.conf.sk_hrms)
     erpnext_subscription = has_subscription(
-        frappe.conf.sk_erpnext_smb or frappe.conf.sk_erpnext)
+        frappe.conf.sk_erpnext_smb or frappe.conf.sk_erpnext
+    )
 
     if not hr_subscription:
         return False

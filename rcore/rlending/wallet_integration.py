@@ -60,35 +60,34 @@ def update_wallet(customer, amount, transaction_type, description):
             # For safety, let's return or log error.
             frappe.log_error(
                 f"Could not find User for Customer {customer} to credit/debit wallet.",
-                "Wallet Integration Error")
+                "Wallet Integration Error",
+            )
             return
 
     # Find or Create Wallet for User
     wallet_name = frappe.db.get_value("Wallet", {"user": user}, "name")
 
     if not wallet_name:
-        wallet = frappe.get_doc({
-            "doctype": "Wallet",
-            "user": user,
-            "balance": 0
-        })
+        wallet = frappe.get_doc({"doctype": "Wallet", "user": user, "balance": 0})
         wallet.insert(ignore_permissions=True)
         wallet_name = wallet.name
     else:
         wallet = frappe.get_doc("Wallet", wallet_name)
 
     # 1. Create History
-    history = frappe.get_doc({
-        "doctype": "Wallet History",
-        "wallet": wallet_name,
-        "transaction_type": transaction_type,
-        "amount": abs(amount),  # Store positive value in history usually
-        "status": "Processed",
-        "description": description,
-        # "is_withdrawable": is_withdrawable # This field was in snippet but I do not know logic for it.
-        # I will assume True/False based on transaction type or default.
-        "is_withdrawable": 1 if transaction_type == "Loan Disbursement" else 0
-    })
+    history = frappe.get_doc(
+        {
+            "doctype": "Wallet History",
+            "wallet": wallet_name,
+            "transaction_type": transaction_type,
+            "amount": abs(amount),  # Store positive value in history usually
+            "status": "Processed",
+            "description": description,
+            # "is_withdrawable": is_withdrawable # This field was in snippet but I do not know logic for it.
+            # I will assume True/False based on transaction type or default.
+            "is_withdrawable": 1 if transaction_type == "Loan Disbursement" else 0,
+        }
+    )
     history.insert(ignore_permissions=True)
 
     # 2. Update Balance

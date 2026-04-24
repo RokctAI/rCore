@@ -32,22 +32,26 @@ def login(usr, pwd):
         # require a full HTTP request context (fails in headless/CI).
         api_secret = frappe.generate_hash(length=15)
         api_key = frappe.generate_hash(length=15)
-        frappe.db.set_value("User", usr, {
-            "api_key": api_key,
-            "api_secret": api_secret
-        }, update_modified=False)
+        frappe.db.set_value(
+            "User",
+            usr,
+            {"api_key": api_key, "api_secret": api_secret},
+            update_modified=False,
+        )
 
         # Self-Healing: Ensure System Users have System Manager role
         user_roles = frappe.get_roles(user.name)
         if user.user_type == "System User" and "System Manager" not in user_roles:
             # Direct insert to avoid triggering User on_update hooks
-            frappe.get_doc({
-                "doctype": "Has Role",
-                "parent": user.name,
-                "parenttype": "User",
-                "parentfield": "roles",
-                "role": "System Manager"
-            }).insert(ignore_permissions=True)
+            frappe.get_doc(
+                {
+                    "doctype": "Has Role",
+                    "parent": user.name,
+                    "parenttype": "User",
+                    "parentfield": "roles",
+                    "role": "System Manager",
+                }
+            ).insert(ignore_permissions=True)
             frappe.clear_cache(user=user.name)
             user_roles = frappe.get_roles(user.name)  # Refresh roles
 
@@ -73,34 +77,22 @@ def login(usr, pwd):
                     "email": user.email,
                     "firstname": user.first_name,
                     "lastname": user.last_name,
-                    "phone": getattr(
-                        user,
-                        "phone",
-                        None) or getattr(
-                        user,
-                        "mobile_no",
-                        None),
+                    "phone": getattr(user, "phone", None)
+                    or getattr(user, "mobile_no", None),
                     "role": primary_role,
                     "active": 1,
-                    "img": getattr(
-                        user,
-                        "user_image",
-                        None),
-                    "home_page": getattr(
-                        user,
-                        "home_page",
-                        None) or "/app"}}}
+                    "img": getattr(user, "user_image", None),
+                    "home_page": getattr(user, "home_page", None) or "/app",
+                },
+            },
+        }
 
     except frappe.AuthenticationError:
         frappe.log_error(
-            "Authentication Failure for user: " +
-            str(usr),
-            "Login API Auth Error")
+            "Authentication Failure for user: " + str(usr), "Login API Auth Error"
+        )
         return {"status": False, "message": "Invalid credentials"}
     except Exception as e:
         tb = frappe.get_traceback()
         frappe.log_error(tb, "Login API System Error")
-        return {
-            "status": False,
-            "message": f"Login Error: {
-                str(e)} | TRACEBACK: {tb}"}
+        return {"status": False, "message": f"Login Error: {str(e)} | TRACEBACK: {tb}"}
