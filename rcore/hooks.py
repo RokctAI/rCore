@@ -154,3 +154,7 @@ if "lending" in installed_apps:
 # Fixtures
 # --------
 fixtures = ["Province", "Organ of State", "Role", "Custom Field", "Email Template"]
+
+# Bench Commands
+# --------------
+commands = ["rcore.commands.commands"]
