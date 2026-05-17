@@ -94,6 +94,6 @@ jobs:
       python-version: ${{ inputs.python-version }}
       mariadb-version: ${{ inputs.mariadb-version }}
       postgres-version: ${{ inputs.postgres-version }}
-      db-type: ${{ inputs.db-type }}
+      db-type: ${{ inputs.db-type || 'postgres' }}
       version_format: ${{ inputs.version_format || '##.##.##' }}
     secrets: inherit
