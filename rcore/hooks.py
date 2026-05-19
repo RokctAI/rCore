@@ -61,6 +61,10 @@ whitelisted_methods = {
     "rokct.platform.api.control": "rcore.platform.api.execute_control",
 }
 
+# After Install
+# -------------
+after_install = ["rcore.install.fetch_agent_scripts"]
+
 # Uninstallation
 # ------------
 before_uninstall = [
@@ -77,7 +81,9 @@ except Exception:
 
 # --- CRM Hooks ---
 if "crm" in installed_apps:
-    after_install = ["rcore.rcrm.install.after_install"]
+    if "after_install" not in locals():
+        after_install = []
+    after_install.append("rcore.rcrm.install.after_install")
 
 # --- HRMS Hooks ---
 if "hrms" in installed_apps:
