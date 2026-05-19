@@ -21,6 +21,9 @@ def get_scheduler_events():
     if not hasattr(frappe, "conf") or not frappe.conf:
         return {}
 
+    # Check role to ensure we only run tenant tasks on tenant sites
+    app_role = frappe.conf.get("app_role", "tenant")
+
     events = {
         "all": ["rcore.roadmap.tasks.process_pending_ai_sessions"],
         "hourly": ["rcore.roadmap.tasks.jules_task_monitor"],
@@ -30,6 +33,15 @@ def get_scheduler_events():
             "rcore.roadmap.tasks.cleanup_archived_sessions",
         ],
     }
+
+    if app_role == "tenant":
+        events["daily"].extend([
+            "rcore.tasks.manage_daily_tenders",
+            "rcore.tasks.manage_daily_funding",
+            "rcore.tasks.disable_expired_support_users",
+            "rcore.tasks.update_storage_usage",
+            "rcore.tasks.reset_monthly_token_usage"
+        ])
 
     return events
 
