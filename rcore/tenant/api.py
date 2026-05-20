@@ -127,7 +127,7 @@ def send_error_to_control(doc):
         scheme = frappe.conf.get("control_plane_scheme", "https")
         api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.report_tenant_error"
 
-        headers = {"X-Rokct-Secret": api_secret}
+        headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
         data = {"error_details": doc.as_json()}
 
         requests.post(api_url, headers=headers, json=data)
@@ -309,7 +309,7 @@ def sync_usage_to_control(tokens_used, model_name):
         scheme = frappe.conf.get("control_plane_scheme", "https")
         api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.report_token_usage_to_control"
 
-        headers = {"X-Rokct-Secret": api_secret}
+        headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
         data = {"tokens_used": tokens_used, "model_name": model_name}
 
         requests.post(api_url, headers=headers, json=data)
@@ -333,7 +333,7 @@ def _notify_control_of_verification():
         scheme = frappe.conf.get("control_plane_scheme", "https")
         api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.mark_subscription_as_verified"
 
-        headers = {"X-Rokct-Secret": api_secret}
+        headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
         # The site name is implicitly sent via the request's Host header,
         # which the control panel will use to identify the subscription.
         response = requests.post(api_url, headers=headers)
@@ -1013,7 +1013,7 @@ def get_subscription_details():
         scheme = frappe.conf.get("control_plane_scheme", "https")
         api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.get_subscription_status"
 
-        headers = {"X-Rokct-Secret": api_secret}
+        headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
         response = requests.post(api_url, headers=headers)
         response.raise_for_status()
         response_json = response.json()
@@ -1362,7 +1362,7 @@ def get_weather(location: str):
     api_url = (
         f"{scheme}://{control_plane_url}/api/method/control.control.api.get_weather"
     )
-    headers = {"X-Rokct-Secret": api_secret, "Accept": "application/json"}
+    headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site, "Accept": "application/json"}
 
     try:
         # Use frappe.make_get_request which is a wrapper around requests
@@ -1406,7 +1406,7 @@ def set_weather_alias(original, corrected):
     scheme = frappe.conf.get("control_plane_scheme", "https")
     # Note: Target the definition in weather.py which is whitelisted
     api_url = f"{scheme}://{control_plane_url}/api/method/control.control.weather.set_weather_alias"
-    headers = {"X-Rokct-Secret": api_secret, "Accept": "application/json"}
+    headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site, "Accept": "application/json"}
 
     # We use POST for state-changing operations
     try:
