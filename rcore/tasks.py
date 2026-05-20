@@ -100,10 +100,10 @@ def _fetch_and_upsert_stimuli():
             if not existing:
                 doc = frappe.new_doc("Stimulus")
                 doc.ocid = ocid
-                doc.update(stimulus_doc_data)
+                doc.update(doc_data)
                 doc.insert(ignore_permissions=True)
             else:
-                frappe.db.set_value("Stimulus", existing, stimulus_doc_data)
+                frappe.db.set_value("Stimulus", existing, doc_data)
         except Exception as e:
             frappe.log_error(f"Stimulus processing failed: {e}", "Tender Sync Error")
     frappe.db.commit()
