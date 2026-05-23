@@ -174,7 +174,7 @@ def verify_onboarding_integration():
     # B. Verify Tenant Profile Commit and Compilation
     print("\nSTEP 2: Verify commit_onboarding_answers (Business Profile) on Tenant...")
     try:
-        from rcore.rcore.api.plan_builder import commit_onboarding_answers
+        from rcore.api.plan_builder import commit_onboarding_answers
 
         sample_answers = {
             "trading_name": "AntigravityLabs",
