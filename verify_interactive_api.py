@@ -147,6 +147,8 @@ def verify_onboarding_integration():
         print(f"   - Business: {len(bus_template)} questions parsed.")
         print(f"   - Life: {len(life_template)} questions parsed.")
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print(f"❌ STEP 1 FAILURE: {e}")
         sys.exit(1)
 
