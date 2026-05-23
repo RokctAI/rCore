@@ -520,10 +520,10 @@ def summarize_chat_session(session_id, messages):
         # Decode messages if they are passed as JSON string
         if isinstance(messages, str):
             try:
-				import json
-				messages = json.loads(messages)
+                import json
+                messages = json.loads(messages)
             except Exception:
-				pass
+                pass
 
         system_prompt = (
             "Provide a concise, high-level summary of the preceding conversation "
