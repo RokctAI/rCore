@@ -469,6 +469,15 @@ def chat_with_rok(message, session_id=None, model=None):
     Secure gateway proxy for Next.js (Vercel) to chat with ROK agent on the Tenant VPS.
     """
     try:
+        # Secure seat assignment and license gatekeeping
+        from rcore.tenant.api import get_token_usage
+        usage_tracker = get_token_usage()
+        if usage_tracker.get("seat_limit_exceeded"):
+            frappe.throw(
+                "Your team's ROK seat limit has been reached. Please contact your administrator to upgrade your subscription.",
+                frappe.PermissionError
+            )
+
         url = "http://127.0.0.1:8642/v1/chat/completions"
         headers = {
             "Content-Type": "application/json",
