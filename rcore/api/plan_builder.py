@@ -476,6 +476,11 @@ def chat_with_rok(message, session_id=None, model=None):
         if session_id:
             headers["X-Hermes-Session-Id"] = session_id
 
+        # Securely isolate memory context per user in multi-tenant environment
+        user_id = frappe.session.user
+        if user_id:
+            headers["X-Hermes-User-Id"] = user_id
+
         payload = {
             "model": model or "hermes-agent",
             "messages": [
@@ -516,6 +521,11 @@ def summarize_chat_session(session_id, messages):
         }
         if session_id:
             headers["X-Hermes-Session-Id"] = session_id
+
+        # Securely isolate memory context per user in multi-tenant environment
+        user_id = frappe.session.user
+        if user_id:
+            headers["X-Hermes-User-Id"] = user_id
 
         # Decode messages if they are passed as JSON string
         if isinstance(messages, str):
