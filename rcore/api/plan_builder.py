@@ -201,7 +201,7 @@ This file is the Single Source of Truth (SSOT) for {full_name}'s life developmen
 
         # 4. Mark onboarding complete for the Company / site
         try:
-            companies = frappe.get_all("Company", limit=1)
+            companies = frappe.get_all("Company", limit_page_length=1)
             if companies:
                 frappe.db.set_value("Company", companies[0].name, "onboarding_complete", 1)
                 frappe.db.commit()
