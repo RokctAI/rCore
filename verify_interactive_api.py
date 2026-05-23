@@ -134,6 +134,11 @@ class MockModule(types.ModuleType):
 for sub in ["utils", "model", "geo", "contacts", "desk", "social", "website", "email", "exceptions"]:
     sys.modules[f'frappe.{sub}'] = MockModule(f'frappe.{sub}')
 
+# Explicitly register deep nested submodules to bypass importlib filesystem loaders
+sys.modules['frappe.geo.country_info'] = MockModule('frappe.geo.country_info')
+sys.modules['frappe.desk.doctype.workspace.workspace'] = MockModule('frappe.desk.doctype.workspace.workspace')
+
+
 
 
 
