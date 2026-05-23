@@ -120,11 +120,15 @@ class MockModule(types.ModuleType):
         if name.startswith("__") and name.endswith("__"):
             raise AttributeError(name)
         
+        full_submodule_name = f"{self.__name__}.{name}"
+        
         class CallableMock(MockModule):
             def __call__(self, *args, **kwargs):
                 return ""
                 
-        return CallableMock(f"{self.__name__}.{name}")
+        mock_obj = CallableMock(full_submodule_name)
+        sys.modules[full_submodule_name] = mock_obj
+        return mock_obj
 
 # Dynamically register common submodules to satisfy all potential app imports
 for sub in ["utils", "model", "geo", "contacts", "desk", "social", "website", "email", "exceptions"]:
