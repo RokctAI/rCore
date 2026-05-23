@@ -7,14 +7,17 @@ import json
 import shutil
 from pathlib import Path
 
-# Add directories to system path for local execution testing
+# Add directories to system path for local execution testing dynamically
+current_file_dir = os.path.dirname(os.path.abspath(__file__))
+parent_workspace_dir = os.path.dirname(current_file_dir)
 SYS_PATHS = [
-    r"C:\Users\sinya\Desktop\RokctAI\rcore",
-    r"C:\Users\sinya\Desktop\RokctAI\control",
+    current_file_dir,
+    os.path.join(parent_workspace_dir, "control")
 ]
 for p in SYS_PATHS:
     if p not in sys.path:
         sys.path.append(p)
+
 
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
@@ -70,11 +73,14 @@ def get_all(doctype, filters=None, **kwargs):
     return []
 
 def get_app_path(app, *parts):
+    current_file_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_workspace_dir = os.path.dirname(current_file_dir)
     if app == "rcore":
-        base = r"C:\Users\sinya\Desktop\RokctAI\rcore\rcore"
+        base = os.path.join(current_file_dir, "rcore")
     else:
-        base = r"C:\Users\sinya\Desktop\RokctAI\control\control"
+        base = os.path.join(parent_workspace_dir, "control", "control")
     return os.path.join(base, *parts)
+
 
 class MockDB:
     def delete(self, doctype, filters):
@@ -192,8 +198,11 @@ def verify_onboarding_integration():
             {"date": "2026-05-24", "category": "Product", "text": "Launched test harness simulator suite"},
         ]
 
-        # Setup local test templates folder under StartupOS/templates
-        monorepo_templates = r"c:\Users\sinya\Desktop\RokctAI\Monorepo\templates_test"
+        # Setup local test templates folder under StartupOS/templates dynamically
+        current_file_dir = os.path.dirname(os.path.abspath(__file__))
+        parent_workspace_dir = os.path.dirname(current_file_dir)
+        monorepo_templates = os.path.join(parent_workspace_dir, "Monorepo", "templates_test")
+        
         startup_os_root = os.path.join(os.getcwd(), "StartupOS")
         dest_templates = os.path.join(startup_os_root, "templates")
         
