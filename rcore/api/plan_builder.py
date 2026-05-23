@@ -469,6 +469,15 @@ def chat_with_rok(message, session_id=None, model=None):
     Secure gateway proxy for Next.js (Vercel) to chat with ROK agent on the Tenant VPS.
     """
     try:
+        # Check if ROK is enabled for this subscription tier
+        from rcore.utils.subscription_checker import get_cached_subscription_details
+        sub = get_cached_subscription_details()
+        if sub.get("is_free_plan", 0) or not sub.get("is_ai", 0):
+            frappe.throw(
+                "ROK Companion is not available on the Free tier. Please upgrade to a Pro or Team plan to unlock your dedicated AI agent.",
+                frappe.PermissionError
+            )
+
         # Secure seat assignment and license gatekeeping
         from rcore.tenant.api import get_token_usage
         usage_tracker = get_token_usage()
