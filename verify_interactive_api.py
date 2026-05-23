@@ -192,6 +192,15 @@ def verify_onboarding_integration():
             {"date": "2026-05-24", "category": "Product", "text": "Launched test harness simulator suite"},
         ]
 
+        # Setup local test templates folder under StartupOS/templates
+        monorepo_templates = r"c:\Users\sinya\Desktop\RokctAI\Monorepo\templates_test"
+        startup_os_root = os.path.join(os.getcwd(), "StartupOS")
+        dest_templates = os.path.join(startup_os_root, "templates")
+        
+        if os.path.exists(monorepo_templates) and not os.path.exists(dest_templates):
+            shutil.copytree(monorepo_templates, dest_templates)
+            print(f"   [Test Setup] Copied templates from Monorepo to test directory: {dest_templates}")
+
         # Trigger simulated profile commit (writes questions.md, runs compiler, commits to mock DB)
         result = commit_onboarding_answers(
             profile_type="business",
