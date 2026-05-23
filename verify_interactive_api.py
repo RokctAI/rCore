@@ -112,14 +112,24 @@ frappe_mock.get_traceback = get_traceback
 sys.modules['frappe'] = frappe_mock
 
 class MockModule(types.ModuleType):
+    def __init__(self, name):
+        super().__init__(name)
+        self.__path__ = []
+
     def __getattr__(self, name):
-        def dummy_func(*args, **kwargs):
-            return ""
-        return dummy_func
+        if name.startswith("__") and name.endswith("__"):
+            raise AttributeError(name)
+        
+        class CallableMock(MockModule):
+            def __call__(self, *args, **kwargs):
+                return ""
+                
+        return CallableMock(f"{self.__name__}.{name}")
 
 # Dynamically register common submodules to satisfy all potential app imports
 for sub in ["utils", "model", "geo", "contacts", "desk", "social", "website", "email", "exceptions"]:
     sys.modules[f'frappe.{sub}'] = MockModule(f'frappe.{sub}')
+
 
 
 
