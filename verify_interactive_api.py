@@ -61,8 +61,8 @@ def new_doc(doctype):
 def get_doc(doctype, name=None):
     return MockDoc(doctype, name)
 
-def get_all(doctype, filters=None):
-    print(f"   [Mock DB] GET ALL {doctype} with filters: {filters}")
+def get_all(doctype, filters=None, **kwargs):
+    print(f"   [Mock DB] GET ALL {doctype} with filters: {filters} and kwargs: {kwargs}")
     if doctype == "Pillar":
         return [MockDoc("Pillar", "Mock-Pillar-1")]
     elif doctype == "Strategic Objective":
