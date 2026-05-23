@@ -8,16 +8,18 @@ import shutil
 from pathlib import Path
 
 # Add directories to system path for local execution testing dynamically
-current_file_dir = os.path.dirname(os.path.abspath(__file__))
-parent_workspace_dir = os.path.dirname(current_file_dir)
+current_file_dir = os.path.dirname(os.path.abspath(__file__)) # C:\Users\sinya\Desktop\RokctAI\rcore\rcore\tests
+rcore_base = os.path.dirname(os.path.dirname(current_file_dir)) # C:\Users\sinya\Desktop\RokctAI\rcore
+parent_workspace_dir = os.path.dirname(rcore_base) # C:\Users\sinya\Desktop\RokctAI
+control_base = os.path.join(parent_workspace_dir, "control")
+
 SYS_PATHS = [
-    current_file_dir,
-    os.path.join(parent_workspace_dir, "control")
+    rcore_base,
+    control_base
 ]
 for p in SYS_PATHS:
     if p not in sys.path:
         sys.path.append(p)
-
 
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
@@ -73,14 +75,11 @@ def get_all(doctype, filters=None, **kwargs):
     return []
 
 def get_app_path(app, *parts):
-    current_file_dir = os.path.dirname(os.path.abspath(__file__))
-    parent_workspace_dir = os.path.dirname(current_file_dir)
     if app == "rcore":
-        base = os.path.join(current_file_dir, "rcore")
+        base = os.path.join(rcore_base, "rcore")
     else:
-        base = os.path.join(parent_workspace_dir, "control", "control")
+        base = os.path.join(control_base, "control")
     return os.path.join(base, *parts)
-
 
 class MockDB:
     def delete(self, doctype, filters):
@@ -147,7 +146,6 @@ sys.modules['frappe.desk.doctype.workspace.workspace'] = MockModule('frappe.desk
 
 
 
-
 import frappe  # verify import works
 
 
@@ -199,8 +197,6 @@ def verify_onboarding_integration():
         ]
 
         # Setup local test templates folder under StartupOS/templates dynamically
-        current_file_dir = os.path.dirname(os.path.abspath(__file__))
-        parent_workspace_dir = os.path.dirname(current_file_dir)
         monorepo_templates = os.path.join(parent_workspace_dir, "Monorepo", "templates_test")
         
         startup_os_root = os.path.join(os.getcwd(), "StartupOS")
@@ -223,7 +219,6 @@ def verify_onboarding_integration():
 
         # Verify filesystem side-effects
         # Determine the generated questions.md location
-        startup_os_root = os.path.join(os.getcwd(), "StartupOS")
         questions_path = os.path.join(startup_os_root, "instances", "business", "AntigravityLabs", "questions.md")
         output_dir = os.path.join(startup_os_root, "instances", "business", "AntigravityLabs", "output")
         
