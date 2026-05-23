@@ -154,7 +154,7 @@ def verify_onboarding_integration():
     # A. Verify Control Site Template Retrieval
     print("STEP 1: Verify get_onboarding_template endpoint from Control...")
     try:
-        from control.control.api import get_onboarding_template
+        from control.api import get_onboarding_template
         
         bus_template = get_onboarding_template("business")
         life_template = get_onboarding_template("life")
