@@ -47,12 +47,19 @@ def ensure_startup_os_core():
                     f.write(response.read())
         except Exception as e:
             if not os.path.exists(dest_file):
-                # If offline and no local file, try to copy from local monorepo if available
-                local_proto_file = f"c:\\Users\\sinya\\Desktop\\RokctAI\\Monorepo\\rcore\\rcore\\platform\\startup_os\\core\\{f_name}"
-                if os.path.exists(local_proto_file):
-                    import shutil
-                    shutil.copy(local_proto_file, dest_file)
-                else:
+                # If offline and no local file, try to dynamically resolve local Monorepo sibling path
+                resolved = False
+                parent = os.path.dirname(os.path.abspath(__file__))
+                for _ in range(5):
+                    parent = os.path.dirname(parent)
+                    probe_path = os.path.join(parent, "Monorepo", "rcore", "rcore", "platform", "startup_os", "core", f_name)
+                    if os.path.exists(probe_path):
+                        import shutil
+                        shutil.copy(probe_path, dest_file)
+                        resolved = True
+                        break
+                
+                if not resolved:
                     raise RuntimeError(f"Failed to fetch StartupOS core engine {f_name}: {e}")
 
     if startup_os_root not in sys.path:
