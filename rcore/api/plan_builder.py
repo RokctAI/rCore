@@ -464,7 +464,7 @@ def commit_plan(plan_data=None, profile_type=None, instance_name=None):
 
 
 @frappe.whitelist()
-def chat_with_rok(message, session_id=None):
+def chat_with_rok(message, session_id=None, model=None):
     """
     Secure gateway proxy for Next.js (Vercel) to chat with ROK agent on the Tenant VPS.
     """
@@ -477,7 +477,7 @@ def chat_with_rok(message, session_id=None):
             headers["X-Hermes-Session-Id"] = session_id
 
         payload = {
-            "model": "hermes-agent",
+            "model": model or "hermes-agent",
             "messages": [
                 {"role": "user", "content": message}
             ],
@@ -494,6 +494,7 @@ def chat_with_rok(message, session_id=None):
             return {
                 "status": "success",
                 "message": choices[0].get("message", {}).get("content", ""),
+                "tool_calls": choices[0].get("message", {}).get("tool_calls", None),
                 "session_id": session_id
             }
         return {"status": "error", "message": "No response choice returned from ROK."}
