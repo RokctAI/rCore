@@ -461,3 +461,44 @@ def commit_plan(plan_data=None, profile_type=None, instance_name=None):
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "commit_plan Error")
         return {"status": "error", "message": str(e)}
+
+
+@frappe.whitelist()
+def chat_with_rok(message, session_id=None):
+    """
+    Secure gateway proxy for Next.js (Vercel) to chat with ROK agent on the Tenant VPS.
+    """
+    try:
+        url = "http://127.0.0.1:8642/v1/chat/completions"
+        headers = {
+            "Content-Type": "application/json",
+        }
+        if session_id:
+            headers["X-Hermes-Session-Id"] = session_id
+
+        payload = {
+            "model": "hermes-agent",
+            "messages": [
+                {"role": "user", "content": message}
+            ],
+            "stream": False
+        }
+
+        import requests
+        response = requests.post(url, json=payload, headers=headers, timeout=60.0)
+        response.raise_for_status()
+
+        result = response.json()
+        choices = result.get("choices", [])
+        if choices:
+            return {
+                "status": "success",
+                "message": choices[0].get("message", {}).get("content", ""),
+                "session_id": session_id
+            }
+        return {"status": "error", "message": "No response choice returned from ROK."}
+
+    except Exception as e:
+        frappe.log_error(f"ROK Tenant Chat Bridge failed: {e}")
+        return {"status": "error", "message": str(e)}
+
