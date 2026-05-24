@@ -8,6 +8,64 @@ import re
 import datetime
 import sys
 import urllib.request
+import urllib.parse
+
+
+def perform_bootstrap_secrets_handshake():
+    """
+    Performs secure single-use bootstrap handshake.
+    Exchanges the transient ROKCT_BOOTSTRAP_TOKEN for AI credentials,
+    loads them strictly in-memory, and immediately deletes the token.
+    """
+    token = os.environ.get("ROKCT_BOOTSTRAP_TOKEN")
+    if not token:
+        return
+
+    # Check if already completed to avoid repeated network calls
+    if frappe.cache().get_value("bootstrap_completed"):
+        os.environ.pop("ROKCT_BOOTSTRAP_TOKEN", None)
+        return
+
+    control_url = os.environ.get("ROKCT_CONTROL_URL") or "http://172.17.0.1:8000"
+    target_endpoint = f"{control_url}/api/method/control.control.bootstrap.get_bootstrap_secrets"
+
+    try:
+        data = urllib.parse.urlencode({"token": token}).encode("utf-8")
+        req = urllib.request.Request(
+            target_endpoint,
+            data=data,
+            headers={
+                "User-Agent": "ROKCT-Bootstrap-Agent/1.0",
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        )
+        
+        with urllib.request.urlopen(req, timeout=10) as response:
+            res_data = json.loads(response.read().decode("utf-8"))
+            secrets = res_data.get("message")
+            
+            if secrets:
+                # Load keys strictly in-memory in environment & site config
+                if secrets.get("gemini_api_key"):
+                    os.environ["GEMINI_API_KEY"] = secrets["gemini_api_key"]
+                    frappe.local.conf.gemini_api_key = secrets["gemini_api_key"]
+                if secrets.get("openai_api_key"):
+                    os.environ["OPENAI_API_KEY"] = secrets["openai_api_key"]
+                    frappe.local.conf.openai_api_key = secrets["openai_api_key"]
+                if secrets.get("whatsapp_bridge_url"):
+                    os.environ["WHATSAPP_BRIDGE_URL"] = secrets["whatsapp_bridge_url"]
+                    frappe.local.conf.whatsapp_bridge_url = secrets["whatsapp_bridge_url"]
+                if secrets.get("tenant_id"):
+                    os.environ["TENANT_ID"] = secrets["tenant_id"]
+                    frappe.local.conf.tenant_id = secrets["tenant_id"]
+
+                frappe.cache().set_value("bootstrap_completed", 1)
+                
+    except Exception as e:
+        frappe.log_error(f"ROKCT Bootstrap handshake failed: {str(e)}", "Bootstrap Security")
+    finally:
+        # Strictly purge transient token from process memory space
+        os.environ.pop("ROKCT_BOOTSTRAP_TOKEN", None)
 
 
 def ensure_startup_os_core():
@@ -16,8 +74,12 @@ def ensure_startup_os_core():
     Resolves the StartupOS path dynamically. If running in Frappe, sites/StartupOS/core
     is the standard writable workspace. If files are missing, fetches them from raw GitHub.
     """
+    # Trigger bootstrap secrets handshake first to hydrate API keys in-memory
+    perform_bootstrap_secrets_handshake()
+
     # Determine writable StartupOS folder
     frappe_sites = "/home/frappe/frappe-bench/sites"
+
     if os.path.isdir(frappe_sites):
         startup_os_root = os.path.join(frappe_sites, "StartupOS")
     else:
@@ -473,10 +535,17 @@ def chat_with_rok(message, session_id=None, model=None):
         from rcore.utils.subscription_checker import get_cached_subscription_details
         sub = get_cached_subscription_details()
         if sub.get("is_free_plan", 0) or not sub.get("is_ai", 0):
-            frappe.throw(
-                "ROK Companion is not available on the Free tier. Please upgrade to a Pro or Team plan to unlock your dedicated AI agent.",
-                frappe.PermissionError
-            )
+            # Enforce 5 free messages daily limit
+            user_id = frappe.session.user
+            today_date = datetime.date.today().strftime("%Y-%m-%d")
+            cache_key = f"free_rok_msg_count:{user_id}:{today_date}"
+            current_count = frappe.cache().get_value(cache_key) or 0
+            if current_count >= 5:
+                frappe.throw(
+                    "Quota Exceeded: Your daily free conversational ROK quota is complete! To make sure you don't lose any of the progress we've made, we are switching your Strategic Onboarding to Predefined (Offline) Mode. You can continue answering the remaining questions statically. To reactivate my smart auditing and reasoning right now, upgrade to a Pro plan!",
+                    frappe.PermissionError
+                )
+            frappe.cache().set_value(cache_key, current_count + 1, expires_in_sec=86400)
 
         # Secure seat assignment and license gatekeeping
         from rcore.tenant.api import get_token_usage
