@@ -34,3 +34,12 @@ def call_control(method, data=None):
     except Exception as e:
         frappe.log_error(f"Control API Call Failed ({method}): {str(e)}", "Control API Error")
         return None
+
+def is_ai_action():
+    """
+    Checks if the current Frappe request was initiated by the AI agent
+    by looking for a specific HTTP header.
+    """
+    if hasattr(frappe.local, "request") and frappe.local.request.headers.get("X-Action-Source") == "AI":
+        return True
+    return False
