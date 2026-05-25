@@ -12,9 +12,9 @@ from frappe.model.document import Document
 class PayFastSettings(Document):
     def after_insert(self):
         try:
-            # Skip during site creation / migration to prevent transactional errors
+            # Skip during site creation / migration / testing to prevent transactional errors
             # when tables don't exist yet!
-            if frappe.flags.in_migrate or frappe.flags.in_install:
+            if frappe.flags.in_migrate or frappe.flags.in_install or frappe.flags.in_test:
                 return
 
             if not frappe.db.table_exists("Payment Gateway"):
@@ -30,6 +30,7 @@ class PayFastSettings(Document):
                     }
                 ).insert(ignore_permissions=True)
         except Exception:
+            frappe.db.rollback()
             print("PayFast Payment Gateway creation deferred (will retry manually)")
 
     def get_payment_url(self, **kwargs):
