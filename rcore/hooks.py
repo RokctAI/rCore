@@ -35,13 +35,15 @@ def get_scheduler_events():
     }
 
     if app_role == "tenant":
-        events["daily"].extend([
-            "rcore.tasks.manage_daily_tenders",
-            "rcore.tasks.manage_daily_funding",
-            "rcore.tasks.disable_expired_support_users",
-            "rcore.tasks.update_storage_usage",
-            "rcore.tasks.reset_monthly_token_usage"
-        ])
+        events["daily"].extend(
+            [
+                "rcore.tasks.manage_daily_tenders",
+                "rcore.tasks.manage_daily_funding",
+                "rcore.tasks.disable_expired_support_users",
+                "rcore.tasks.update_storage_usage",
+                "rcore.tasks.reset_monthly_token_usage",
+            ]
+        )
 
     return events
 
