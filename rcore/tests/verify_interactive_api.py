@@ -253,11 +253,54 @@ def verify_onboarding_integration():
             print("✅ Filesystem side-effects (Stubbed/Mocked Compilation) verified successfully!")
             print(f"   - questions.md size: {os.path.getsize(questions_path)} bytes")
             print("   - Compiled files: skipped (stub compiler in standalone test mode)")
+
+        # C. Verify Dynamic Compiled Strategic Markdown Seeder
+        print("\nSTEP 3: Verify dynamic compiled strategic markdown file parser and seeder...")
+        # Create output dir manually for testing the seeder
+        test_output_dir = os.path.join(startup_os_root, "instances", "business", "AntigravityLabs", "output")
+        os.makedirs(test_output_dir, exist_ok=True)
+        
+        mock_plan_md = """# AntigravityLabs — Business Plan on a Page
+
+## 1. Executive Summary & Core Mission
+We are deploying a robust multi-tenant model that delivers modern technology to underserved markets.
+
+---
+
+## 2. Strategic Pillars & Operating Framework
+
+### A. Foundational Business Profile
+*   **Legal Registered Name**: AntigravityLabs (Pty) Ltd
+*   **B-BBEE Contribution Status**: Level 1 Contributor
+
+### B. Strategic Anchors
+*   **Product Offering**: Alternative bookkeeping and supply chain orchestration.
+
+---
+
+## 3. Cost Control & Mitigation Plan
+1.  **Infrastructure Elasticity**: server costs mirror actual user transaction volume.
+"""
+        mock_file_path = os.path.join(test_output_dir, "business_plan_on_a_page.md")
+        with open(mock_file_path, "w", encoding="utf-8") as f:
+            f.write(mock_plan_md)
+            
+        print(f"   [Test Setup] Created mock compiled plan file: {mock_file_path}")
+        
+        # Trigger plan commit reading from files
+        from rcore.api.plan_builder import commit_plan
+        db_res = commit_plan(profile_type="business", instance_name="AntigravityLabs")
+        
+        assert db_res.get("status") == "success", "Database plan commit must succeed."
+        assert "seeded from compiled strategic files" in db_res.get("message"), "Seeder must use compiled files."
+        
+        print("✅ STEP 3 SUCCESS: Dynamic strategic markdown parser and seeder verified successfully.")
+        print(f"   - Seeder message: {db_res.get('message')}")
         
     except Exception as e:
         import traceback
         traceback.print_exc()
-        print(f"❌ STEP 2 FAILURE: {e}")
+        print(f"❌ STEP 2/3 FAILURE: {e}")
         sys.exit(1)
 
     print("\n======================================================================")
