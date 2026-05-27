@@ -1362,7 +1362,11 @@ def get_weather(location: str):
     api_url = (
         f"{scheme}://{control_plane_url}/api/method/control.control.api.get_weather"
     )
-    headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site, "Accept": "application/json"}
+    headers = {
+        "X-Rokct-Secret": api_secret,
+        "X-Rokct-Tenant": frappe.local.site,
+        "Accept": "application/json",
+    }
 
     try:
         # Use frappe.make_get_request which is a wrapper around requests
@@ -1406,7 +1410,11 @@ def set_weather_alias(original, corrected):
     scheme = frappe.conf.get("control_plane_scheme", "https")
     # Note: Target the definition in weather.py which is whitelisted
     api_url = f"{scheme}://{control_plane_url}/api/method/control.control.weather.set_weather_alias"
-    headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site, "Accept": "application/json"}
+    headers = {
+        "X-Rokct-Secret": api_secret,
+        "X-Rokct-Tenant": frappe.local.site,
+        "Accept": "application/json",
+    }
 
     # We use POST for state-changing operations
     try:

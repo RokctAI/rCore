@@ -4,13 +4,14 @@
 import click
 import frappe
 
+
 @click.command("update-tenant-ecosystem")
 def update_tenant_ecosystem_command():
     """
     Triggers self-update for the tenant spoke (rcore).
     """
     from rcore.update_manager import update_tenant_ecosystem
-    
+
     if not frappe.local.site:
         print("Please provide a site using --site [site]")
         return
@@ -23,6 +24,5 @@ def update_tenant_ecosystem_command():
     else:
         print(f"❌ {result.get('message')}")
 
-commands = [
-    update_tenant_ecosystem_command
-]
+
+commands = [update_tenant_ecosystem_command]
