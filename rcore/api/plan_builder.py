@@ -26,7 +26,7 @@ def perform_bootstrap_secrets_handshake():
         os.environ.pop("ROKCT_BOOTSTRAP_TOKEN", None)
         return
 
-    control_url = os.environ.get("ROKCT_CONTROL_URL") or "http://172.17.0.1:8000"
+    control_url = os.environ.get("ROKCT_CONTROL_URL") or "https://platform.rokct.ai"
     target_endpoint = f"{control_url}/api/method/control.control.bootstrap.get_bootstrap_secrets"
 
     try:
