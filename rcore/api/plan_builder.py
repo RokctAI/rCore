@@ -420,7 +420,8 @@ def generate_alive_cv_pdf(instance_name, profile_type="life", role_focus=None):
                 
                 # Dynamic completion via ROK completions endpoint
                 import requests
-                url = "http://127.0.0.1:8642/v1/chat/completions"
+                import os
+                url = os.environ.get("ROK_COMPLETIONS_URL") or "http://127.0.0.1:8642/v1/chat/completions"
                 payload = {
                     "model": "hermes-agent",
                     "messages": [
@@ -1075,8 +1076,8 @@ def chat_with_rok(message, session_id=None, model=None):
                 "Your team's ROK seat limit has been reached. Please contact your administrator to upgrade your subscription.",
                 frappe.PermissionError
             )
-
-        url = "http://127.0.0.1:8642/v1/chat/completions"
+        import os
+        url = os.environ.get("ROK_COMPLETIONS_URL") or "http://127.0.0.1:8642/v1/chat/completions"
         headers = {
             "Content-Type": "application/json",
         }
@@ -1121,8 +1122,8 @@ def summarize_chat_session(session_id, messages):
     """
     Summarizes a completed or long chat session via the ROK completions loop on Tenant.
     """
-    try:
-        url = "http://127.0.0.1:8642/v1/chat/completions"
+        import os
+        url = os.environ.get("ROK_COMPLETIONS_URL") or "http://127.0.0.1:8642/v1/chat/completions"
         headers = {
             "Content-Type": "application/json",
         }
