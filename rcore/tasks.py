@@ -170,3 +170,26 @@ def _delete_expired_funding():
     for f in expired:
         frappe.delete_doc("Neurotrophin", f.name, ignore_permissions=True, force=True)
     frappe.db.commit()
+
+def check_invoice_payments():
+    """
+    Automated payment reminders. Checks all unpaid and overdue Sales Invoices
+    and triggers reminders/system logs.
+    """
+    if frappe.conf.get("app_role") != "tenant": return
+    
+    unpaid_invoices = frappe.get_all("Sales Invoice", filters={
+        "docstatus": 1,
+        "status": ["not in", ["Paid", "Draft", "Cancelled"]],
+        "outstanding_amount": [">", 0]
+    }, fields=["name", "customer", "outstanding_amount", "due_date"])
+    
+    for inv in unpaid_invoices:
+        try:
+            frappe.log_error(
+                message=f"Outstanding Sales Invoice {inv.name} for Customer {inv.customer} requires payment. Outstanding: {inv.outstanding_amount}.",
+                title="Invoice Payment Reminder"
+            )
+        except Exception as e:
+            frappe.log_error(f"Failed payment check for {inv.name}: {e}", "Invoice Payment Check Error")
+

@@ -40,7 +40,8 @@ def get_scheduler_events():
             "rcore.tasks.manage_daily_funding",
             "rcore.tasks.disable_expired_support_users",
             "rcore.tasks.update_storage_usage",
-            "rcore.tasks.reset_monthly_token_usage"
+            "rcore.tasks.reset_monthly_token_usage",
+            "rcore.tasks.check_invoice_payments"
         ])
 
     return events
