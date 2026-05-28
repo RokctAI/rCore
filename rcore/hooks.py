@@ -68,11 +68,27 @@ whitelisted_methods = {
     # The two universal entry points for the platform
     "rokct.platform.api.tenant": "rcore.platform.api.execute_tenant",
     "rokct.platform.api.control": "rcore.platform.api.execute_control",
+    # Migrated Brain Core API
+    "rcore.api.query": "rcore.api.rcore.query",
+    "rcore.api.search": "rcore.api.rcore.search",
+    "rcore.api.record_event": "rcore.api.rcore.record_event",
+    "rcore.api.record_chat_summary": "rcore.api.rcore.record_chat_summary",
+    "rcore.api.get_event_interval": "rcore.api.rcore.get_event_interval",
+    "rcore.api.accept_stimulus": "rcore.api.rcore.accept_stimulus",
+    "rcore.api.reject_stimulus": "rcore.api.rcore.reject_stimulus",
+    "rcore.api.accept_neurotrophin": "rcore.api.rcore.accept_neurotrophin",
+    "rcore.api.reject_neurotrophin": "rcore.api.rcore.reject_neurotrophin",
+    # AI Gateway
+    "rcore.api.dispatch_ai_task": "rcore.api.rcore.dispatch_ai_task",
+    "rcore.api.get_ai_result": "rcore.api.rcore.get_ai_result",
+    "rcore.api.generate_release_notes": "rcore.api.rcore.generate_release_notes"
 }
 
 # After Install
 # -------------
-after_install = ["rcore.install.fetch_agent_scripts"]
+after_install = ["rcore.install.fetch_agent_scripts", "rcore.setup_ai.setup_ai_infrastructure"]
+after_migrate = "rcore.setup_ai.setup_ai_infrastructure"
+
 
 # Uninstallation
 # ------------
@@ -182,6 +198,13 @@ if "doc_events" not in locals():
 doc_events.update({
     "Engram": {
         "validate": "rcore.tasks.tag_engram_pillars"
+    },
+    "*": {
+        "on_submit": "rcore.utils.engram_builder.process_event_in_realtime",
+        "on_trash": "rcore.utils.engram_builder.process_event_in_realtime"
+    },
+    "Email Queue": {
+        "on_submit": "rcore.utils.engram_builder.process_event_in_realtime"
     }
 })
 

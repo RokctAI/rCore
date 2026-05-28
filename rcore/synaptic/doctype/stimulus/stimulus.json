@@ -1,0 +1,130 @@
+{
+    "name": "Stimulus",
+    "engine": "InnoDB",
+    "autoname": "field:ocid",
+    "creation": "2025-09-10 10:25:00.000000",
+    "doctype": "DocType",
+    "module": "synaptic",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "role": "System Manager",
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1
+        }
+    ],
+    "fields": [
+        {
+            "fieldname": "ocid",
+            "fieldtype": "Data",
+            "label": "OCID",
+            "reqd": 1,
+            "unique": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "title",
+            "fieldtype": "Data",
+            "label": "Title",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "description",
+            "fieldtype": "Text Editor",
+            "label": "Description"
+        },
+        {
+            "fieldname": "status",
+            "fieldtype": "Data",
+            "label": "Status",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "publisher_name",
+            "fieldtype": "Data",
+            "label": "Publisher"
+        },
+        {
+            "fieldname": "published_date",
+            "fieldtype": "Datetime",
+            "label": "Published Date"
+        },
+        {
+            "fieldname": "stimulus_start_date",
+            "fieldtype": "Datetime",
+            "label": "Stimulus Start Date"
+        },
+        {
+            "fieldname": "stimulus_end_date",
+            "fieldtype": "Datetime",
+            "label": "Stimulus Closing Date",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "stimulus_category",
+            "fieldtype": "Link",
+            "label": "Category",
+            "options": "Stimulus Category",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "organ_of_state",
+            "fieldtype": "Link",
+            "label": "Organ of State",
+            "options": "Organ of State",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "province",
+            "fieldtype": "Link",
+            "label": "Province",
+            "options": "Province"
+        },
+        {
+            "fieldname": "stimulus_type",
+            "fieldtype": "Link",
+            "label": "Stimulus Type",
+            "options": "Stimulus Type"
+        },
+        {
+            "fieldname": "esubmission",
+            "fieldtype": "Check",
+            "label": "eSubmission"
+        },
+        {
+            "fieldname": "value_amount",
+            "fieldtype": "Currency",
+            "label": "Value"
+        },
+        {
+            "fieldname": "value_currency",
+            "fieldtype": "Data",
+            "label": "Currency"
+        },
+        {
+            "fieldname": "custom_workflow_json",
+            "fieldtype": "Code",
+            "label": "Custom Workflow JSON",
+            "read_only": 1,
+            "hidden": 1
+        },
+        {
+            "fieldname": "claimed_by",
+            "fieldtype": "Link",
+            "label": "Claimed By",
+            "options": "User"
+        },
+        {
+            "fieldname": "dismissed_by",
+            "fieldtype": "Link",
+            "label": "Dismissed By",
+            "options": "User"
+        }
+    ],
+    "track_changes": 1,
+    "issingle": 0,
+    "sort_field": "stimulus_end_date",
+    "sort_order": "DESC"
+}

@@ -1,0 +1,55 @@
+{
+    "name": "Neurotrophin",
+    "engine": "InnoDB",
+    "autoname": "field:title",
+    "creation": "2025-10-14 00:02:00.000000",
+    "doctype": "DocType",
+    "module": "synaptic",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "role": "System Manager",
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1
+        }
+    ],
+    "fields": [
+        {
+            "fieldname": "title",
+            "fieldtype": "Data",
+            "label": "Title",
+            "reqd": 1,
+            "unique": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "brief",
+            "fieldtype": "Text Editor",
+            "label": "Brief"
+        },
+        {
+            "fieldname": "deadline",
+            "fieldtype": "Datetime",
+            "label": "Deadline",
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "claimed_by",
+            "fieldtype": "Link",
+            "label": "Claimed By",
+            "options": "User"
+        },
+        {
+            "fieldname": "dismissed_by",
+            "fieldtype": "Link",
+            "label": "Dismissed By",
+            "options": "User"
+        }
+    ],
+    "track_changes": 1,
+    "issingle": 0,
+    "sort_field": "deadline",
+    "sort_order": "DESC"
+}

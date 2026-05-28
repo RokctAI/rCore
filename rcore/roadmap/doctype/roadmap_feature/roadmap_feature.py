@@ -44,7 +44,7 @@ def assign_to_jules(docname, feature, explanation):
         prompt = construct_contextual_prompt(roadmap, feature_doc, "Building")
 
         session = frappe.call(
-            "brain.api.start_jules_session",
+            "rcore.api.start_jules_session",
             prompt=prompt,
             source_repo=source_repo,
             api_key=api_key,

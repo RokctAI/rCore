@@ -119,7 +119,7 @@ def populate_roadmap_with_ai_ideas():
                     )
                     # Delegate to Brain
                     session = frappe.call(
-                        "brain.api.start_jules_session",
+                        "rcore.api.start_jules_session",
                         prompt=full_prompt,
                         source_repo=roadmap.get("source_repository"),
                         api_key=api_key,
@@ -188,7 +188,7 @@ def process_pending_ai_sessions():
                     session.add_comment("Comment", "Session Timed Out (>30 mins)")
                     try:
                         frappe.call(
-                            "brain.api.delete_jules_session",
+                            "rcore.api.delete_jules_session",
                             session_id=session.session_id,
                             api_key=api_key,
                         )
@@ -200,7 +200,7 @@ def process_pending_ai_sessions():
 
                 # Delegate to Brain
                 activities = frappe.call(
-                    "brain.api.get_jules_activities",
+                    "rcore.api.get_jules_activities",
                     session_id=session.session_id,
                     api_key=api_key,
                 )
@@ -224,7 +224,7 @@ def process_pending_ai_sessions():
 
                         # Cleanup session in Cloud
                         frappe.call(
-                            "brain.api.delete_jules_session",
+                            "rcore.api.delete_jules_session",
                             session_id=session.session_id,
                             api_key=api_key,
                         )
@@ -299,7 +299,7 @@ def process_building_queue():
 
                     # Start Jules Session
                     session = frappe.call(
-                        "brain.api.start_jules_session",
+                        "rcore.api.start_jules_session",
                         prompt=full_prompt,
                         source_repo=roadmap.source_repository,
                         api_key=api_key,
@@ -356,7 +356,7 @@ def jules_task_monitor():
 
             # Check Status via Brain
             session_data = frappe.call(
-                "brain.api.get_jules_status",
+                "rcore.api.get_jules_status",
                 session_id=f.jules_session_id,
                 api_key=api_key,
             )
@@ -455,7 +455,7 @@ def cleanup_archived_sessions():
 
                 # 1. Delete Session (Directly)
                 frappe.call(
-                    "brain.api.delete_jules_session",
+                    "rcore.api.delete_jules_session",
                     session_id=f.jules_session_id,
                     api_key=api_key,
                 )
@@ -513,7 +513,7 @@ def discover_roadmap_context(roadmap_name):
 
     try:
         session = frappe.call(
-            "brain.api.start_jules_session",
+            "rcore.api.start_jules_session",
             prompt=prompt,
             source_repo=roadmap.source_repository,
             api_key=api_key,
@@ -528,7 +528,7 @@ def discover_roadmap_context(roadmap_name):
         for _ in range(10):
             time.sleep(3)
             activities = frappe.call(
-                "brain.api.get_jules_activities", session_id=session_id, api_key=api_key
+                "rcore.api.get_jules_activities", session_id=session_id, api_key=api_key
             )
 
             latest_msg = _get_latest_agent_message(activities)
@@ -572,7 +572,7 @@ def discover_roadmap_context(roadmap_name):
 
                             # Success! Cleanup and Return.
                             frappe.call(
-                                "brain.api.delete_jules_session",
+                                "rcore.api.delete_jules_session",
                                 session_id=session_id,
                                 api_key=api_key,
                             )
@@ -582,7 +582,7 @@ def discover_roadmap_context(roadmap_name):
 
         # Timeout
         frappe.call(
-            "brain.api.delete_jules_session", session_id=session_id, api_key=api_key
+            "rcore.api.delete_jules_session", session_id=session_id, api_key=api_key
         )
         frappe.throw("Jules took too long to analyze the repository.")
 
@@ -653,7 +653,7 @@ def _create_jules_session(api_key, source_repo, title, prompt):
     """
     try:
         session = frappe.call(
-            "brain.api.start_jules_session",
+            "rcore.api.start_jules_session",
             prompt=prompt,
             source_repo=source_repo,
             api_key=api_key,

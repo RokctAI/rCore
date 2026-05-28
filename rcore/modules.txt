@@ -4,3 +4,5 @@ rhrms
 rlending
 roadmap
 rcore
+memory
+synaptic

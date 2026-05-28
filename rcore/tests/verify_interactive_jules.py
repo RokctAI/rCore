@@ -14,7 +14,7 @@ def verify_interactive_flow():
     print("\n1. Creating Session (require_approval=True)...")
     try:
         session = frappe.call(
-            "brain.api.start_jules_session",
+            "rcore.api.start_jules_session",
             prompt="Create a simple 'hello_world.txt' file.",
             source_repo="sources/github/RendaniSinyage/RokctAI_frontend",  # Using a known repo
             require_approval=True,
@@ -30,7 +30,7 @@ def verify_interactive_flow():
     print("\n2. Waiting for Plan Approval State...")
     max_retries = 20
     for i in range(max_retries):
-        status_data = frappe.call("brain.api.get_jules_status", session_id=session_id)
+        status_data = frappe.call("rcore.api.get_jules_status", session_id=session_id)
         state = status_data.get("state")
         print(f"   [{i + 1}/{max_retries}] State: {state}")
 
@@ -49,7 +49,7 @@ def verify_interactive_flow():
     # 3. Approve Plan
     print("\n3. Approving Plan...")
     try:
-        frappe.call("brain.api.vote_on_plan", session_id=session_id, action="approve")
+        frappe.call("rcore.api.vote_on_plan", session_id=session_id, action="approve")
         print("✅ Plan Approved command sent.")
     except Exception as e:
         print(f"❌ Approval Failed: {e}")
@@ -58,7 +58,7 @@ def verify_interactive_flow():
     # 4. Watch for Progress (State Change)
     print("\n4. Verifying State Change...")
     time.sleep(5)  # Give it a moment
-    status_data = frappe.call("brain.api.get_jules_status", session_id=session_id)
+    status_data = frappe.call("rcore.api.get_jules_status", session_id=session_id)
     print(f"   Current State: {status_data.get('state')}")
     if status_data.get("state") != "AWAITING_PLAN_APPROVAL":
         print("✅ State changed successfully.")
@@ -69,7 +69,7 @@ def verify_interactive_flow():
     print("\n5. Sending User Message...")
     try:
         frappe.call(
-            "brain.api.send_jules_message",
+            "rcore.api.send_jules_message",
             session_id=session_id,
             message="Please also make sure the file contains a timestamp.",
         )
@@ -80,7 +80,7 @@ def verify_interactive_flow():
     # 6. Verify Message in Activities
     print("\n6. Verifying Message in Activities...")
     time.sleep(5)
-    activities = frappe.call("brain.api.get_jules_activities", session_id=session_id)
+    activities = frappe.call("rcore.api.get_jules_activities", session_id=session_id)
 
     found = False
     for act in activities:
@@ -97,7 +97,7 @@ def verify_interactive_flow():
 
     # 7. Cleanup
     print("\n7. Cleaning Up...")
-    frappe.call("brain.api.delete_jules_session", session_id=session_id)
+    frappe.call("rcore.api.delete_jules_session", session_id=session_id)
     print("✅ Session Deleted.")
 
 

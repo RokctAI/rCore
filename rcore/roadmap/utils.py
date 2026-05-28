@@ -23,7 +23,7 @@ def check_queue_status(api_key):
     Returns True if Safe (No Queue), False if Busy (Queue exists).
     """
     try:
-        sessions = frappe.call("brain.api.get_jules_sessions", api_key=api_key)
+        sessions = frappe.call("rcore.api.get_jules_sessions", api_key=api_key)
         # Check if any session is QUEUED
         is_queued = any(s.get("state") == "QUEUED" for s in sessions)
         return not is_queued  # Safe if NOT queued

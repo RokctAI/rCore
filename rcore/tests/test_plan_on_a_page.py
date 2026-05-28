@@ -49,7 +49,7 @@ class TestPlanOnAPage(FrappeTestCase):
         plan.vision = self.vision.name
 
         # Mocking Engram creation if Engram doctype doesn't exist in test env,
-        # BUT assuming rcore depends on 'brain' or it's part of the core, logic should work.
+        # BUT assuming rcore depends on 'rcore' or it's part of the core, logic should work.
         # If Engram is missing, this will fail. Let's assume Engram exists.
 
         # We need to make sure Engram exists to test this.

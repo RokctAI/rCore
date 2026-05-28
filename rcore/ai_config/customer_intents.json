@@ -1,0 +1,24 @@
+{
+    "_comment": "Configuration for the VPS Router Worker (Customer Persona) - Aligned with Flutter Customer App",
+    "anchors": {
+        "action_track": "track where status location delivery arrival when progress",
+        "action_cancel": "cancel stop abort refund return exchange",
+        "action_book": "book reserve schedule table appointment slot apply",
+        "action_report": "report complain issue bug broken error help contact support",
+        "action_find": "find search lookup list show view browse explore type",
+        "action_buy": "buy purchase order get take add_to_cart",
+        "action_view_cart": "cart bag checkout pay basket finish complete",
+        "action_check_wallet": "wallet balance funds money cash account",
+        "action_send": "send ship dispatch mail courier",
+        "misc_greeting": "hello hi hey start greetings good_morning good_afternoon yo",
+        "entity_order": "order food pizza meal regular purchase history",
+        "entity_parcel": "parcel package box courier shipment delivery",
+        "entity_loan": "loan credit advance borrow finance money cash",
+        "entity_shop": "shop store merchant vendor restaurant seller place",
+        "entity_product": "product item goods food shirt shoes category things",
+        "entity_service": "service cleaning repair maintenance plumbing",
+        "entity_table": "table seat reservation dining booking",
+        "entity_wallet": "wallet balance card payment money account loyalty points",
+        "entity_profile": "profile account password address settings user me"
+    }
+}

@@ -1,0 +1,1 @@
+# DocTypes for the Synaptic Network Sub-module

@@ -760,7 +760,7 @@ def create_temporary_support_user(
 
         # Log this significant security event to the brain
         frappe.call(
-            "brain.api.record_event",
+            "rcore.api.record_event",
             message=f"Temporary support access granted to agent '{agent_id}' for reason: {reason}. User account '{support_email}' created.",
             reference_doctype="User",
             reference_name="Administrator",
@@ -823,7 +823,7 @@ def disable_temporary_support_user(support_user_email):
 
         # Log this significant security event to the brain
         frappe.call(
-            "brain.api.record_event",
+            "rcore.api.record_event",
             message=f"Temporary support access for user account '{support_user_email}' was revoked.",
             reference_doctype="User",
             reference_name="Administrator",
@@ -968,7 +968,7 @@ def log_frontend_error(error_message, context=None):
 
         # Call the brain's API to record the event
         frappe.call(
-            "brain.api.record_event",
+            "rcore.api.record_event",
             message=brain_message,
             reference_doctype=reference_doctype,
             reference_name=reference_name,

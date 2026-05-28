@@ -1,0 +1,136 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "format:{reference_doctype}-{reference_name}",
+    "creation": "2025-10-11 04:35:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "reference_doctype",
+        "reference_name",
+        "source",
+        "summary_section",
+        "summary",
+        "details_section",
+        "involved_users",
+        "last_activity_date",
+        "last_modifying_user",
+        "relationships_section",
+        "permissions_section",
+        "permissions"
+    ],
+    "fields": [
+        {
+            "fieldname": "reference_title",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Reference Title"
+        },
+        {
+            "fieldname": "reference_doctype",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "Reference DocType",
+            "options": "DocType",
+            "reqd": 1
+        },
+        {
+            "fieldname": "reference_name",
+            "fieldtype": "Data",
+            "label": "Reference Name",
+            "reqd": 1,
+            "hidden": 1
+        },
+        {
+            "fieldname": "module",
+            "fieldtype": "Data",
+            "label": "Module",
+            "read_only": 1
+        },
+        {
+            "fieldname": "source",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Source",
+            "options": "Document Hook\nChat Summary",
+            "default": "Document Hook"
+        },
+        {
+            "fieldname": "summary_section",
+            "fieldtype": "Section Break",
+            "label": "Summary"
+        },
+        {
+            "fieldname": "summary",
+            "fieldtype": "Text Editor",
+            "label": "Summary",
+            "read_only": 1
+        },
+        {
+            "fieldname": "details_section",
+            "fieldtype": "Section Break",
+            "label": "Details"
+        },
+        {
+            "fieldname": "involved_users",
+            "fieldtype": "Small Text",
+            "label": "Involved Users",
+            "read_only": 1
+        },
+        {
+            "fieldname": "last_activity_date",
+            "fieldtype": "Datetime",
+            "in_list_view": 1,
+            "label": "Last Activity Date",
+            "read_only": 1
+        },
+        {
+            "fieldname": "last_modifying_user",
+            "fieldtype": "Link",
+            "label": "Last Modifying User",
+            "options": "User",
+            "hidden": 1
+        },
+        {
+            "fieldname": "relationships_section",
+            "fieldtype": "Section Break",
+            "label": "Relationships"
+        },
+        {
+            "fieldname": "permissions_section",
+            "fieldtype": "Section Break",
+            "label": "Permissions"
+        },
+        {
+            "fieldname": "permissions",
+            "fieldtype": "Table",
+            "label": "Permissions",
+            "options": "Engram Permission",
+            "hidden": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2025-10-11 04:35:00.000000",
+    "modified_by": "Administrator",
+    "module": "memory",
+    "name": "Engram",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "last_activity_date",
+    "sort_order": "DESC",
+    "states": []
+}

@@ -1,0 +1,14 @@
+{
+    "name": "Synaptic Convergence Settings",
+    "issingle": 1,
+    "doctype": "DocType",
+    "module": "synaptic",
+    "fields": [
+        {
+            "fieldname": "main_procurement_category",
+            "fieldtype": "Link",
+            "label": "Main Procurement Category",
+            "options": "Stimulus Category"
+        }
+    ]
+}

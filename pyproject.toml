@@ -6,7 +6,15 @@ authors = [
     { name = "RokctAI", email = "admin@rokct.ai"}
 ]
 dependencies = [
+    "torch",
+    "transformers",
+    "accelerate",
+    "sentencepiece",
+    "protobuf",
+    "huggingface-hub",
+    "Pillow"
 ]
+
 
 [build-system]
 requires = ["flit_core >=3.4,<4"]
