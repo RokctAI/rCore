@@ -1,0 +1,71 @@
+{
+    "doctype": "DocType",
+    "name": "Partner Organization",
+    "engine": "InnoDB",
+    "is_submittable": 0,
+    "issingle": 0,
+    "istable": 0,
+    "module": "rcore",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1,
+    "fields": [
+        {
+            "fieldname": "organization_name",
+            "fieldtype": "Data",
+            "label": "Organization Name",
+            "reqd": 1,
+            "in_global_search": 1
+        },
+        {
+            "fieldname": "partner_type",
+            "fieldtype": "Select",
+            "label": "Partner Type",
+            "options": "Funeral Parlor\nInsurance\nMedical Partner\nFinancial Advisor\nOther",
+            "default": "Funeral Parlor",
+            "reqd": 1
+        },
+        {
+            "fieldname": "email",
+            "fieldtype": "Data",
+            "label": "Email",
+            "reqd": 0
+        },
+        {
+            "fieldname": "phone",
+            "fieldtype": "Data",
+            "label": "Phone"
+        },
+        {
+            "fieldname": "address",
+            "fieldtype": "Text",
+            "label": "Address"
+        },
+        {
+            "fieldname": "website",
+            "fieldtype": "Data",
+            "label": "Website"
+        },
+        {
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "label": "Status",
+            "options": "Active\nInactive\nSuspended",
+            "default": "Active"
+        }
+    ]
+}
