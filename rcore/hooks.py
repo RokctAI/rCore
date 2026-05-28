@@ -42,7 +42,9 @@ def get_scheduler_events():
             "rcore.tasks.update_storage_usage",
             "rcore.tasks.reset_monthly_token_usage",
             "rcore.tasks.check_invoice_payments",
-            "rcore.tasks.pick_proactive_question"
+            "rcore.tasks.pick_proactive_question",
+            "rcore.tasks.send_weekly_goal_reminders",
+            "rcore.tasks.send_friday_wins_reminders"
         ])
 
     return events
