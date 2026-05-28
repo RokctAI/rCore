@@ -1,0 +1,30 @@
+{
+    "doctype": "DocType",
+    "name": "Obituary Draft",
+    "engine": "InnoDB",
+    "is_submittable": 0,
+    "issingle": 1,
+    "istable": 0,
+    "module": "rcore",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "fields": [
+        {
+            "fieldname": "draft_text",
+            "fieldtype": "Long Text",
+            "label": "Draft Text"
+        }
+    ]
+}
