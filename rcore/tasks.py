@@ -193,3 +193,28 @@ def check_invoice_payments():
         except Exception as e:
             frappe.log_error(f"Failed payment check for {inv.name}: {e}", "Invoice Payment Check Error")
 
+def pick_proactive_question():
+    """
+    Picks a random active question from the Question Bank DocType
+    and triggers a system notification/log or logs it under ToDos.
+    """
+    if frappe.conf.get("app_role") != "tenant": return
+    
+    questions = frappe.get_all("Question Bank", filters={"is_active": 1}, fields=["question", "category"])
+    if not questions: return
+    
+    import random
+    selected = random.choice(questions)
+    
+    doc = frappe.get_doc({
+        "doctype": "ToDo",
+        "description": f"ROK Daily Question ({selected.category}): {selected.question}",
+        "priority": "Medium",
+        "status": "Open"
+    })
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+    
+    frappe.log_error(f"Proactive Question selected: {selected.question}", "Proactive Question Bank Picker")
+
+
