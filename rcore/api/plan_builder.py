@@ -1122,6 +1122,7 @@ def summarize_chat_session(session_id, messages):
     """
     Summarizes a completed or long chat session via the ROK completions loop on Tenant.
     """
+    try:
         import os
         url = os.environ.get("ROK_COMPLETIONS_URL") or "http://127.0.0.1:8642/v1/chat/completions"
         headers = {
@@ -1190,6 +1191,7 @@ def summarize_chat_session(session_id, messages):
     except Exception as e:
         frappe.log_error(f"ROK Summarization failed: {e}")
         return {"status": "error", "message": str(e)}
+
 
 
 @frappe.whitelist(allow_guest=True)
