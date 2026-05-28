@@ -44,7 +44,10 @@ def get_scheduler_events():
             "rcore.tasks.check_invoice_payments",
             "rcore.tasks.pick_proactive_question",
             "rcore.tasks.send_weekly_goal_reminders",
-            "rcore.tasks.send_friday_wins_reminders"
+            "rcore.tasks.send_friday_wins_reminders",
+            "rcore.tasks.archive_inactive_vault_files",
+            "rcore.tasks.check_protocol_99_sequences",
+            "rcore.tasks.archive_low_score_engrams"
         ])
 
     return events
@@ -173,6 +176,15 @@ if "lending" in installed_apps:
             },
         }
     )
+
+if "doc_events" not in locals():
+    doc_events = {}
+doc_events.update({
+    "Engram": {
+        "validate": "rcore.tasks.tag_engram_pillars"
+    }
+})
+
 
 # Fixtures
 # --------

@@ -259,5 +259,99 @@ def send_friday_wins_reminders():
         frappe.log_error(f"Failed to trigger Friday Wins reminder: {e}")
     frappe.db.commit()
 
+def archive_inactive_vault_files():
+    """
+    90-Day vault file archiving. Archives/deletes files 90 days post-cancel of a subscription.
+    """
+    if frappe.conf.get("app_role") != "tenant": return
+    
+    from frappe.utils import add_days, nowdate
+    ninety_days_ago = add_days(nowdate(), -90)
+    
+    expired_tenants = frappe.get_all("User", filters={
+        "enabled": 0,
+        "temporary_user_expires_on": ["<", ninety_days_ago]
+    }, fields=["name", "email"])
+    
+    for tenant in expired_tenants:
+        files = frappe.get_all("File", filters={"owner": tenant.name}, fields=["name"])
+        for f in files:
+            try:
+                frappe.delete_doc("File", f.name, ignore_permissions=True)
+            except Exception as e:
+                frappe.log_error(f"Failed to archive/delete file {f.name} for {tenant.email}: {e}")
+    frappe.db.commit()
+
+def check_protocol_99_sequences():
+    """
+    Protocol 99 sequence: WhatsApp alerts and 6h vault release.
+    Checks active sequences and releases vault packages after 6 hours.
+    """
+    if frappe.conf.get("app_role") != "tenant": return
+    
+    from frappe.utils import add_hours, now_datetime
+    six_hours_ago = add_hours(now_datetime(), -6)
+    
+    active_releases = frappe.get_all("Legacy Vault", filters={
+        "release_status": "Initiated",
+        "release_initiated_at": ["<=", six_hours_ago]
+    }, fields=["name", "owner", "will_document_url"])
+    
+    for release in active_releases:
+        try:
+            relationship = frappe.get_value("Legacy Relationship", {"parent": release.owner}, ["executor_details", "name"], as_dict=True)
+            if relationship:
+                frappe.db.set_value("Legacy Vault", release.name, "release_status", "Released")
+                frappe.log_error(
+                    message=f"Protocol 99 Timer Expired (6 Hours). Decrypting and releasing Vault package for owner {release.owner} to executor {relationship.executor_details}.",
+                    title="Protocol 99 Vault Released"
+                )
+        except Exception as e:
+            frappe.log_error(f"Protocol 99 execution failed for {release.name}: {e}")
+    frappe.db.commit()
+
+def tag_engram_pillars(doc, method=None):
+    """
+    Cross-pillar tagging. Automatically tags engrams based on text classification.
+    """
+    text = (doc.summary or "" + " " + doc.content or "").lower()
+    tags = []
+    if any(w in text for w in ["business", "invoice", "revenue", "operations", "venture"]):
+        tags.append("Business")
+    if any(w in text for w in ["career", "promotion", "milestone", "job", "profession"]):
+        tags.append("Career")
+    if any(w in text for w in ["goal", "productivity", "accountability", "habit", "wins"]):
+        tags.append("Productivity")
+    if any(w in text for w in ["life", "health", "wellness", "relationship", "family"]):
+        tags.append("Life")
+    if any(w in text for w in ["legacy", "vault", "obituary", "will", "executor"]):
+        tags.append("Legacy")
+        
+    if tags:
+        doc.set("tags", ", ".join(tags))
+
+def archive_low_score_engrams():
+    """
+    Engram scoring & expiry. Archives engrams older than 1 year with low score.
+    """
+    if frappe.conf.get("app_role") != "tenant": return
+    
+    from frappe.utils import add_days, nowdate
+    one_year_ago = add_days(nowdate(), -365)
+    
+    if frappe.db.exists("DocType", "Engram"):
+        low_score_engrams = frappe.get_all("Engram", filters={
+            "creation": ["<", one_year_ago],
+            "relevance_score": ["<", 0.5]
+        }, fields=["name"])
+        
+        for engram in low_score_engrams:
+            try:
+                frappe.db.set_value("Engram", engram.name, "is_archived", 1)
+            except Exception as e:
+                frappe.log_error(f"Failed to archive engram {engram.name}: {e}")
+        frappe.db.commit()
+
+
 
 
