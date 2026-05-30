@@ -6,6 +6,7 @@ import frappe
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
+
 @frappe.whitelist()
 def query(doctype, name):
     """
@@ -13,13 +14,16 @@ def query(doctype, name):
     Ensures security is enforced by checking for read permission.
     """
     if not frappe.has_permission(doctype, "read", doc=name):
-        frappe.throw(f"You do not have permission to access the memory of {doctype} {name}", frappe.PermissionError)
+        frappe.throw(
+            f"You do not have permission to access the memory of {doctype} {name}",
+            frappe.PermissionError,
+        )
 
     try:
         engram_name = f"{doctype}-{name}"
         engram_doc = frappe.get_doc("Engram", engram_name)
         response_data = engram_doc.as_dict()
-        response_data['brain_version'] = brain_version
+        response_data["brain_version"] = brain_version
         return response_data
     except frappe.DoesNotExistError:
         frappe.throw(f"No Engram found for {doctype} {name}", frappe.NotFound)
@@ -33,6 +37,7 @@ def record_event(message, reference_doctype, reference_name, is_ai_action=False)
     A secure API endpoint to record a custom event in the Brain's memory.
     """
     try:
+
         class MockDoc:
             def __init__(self):
                 self.doctype = reference_doctype
@@ -41,22 +46,25 @@ def record_event(message, reference_doctype, reference_name, is_ai_action=False)
                 self.owner = frappe.session.user
                 self.is_ai_action = is_ai_action
                 self._doc_before_save = None
-            
+
             def has_field(self, fieldname):
                 return False
-                
+
             def get(self, key, default=None):
                 return getattr(self, key, default)
 
             @property
             def meta(self):
                 class MockMeta:
-                    def get_label(self, f): return f
+                    def get_label(self, f):
+                        return f
+
                 return MockMeta()
 
         mock_doc = MockDoc()
 
         from rcore.utils.engram_builder import process_event_in_realtime
+
         process_event_in_realtime(mock_doc, message)
 
         return {"status": "success", "message": "Event recorded."}
@@ -66,12 +74,20 @@ def record_event(message, reference_doctype, reference_name, is_ai_action=False)
 
 
 @frappe.whitelist()
-def record_chat_summary(chat_transcript, reference_doctype=None, reference_name=None, modules=None):
+def record_chat_summary(
+    chat_transcript, reference_doctype=None, reference_name=None, modules=None
+):
     """
     Accepts a raw chat transcript, enqueues a background job to summarize it.
     """
-    if not chat_transcript or not isinstance(chat_transcript, str) or not chat_transcript.strip():
-        frappe.throw("`chat_transcript` must be a non-empty string.", title="Invalid Input")
+    if (
+        not chat_transcript
+        or not isinstance(chat_transcript, str)
+        or not chat_transcript.strip()
+    ):
+        frappe.throw(
+            "`chat_transcript` must be a non-empty string.", title="Invalid Input"
+        )
 
     if not reference_doctype or not reference_name:
         reference_doctype = "User"
@@ -86,13 +102,15 @@ def record_chat_summary(chat_transcript, reference_doctype=None, reference_name=
         reference_doctype=reference_doctype,
         reference_name=reference_name,
         user=frappe.session.user,
-        modules=modules
+        modules=modules,
     )
 
     return {"status": "accepted", "message": "Chat summary job has been queued."}
 
 
-def generate_summary_and_update_engram(chat_transcript, reference_doctype, reference_name, user, modules=None):
+def generate_summary_and_update_engram(
+    chat_transcript, reference_doctype, reference_name, user, modules=None
+):
     """
     Background job that generates a summary and updates the Engram document.
     """
@@ -116,11 +134,16 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
             engram_doc.reference_name = reference_name
             engram_doc.name = engram_name
             from rcore.utils.engram_builder import get_document_title
-            engram_doc.reference_title = get_document_title(reference_doctype, reference_name)
+
+            engram_doc.reference_title = get_document_title(
+                reference_doctype, reference_name
+            )
 
         if modules:
             try:
-                modules_list = json.loads(modules) if isinstance(modules, str) else modules
+                modules_list = (
+                    json.loads(modules) if isinstance(modules, str) else modules
+                )
                 if isinstance(modules_list, list):
                     engram_doc.module = ", ".join(sorted(list(set(modules_list))))
             except (json.JSONDecodeError, TypeError):
@@ -133,9 +156,17 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
         engram_doc.source = "Chat Summary"
         user_full_name = frappe.get_fullname(user)
         new_summary_line = f"Chat Summary by {user_full_name} on {frappe.utils.getdate(frappe.utils.now())}:\n{summary_text}"
-        engram_doc.summary = (engram_doc.summary + "\n\n---\n\n" + new_summary_line) if engram_doc.summary else new_summary_line
+        engram_doc.summary = (
+            (engram_doc.summary + "\n\n---\n\n" + new_summary_line)
+            if engram_doc.summary
+            else new_summary_line
+        )
 
-        involved = set(engram_doc.get("involved_users", "").split(", ") if engram_doc.get("involved_users") else [])
+        involved = set(
+            engram_doc.get("involved_users", "").split(", ")
+            if engram_doc.get("involved_users")
+            else []
+        )
         involved.add(user_full_name)
         engram_doc.involved_users = ", ".join(sorted(list(filter(None, involved))))
 
@@ -144,16 +175,20 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
         frappe.db.commit()
 
         from rcore.services.llm_service import embed_text
+
         if engram_doc.summary:
             context_text = f"{reference_doctype} {reference_name} ({engram_doc.reference_title}):\n{engram_doc.summary}"
             vector = embed_text(context_text)
-            
+
             if vector:
-                frappe.db.sql("""
+                frappe.db.sql(
+                    """
                     UPDATE tabEngram 
                     SET embedding = %s 
                     WHERE name = %s
-                """, (str(vector), engram_doc.name))
+                """,
+                    (str(vector), engram_doc.name),
+                )
                 frappe.db.commit()
 
         frappe.db.commit()
@@ -162,7 +197,7 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
         frappe.db.rollback()
         frappe.log_error(
             f"Brain: Failed to generate or record chat summary for {reference_doctype} {reference_name}: {e}",
-            frappe.get_traceback()
+            frappe.get_traceback(),
         )
 
 
@@ -181,10 +216,14 @@ def get_event_interval(reference_doctype, reference_name, start_event, end_event
         start_date = None
         end_date = None
 
-        start_pattern = re.compile(rf"{re.escape(start_event)} by .* on (\d{{4}}-\d{{2}}-\d{{2}})")
-        end_pattern = re.compile(rf"{re.escape(end_event)} by .* on (\d{{4}}-\d{{2}}-\d{{2}})")
+        start_pattern = re.compile(
+            rf"{re.escape(start_event)} by .* on (\d{{4}}-\d{{2}}-\d{{2}})"
+        )
+        end_pattern = re.compile(
+            rf"{re.escape(end_event)} by .* on (\d{{4}}-\d{{2}}-\d{{2}})"
+        )
 
-        for line in summary.split('\n'):
+        for line in summary.split("\n"):
             if not start_date:
                 start_match = start_pattern.search(line)
                 if start_match:
@@ -200,7 +239,10 @@ def get_event_interval(reference_doctype, reference_name, start_event, end_event
                 return {"error": "End event occurred before start event."}
 
             interval = end_date - start_date
-            return {"interval_days": interval.days, "interval_seconds": interval.total_seconds()}
+            return {
+                "interval_days": interval.days,
+                "interval_seconds": interval.total_seconds(),
+            }
 
         missing = []
         if not start_date:
@@ -208,12 +250,16 @@ def get_event_interval(reference_doctype, reference_name, start_event, end_event
         if not end_date:
             missing.append(end_event)
 
-        return {"error": f"Could not find one or more events in the document's history: {', '.join(missing)}"}
+        return {
+            "error": f"Could not find one or more events in the document's history: {', '.join(missing)}"
+        }
 
     except frappe.DoesNotExistError:
         return {"error": f"No Engram found for {reference_doctype} {reference_name}"}
     except Exception as e:
-        frappe.log_error(f"Brain: Failed to get event interval: {e}", frappe.get_traceback())
+        frappe.log_error(
+            f"Brain: Failed to get event interval: {e}", frappe.get_traceback()
+        )
         frappe.throw(f"An error occurred while calculating the event interval: {e}")
 
 
@@ -224,7 +270,10 @@ def accept_stimulus(stimulus_name, template_name="Default"):
     """
     stimulus = frappe.get_doc("Stimulus", stimulus_name)
     if stimulus.claimed_by:
-        frappe.throw(f"This stimulus has already been claimed by {stimulus.claimed_by}.", title="Already Claimed")
+        frappe.throw(
+            f"This stimulus has already been claimed by {stimulus.claimed_by}.",
+            title="Already Claimed",
+        )
 
     try:
         stimulus.claimed_by = frappe.session.user
@@ -235,7 +284,7 @@ def accept_stimulus(stimulus_name, template_name="Default"):
             message=f"Stimulus {stimulus_name} claimed by {frappe.session.user}.",
             reference_doctype="Stimulus",
             reference_name=stimulus_name,
-            is_ai_action=True
+            is_ai_action=True,
         )
 
         tasks_to_create = []
@@ -243,37 +292,60 @@ def accept_stimulus(stimulus_name, template_name="Default"):
             try:
                 raw_data = json.loads(stimulus.custom_workflow_json)
                 tasks_to_create = raw_data.get("tasks", [])
-            except: pass
-            
+            except:
+                pass
+
         if not tasks_to_create:
             try:
                 from rcore.utils.common import call_control
-                opportunities = call_control("get_public_opportunities", {
-                    "opportunity_type": "tenders", 
-                    "filters": json.dumps({"slug": stimulus_name}) 
-                })
+
+                opportunities = call_control(
+                    "get_public_opportunities",
+                    {
+                        "opportunity_type": "tenders",
+                        "filters": json.dumps({"slug": stimulus_name}),
+                    },
+                )
                 if opportunities:
                     tasks_to_create = opportunities[0].get("tasks", [])
-            except: pass
+            except:
+                pass
 
         if frappe.db.exists("DocType", "Task"):
             for task_template in tasks_to_create:
-                subject = task_template.get("subject") if isinstance(task_template, dict) else task_template
-                offset = task_template.get("due_date_offset_days", 7) if isinstance(task_template, dict) else 7
-                
-                frappe.get_doc({
-                    "doctype": "Task",
-                    "subject": subject,
-                    "exp_start_date": frappe.utils.nowdate(),
-                    "exp_end_date": frappe.utils.add_to_date(frappe.utils.nowdate(), days=offset),
-                    "_assign": frappe.session.user
-                }).insert(ignore_permissions=True)
+                subject = (
+                    task_template.get("subject")
+                    if isinstance(task_template, dict)
+                    else task_template
+                )
+                offset = (
+                    task_template.get("due_date_offset_days", 7)
+                    if isinstance(task_template, dict)
+                    else 7
+                )
+
+                frappe.get_doc(
+                    {
+                        "doctype": "Task",
+                        "subject": subject,
+                        "exp_start_date": frappe.utils.nowdate(),
+                        "exp_end_date": frappe.utils.add_to_date(
+                            frappe.utils.nowdate(), days=offset
+                        ),
+                        "_assign": frappe.session.user,
+                    }
+                ).insert(ignore_permissions=True)
 
         frappe.db.commit()
-        return {"status": "success", "message": f"Stimulus {stimulus_name} claimed and tasks created."}
+        return {
+            "status": "success",
+            "message": f"Stimulus {stimulus_name} claimed and tasks created.",
+        }
     except Exception as e:
         frappe.db.rollback()
-        frappe.log_error(frappe.get_traceback(), f"Failed to claim stimulus {stimulus_name}")
+        frappe.log_error(
+            frappe.get_traceback(), f"Failed to claim stimulus {stimulus_name}"
+        )
         frappe.throw(f"An error occurred while claiming the stimulus: {e}")
 
 
@@ -296,7 +368,9 @@ def reject_stimulus(stimulus_name):
         return {"status": "success", "message": f"Stimulus {stimulus_name} dismissed."}
     except Exception as e:
         frappe.db.rollback()
-        frappe.log_error(frappe.get_traceback(), f"Failed to dismiss stimulus {stimulus_name}")
+        frappe.log_error(
+            frappe.get_traceback(), f"Failed to dismiss stimulus {stimulus_name}"
+        )
         frappe.throw(f"An error occurred while dismissing the stimulus: {e}")
 
 
@@ -307,7 +381,10 @@ def accept_neurotrophin(neurotrophin_name, template_name="Default"):
     """
     neurotrophin = frappe.get_doc("Neurotrophin", neurotrophin_name)
     if neurotrophin.claimed_by:
-        frappe.throw(f"This funding opportunity has already been accepted by {neurotrophin.claimed_by}.", title="Already Accepted")
+        frappe.throw(
+            f"This funding opportunity has already been accepted by {neurotrophin.claimed_by}.",
+            title="Already Accepted",
+        )
 
     try:
         neurotrophin.claimed_by = frappe.session.user
@@ -318,7 +395,7 @@ def accept_neurotrophin(neurotrophin_name, template_name="Default"):
             message=f"Funding Opportunity {neurotrophin_name} accepted by {frappe.session.user}.",
             reference_doctype="Neurotrophin",
             reference_name=neurotrophin_name,
-            is_ai_action=True
+            is_ai_action=True,
         )
 
         tasks_to_create = []
@@ -326,37 +403,60 @@ def accept_neurotrophin(neurotrophin_name, template_name="Default"):
             try:
                 raw_data = json.loads(neurotrophin.raw_json)
                 tasks_to_create = raw_data.get("tasks", [])
-            except: pass
+            except:
+                pass
 
         if not tasks_to_create:
             try:
                 from rcore.utils.common import call_control
-                opportunities = call_control("get_public_opportunities", {
-                    "opportunity_type": "grants", 
-                    "filters": json.dumps({"slug": neurotrophin.slug}) 
-                })
+
+                opportunities = call_control(
+                    "get_public_opportunities",
+                    {
+                        "opportunity_type": "grants",
+                        "filters": json.dumps({"slug": neurotrophin.slug}),
+                    },
+                )
                 if opportunities:
                     tasks_to_create = opportunities[0].get("tasks", [])
-            except: pass
+            except:
+                pass
 
         if frappe.db.exists("DocType", "Task"):
             for task_subject in tasks_to_create:
-                subject = task_subject.get("subject") if isinstance(task_subject, dict) else task_subject
-                offset = task_subject.get("due_date_offset_days", 7) if isinstance(task_subject, dict) else 7
-                
-                frappe.get_doc({
-                    "doctype": "Task",
-                    "subject": subject,
-                    "exp_start_date": frappe.utils.nowdate(),
-                    "exp_end_date": frappe.utils.add_to_date(frappe.utils.nowdate(), days=offset),
-                    "_assign": frappe.session.user
-                }).insert(ignore_permissions=True)
+                subject = (
+                    task_subject.get("subject")
+                    if isinstance(task_subject, dict)
+                    else task_subject
+                )
+                offset = (
+                    task_subject.get("due_date_offset_days", 7)
+                    if isinstance(task_subject, dict)
+                    else 7
+                )
+
+                frappe.get_doc(
+                    {
+                        "doctype": "Task",
+                        "subject": subject,
+                        "exp_start_date": frappe.utils.nowdate(),
+                        "exp_end_date": frappe.utils.add_to_date(
+                            frappe.utils.nowdate(), days=offset
+                        ),
+                        "_assign": frappe.session.user,
+                    }
+                ).insert(ignore_permissions=True)
 
         frappe.db.commit()
-        return {"status": "success", "message": f"Funding Opportunity {neurotrophin_name} accepted and tasks created."}
+        return {
+            "status": "success",
+            "message": f"Funding Opportunity {neurotrophin_name} accepted and tasks created.",
+        }
     except Exception as e:
         frappe.db.rollback()
-        frappe.log_error(frappe.get_traceback(), f"Failed to accept neurotrophin {neurotrophin_name}")
+        frappe.log_error(
+            frappe.get_traceback(), f"Failed to accept neurotrophin {neurotrophin_name}"
+        )
         frappe.throw(f"An error occurred while accepting the funding opportunity: {e}")
 
 
@@ -366,12 +466,22 @@ def search(module=None, module_group=None, involved_user=None, limit=20):
     A search API for finding relevant Engrams based on metadata.
     """
     if not frappe.session.user:
-        frappe.throw("You must be logged in to use this feature.", frappe.PermissionError)
-    
+        frappe.throw(
+            "You must be logged in to use this feature.", frappe.PermissionError
+        )
+
     t_engram = frappe.qb.DocType("Engram")
     query = (
         frappe.qb.from_(t_engram)
-        .select(t_engram.name, t_engram.reference_doctype, t_engram.reference_name, t_engram.reference_title, t_engram.module, t_engram.summary, t_engram.last_activity_date)
+        .select(
+            t_engram.name,
+            t_engram.reference_doctype,
+            t_engram.reference_name,
+            t_engram.reference_title,
+            t_engram.module,
+            t_engram.summary,
+            t_engram.last_activity_date,
+        )
         .orderby(t_engram.last_activity_date, order=frappe.qb.desc)
     )
 
@@ -379,11 +489,13 @@ def search(module=None, module_group=None, involved_user=None, limit=20):
         query = query.where(t_engram.module == module)
 
     if module_group:
-        modules_in_group = frappe.get_all("Module Def", filters={"parent": module_group}, pluck="name")
+        modules_in_group = frappe.get_all(
+            "Module Def", filters={"parent": module_group}, pluck="name"
+        )
         if modules_in_group:
-             query = query.where(t_engram.module.isin(modules_in_group))
+            query = query.where(t_engram.module.isin(modules_in_group))
         else:
-             return []
+            return []
 
     try:
         engrams = query.limit(limit).run(as_dict=True)
@@ -400,20 +512,20 @@ def semantic_search(query, limit=5, involved_user=None):
     """
     if not frappe.session.user:
         frappe.throw("Authentication Required", frappe.PermissionError)
-        
+
     from rcore.services.llm_service import embed_text
-    
+
     vector = embed_text(query)
     if not vector:
         return []
-        
+
     conditions = ""
     params = [str(vector), limit]
-    
+
     if involved_user:
         conditions += " AND involved_users LIKE %s"
         params.insert(1, f"%{involved_user}%")
-        
+
     sql = f"""
         SELECT 
             name, reference_doctype, reference_name, reference_title, summary, 
@@ -423,7 +535,7 @@ def semantic_search(query, limit=5, involved_user=None):
         ORDER BY distance ASC
         LIMIT %s
     """
-    
+
     results = frappe.db.sql(sql, tuple(params), as_dict=True)
     return results
 
@@ -437,16 +549,25 @@ def reject_neurotrophin(neurotrophin_name):
     user = frappe.session.user
 
     if any(d.user == user for d in neurotrophin.get("dismissed_by", [])):
-        return {"status": "success", "message": "Funding opportunity already dismissed."}
+        return {
+            "status": "success",
+            "message": "Funding opportunity already dismissed.",
+        }
 
     try:
         neurotrophin.append("dismissed_by", {"user": user})
         neurotrophin.save(ignore_permissions=True)
         frappe.db.commit()
-        return {"status": "success", "message": f"Funding Opportunity {neurotrophin_name} dismissed."}
+        return {
+            "status": "success",
+            "message": f"Funding Opportunity {neurotrophin_name} dismissed.",
+        }
     except Exception as e:
         frappe.db.rollback()
-        frappe.log_error(frappe.get_traceback(), f"Failed to dismiss neurotrophin {neurotrophin_name}")
+        frappe.log_error(
+            frappe.get_traceback(),
+            f"Failed to dismiss neurotrophin {neurotrophin_name}",
+        )
         frappe.throw(f"An error occurred while dismissing the funding opportunity: {e}")
 
 
@@ -457,20 +578,16 @@ def dispatch_ai_task(task_type, data):
     """
     if isinstance(data, str):
         data = frappe.parse_json(data)
-        
+
     from rcore.services.llm_service import (
-        dispatch_ai_task as service_dispatch, 
-        BRAIN_QUEUE, 
-        VISION_QUEUE, 
-        ROUTER_QUEUE
+        dispatch_ai_task as service_dispatch,
+        BRAIN_QUEUE,
+        VISION_QUEUE,
+        ROUTER_QUEUE,
     )
 
-    queue_map = {
-        "vision": VISION_QUEUE,
-        "rcore": BRAIN_QUEUE,
-        "router": ROUTER_QUEUE
-    }
-    
+    queue_map = {"vision": VISION_QUEUE, "rcore": BRAIN_QUEUE, "router": ROUTER_QUEUE}
+
     queue = queue_map.get(task_type)
     if not queue:
         frappe.throw(f"Invalid Task Type: {task_type}")
@@ -485,12 +602,13 @@ def get_ai_result(job_id):
     """
     import redis
     import json
+
     r = redis.from_url(frappe.conf.get("redis_queue") or "redis://localhost:6379")
-    
+
     result_raw = r.get(f"rokct:result:{job_id}")
     if result_raw:
         return json.loads(result_raw)
-    
+
     return {"status": "pending"}
 
 
@@ -500,7 +618,10 @@ def generate_release_notes(repo_url, commit_log, version_name="vNext"):
     Generates Release Notes via LLM.
     """
     if frappe.session.user == "Guest":
-        frappe.throw("Authentication Required: Please provide a valid API Token.", frappe.PermissionError)
+        frappe.throw(
+            "Authentication Required: Please provide a valid API Token.",
+            frappe.PermissionError,
+        )
 
     try:
         if "github.com/" in repo_url:
@@ -509,50 +630,71 @@ def generate_release_notes(repo_url, commit_log, version_name="vNext"):
         else:
             repo_owner = repo_url.split("/")[0]
     except Exception:
-        frappe.throw(f"Invalid Repo URL format: {repo_url}.", frappe.InvalidRequestError)
+        frappe.throw(
+            f"Invalid Repo URL format: {repo_url}.", frappe.InvalidRequestError
+        )
 
     settings = frappe.get_single("Brain Settings")
     allowed_owners = (settings.allowed_repo_owners or "").split(",")
     allowed_owners = [o.strip().lower() for o in allowed_owners if o.strip()]
-    
+
     if repo_owner.lower() not in allowed_owners:
-        frappe.throw(f"Repo Owner '{repo_owner}' is not authorized.", frappe.PermissionError)
-        
+        frappe.throw(
+            f"Repo Owner '{repo_owner}' is not authorized.", frappe.PermissionError
+        )
+
     from rcore.scripts.generate_release_notes import generate_release_notes as _generate
+
     return _generate(commit_log, version_name)
 
 
 # --- Jules AI Integration ---
 
+
 @frappe.whitelist()
-def start_jules_session(prompt, source_repo, api_key=None, automation_mode="AUTO_CREATE_PR", require_approval=False, title=None):
+def start_jules_session(
+    prompt,
+    source_repo,
+    api_key=None,
+    automation_mode="AUTO_CREATE_PR",
+    require_approval=False,
+    title=None,
+):
     client = JulesClient()
-    return client.create_session(api_key, prompt, source_repo, automation_mode, require_approval, title)
+    return client.create_session(
+        api_key, prompt, source_repo, automation_mode, require_approval, title
+    )
+
 
 @frappe.whitelist()
 def get_jules_status(session_id, api_key=None):
     client = JulesClient()
     return client.get_session(api_key, session_id)
 
+
 @frappe.whitelist()
 def get_jules_activities(session_id, api_key=None):
     client = JulesClient()
     return client.get_activities(api_key, session_id)
+
 
 @frappe.whitelist()
 def get_jules_sources(api_key=None):
     client = JulesClient()
     return client.get_sources(api_key)
 
+
 @frappe.whitelist()
 def delete_jules_session(session_id, api_key=None):
     client = JulesClient()
     return client.delete_session(api_key, session_id)
 
+
 @frappe.whitelist()
 def get_jules_sessions(api_key=None):
     client = JulesClient()
     return client.get_sessions(api_key)
+
 
 @frappe.whitelist()
 def vote_on_plan(session_id, action, api_key=None):
@@ -560,6 +702,7 @@ def vote_on_plan(session_id, action, api_key=None):
         frappe.throw("Only 'approve' action is currently supported.")
     client = JulesClient()
     return client.approve_plan(api_key, session_id)
+
 
 @frappe.whitelist()
 def send_jules_message(session_id, message, api_key=None):
