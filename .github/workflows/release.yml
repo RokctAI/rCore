@@ -46,7 +46,7 @@ jobs:
       project_type: 'frappe'
       install-payments: true
       # Dogfooding: Use the new Weekly Strategy
-      release_strategy: 'immediate'
+      release_strategy: 'weekly'
 
       # RC Cleanup: Delete RC releases/tags after promotion to stable
       cleanup_rc_releases: true
@@ -57,7 +57,7 @@ jobs:
       one_time_cleanup_cutoff_date: '2026-01-30'
       
       # Brain Endpoint 
-      brain_endpoint: https://platform.rokct.ai/api/method/rcore.api.generate_release_notes
+      brain_endpoint: https://platform.rokct.ai/api/method/rcore.api.brain.generate_release_notes
       # Environment configuration
       node-version: ${{ inputs.node-version || '24' }}
       python-version: ${{ inputs.python-version || '3.14.2' }}
