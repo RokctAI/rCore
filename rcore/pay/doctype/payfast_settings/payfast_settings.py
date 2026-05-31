@@ -14,7 +14,11 @@ class PayFastSettings(Document):
         try:
             # Skip during site creation / migration / testing to prevent transactional errors
             # when tables don't exist yet!
-            if frappe.flags.in_migrate or frappe.flags.in_install or frappe.flags.in_test:
+            if (
+                frappe.flags.in_migrate
+                or frappe.flags.in_install
+                or frappe.flags.in_test
+            ):
                 return
 
             if not frappe.db.table_exists("Payment Gateway"):
