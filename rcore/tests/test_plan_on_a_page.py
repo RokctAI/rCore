@@ -60,7 +60,7 @@ class TestPlanOnAPage(FrappeTestCase):
         plan.save(ignore_permissions=True)
 
         # Check if Engram was created
-        engram_name = f"plan-on-a-page-{plan.name}"
+        engram_name = f"Plan On A Page-{plan.name}"
         self.assertTrue(frappe.db.exists("Engram", engram_name))
 
         engram = frappe.get_doc("Engram", engram_name)

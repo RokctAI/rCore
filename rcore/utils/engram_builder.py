@@ -272,11 +272,7 @@ def process_event_in_realtime(doc, method):
                     # Only create savepoint and rollback if we are actually attempting the write
                     try:
                         frappe.db.savepoint("vector_update")
-                        frappe.db.sql("""
-                            UPDATE tabEngram 
-                            SET embedding = %s 
-                            WHERE name = %s
-                        """, (str(vector), engram_doc.name))
+                        frappe.db.set_value("Engram", engram_doc.name, "embedding", str(vector))
                     except Exception as sql_e:
                         frappe.db.rollback(save_point="vector_update")
                         frappe.log_error(f"Failed to write vector for {engram_doc.name}: {sql_e}", "Engram Vector Error")

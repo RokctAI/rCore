@@ -43,7 +43,7 @@ class TestEngramBuilder(FrappeTestCase):
     @patch("rcore.utils.engram_builder.get_brain_module_doctypes")
     @patch("rcore.utils.engram_builder.get_excluded_doctypes_from_control")
     def test_process_event_exclusion_logic(self, mock_control, mock_brain):
-        mock_rcore.return_value = ["Engram"]
+        mock_brain.return_value = ["Engram"]
         mock_control.return_value = ["ExcludedDoc"]
         
         # Capture real get_value

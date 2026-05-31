@@ -13,8 +13,8 @@ class TestBrainAPI(FrappeTestCase):
         # is kept for consistency with standard Frappe testing.
         pass
 
-    @patch("rcore.api.frappe.has_permission")
-    @patch("rcore.api.frappe.get_doc")
+    @patch("rcore.api.brain.frappe.has_permission")
+    @patch("rcore.api.brain.frappe.get_doc")
     def test_query_success(self, mock_get_doc, mock_has_permission):
         mock_has_permission.return_value = True
         
@@ -28,15 +28,15 @@ class TestBrainAPI(FrappeTestCase):
         self.assertIn("brain_version", result)
         mock_has_permission.assert_called_with("ToDo", "read", doc="TODO-001")
 
-    @patch("rcore.api.frappe.has_permission")
+    @patch("rcore.api.brain.frappe.has_permission")
     def test_query_permission_denied(self, mock_has_permission):
         mock_has_permission.return_value = False
         
         with self.assertRaises(frappe.PermissionError):
             query("ToDo", "TODO-001")
 
-    @patch("rcore.api.frappe.has_permission")
-    @patch("rcore.api.frappe.get_doc")
+    @patch("rcore.api.brain.frappe.has_permission")
+    @patch("rcore.api.brain.frappe.get_doc")
     def test_query_not_found(self, mock_get_doc, mock_has_permission):
         mock_has_permission.return_value = True
         mock_get_doc.side_effect = frappe.DoesNotExistError
@@ -45,7 +45,7 @@ class TestBrainAPI(FrappeTestCase):
             query("ToDo", "NON-EXISTENT")
 
     @patch("rcore.utils.engram_builder.process_event_in_realtime")
-    @patch("rcore.api.frappe.session")
+    @patch("rcore.api.brain.frappe.session")
     def test_record_event_success(self, mock_session, mock_process):
         mock_session.user = "test@example.com"
         
@@ -61,7 +61,7 @@ class TestBrainAPI(FrappeTestCase):
         self.assertEqual(mock_doc.name, "TODO-001")
         self.assertEqual(args[1], "Action failed")
 
-    @patch("rcore.api.frappe.get_doc")
+    @patch("rcore.api.brain.frappe.get_doc")
     def test_get_event_interval_success(self, mock_get_doc):
         mock_engram = MagicMock()
         mock_engram.summary = (
@@ -75,7 +75,7 @@ class TestBrainAPI(FrappeTestCase):
         
         self.assertEqual(result["interval_days"], 3)
 
-    @patch("rcore.api.frappe.get_doc")
+    @patch("rcore.api.brain.frappe.get_doc")
     def test_get_event_interval_missing_event(self, mock_get_doc):
         mock_engram = MagicMock()
         mock_engram.summary = "Created by Admin on 2025-01-01"

@@ -49,7 +49,7 @@ class PlanOnAPage(Document):
         # Create or update the Engram
         # Check if Engram doctype exists (Brain app dependency)
         if frappe.db.exists("DocType", "Engram"):
-            engram_name = f"plan-on-a-page-{plan.name}"
+            engram_name = f"Plan On A Page-{plan.name}"
             if not frappe.db.exists("Engram", engram_name):
                 engram = frappe.new_doc("Engram")
                 engram.reference_doctype = "Plan On A Page"
