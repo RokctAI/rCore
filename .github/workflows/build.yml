@@ -88,7 +88,7 @@ jobs:
       run_lint: true
       run_ci: true
       # Deployment Configuration (Immediate release on Main)
-      release_strategy: 'weekly'
+      release_strategy: 'immediately'
       # Environment configuration
       node-version: ${{ inputs.node-version }}
       python-version: ${{ inputs.python-version }}
