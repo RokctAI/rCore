@@ -1,5 +1,6 @@
 import json
 import frappe
+from rcore.api.plan_builder.ensure_startup_os_core import ensure_startup_os_core
 
 @frappe.whitelist()
 def commit_plan(plan_data=None, profile_type=None, instance_name=None):
