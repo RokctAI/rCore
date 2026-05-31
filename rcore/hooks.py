@@ -86,7 +86,7 @@ whitelisted_methods = {
 
 # After Install
 # -------------
-after_install = ["rcore.install.fetch_agent_scripts", "rcore.setup_ai.setup_ai_infrastructure"]
+after_install = ["rcore.install.fetch_agent_scripts", "rcore.setup_ai.setup_ai_infrastructure", "rcore.tenant.api.announce_ready_to_control"]
 after_migrate = "rcore.setup_ai.setup_ai_infrastructure"
 
 

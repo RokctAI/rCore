@@ -1419,3 +1419,37 @@ def set_weather_alias(original, corrected):
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Weather Alias Proxy Error")
         frappe.throw(f"Failed to sync alias to Global Brain: {e}")
+
+
+def announce_ready_to_control():
+    """
+    Called standardly via hooks (after_install) to announce that the tenant
+    container is healthy and ready to the Control Hub.
+    Reuses ROKCT_BOOTSTRAP_TOKEN (transient env) to authorize.
+    """
+    import os
+    import requests
+    token = os.environ.get("ROKCT_BOOTSTRAP_TOKEN")
+    control_plane_url = os.environ.get("ROKCT_CONTROL_PLANE_URL") or frappe.conf.get("control_plane_url")
+    
+    if not token or not control_plane_url:
+        return
+
+    scheme = os.environ.get("ROKCT_CONTROL_PLANE_SCHEME") or frappe.conf.get("control_plane_scheme") or "https"
+    api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.subscription.announce_tenant_ready"
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "site_name": frappe.local.site
+    }
+
+    try:
+        response = requests.post(api_url, headers=headers, json=data, timeout=30)
+        response.raise_for_status()
+        frappe.log_error(f"Tenant '{frappe.local.site}' successfully announced readiness to Control Hub.", "Tenant Bootstrap")
+    except Exception as e:
+        frappe.log_error(f"Tenant '{frappe.local.site}' failed to announce readiness: {e}\n{frappe.get_traceback()}", "Tenant Bootstrap Error")
+
