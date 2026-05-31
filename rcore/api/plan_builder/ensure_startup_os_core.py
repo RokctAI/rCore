@@ -1,5 +1,9 @@
 import json
 import frappe
+import os
+import sys
+import urllib.request
+from rcore.api.plan_builder.perform_bootstrap_secrets_handshake import perform_bootstrap_secrets_handshake
 
 def ensure_startup_os_core():
     """

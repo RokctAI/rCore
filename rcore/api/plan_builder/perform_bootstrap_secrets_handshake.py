@@ -1,5 +1,8 @@
 import json
 import frappe
+import os
+import urllib.request
+import urllib.parse
 
 def perform_bootstrap_secrets_handshake():
     """
