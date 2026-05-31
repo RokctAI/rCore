@@ -63,6 +63,7 @@ class PlanOnAPage(Document):
                 engram.save(ignore_permissions=True)
 
             # Set the permissions for the Engram
-            if not engram.has_permission("read", "System Manager"):
-                engram.add_permission("read", "System Manager")
+            roles = [p.role for p in engram.get("permissions", [])]
+            if "System Manager" not in roles:
+                engram.append("permissions", {"role": "System Manager"})
                 engram.save(ignore_permissions=True)

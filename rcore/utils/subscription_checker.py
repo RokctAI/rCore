@@ -9,8 +9,8 @@ def check_subscription_feature(feature_module):
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
-            # If on the control panel, bypass all subscription checks.
-            if frappe.conf.get("app_role") == "control":
+            # If on the control panel or running unit tests, bypass all subscription checks.
+            if frappe.conf.get("app_role") == "control" or frappe.flags.in_test:
                 return fn(*args, **kwargs)
 
             # Try to get subscription details from cache first
@@ -18,8 +18,11 @@ def check_subscription_feature(feature_module):
             subscription = frappe.cache().get_value(cache_key)
 
             if not subscription:
-                # If not in cache, fetch from API
-                subscription = get_subscription_details()
+                if frappe.flags.in_test:
+                    subscription = {"status": "Active", "modules": ["Memory", "HR", "Lending", "Strategic", "Vision", "Pillar"]}
+                else:
+                    # If not in cache, fetch from API
+                    subscription = get_subscription_details()
                 if subscription:
                     # Use the cache duration from the subscription details, or
                     # default to 24 hours
@@ -55,6 +58,9 @@ def get_cached_subscription_details():
     """
     Returns the subscription details, using the cache if available.
     """
+    if frappe.flags.in_test:
+        return {"status": "Active", "modules": ["Memory", "HR", "Lending", "Strategic", "Vision", "Pillar"]}
+
     cache_key = "subscription_details"
     subscription = frappe.cache().get_value(cache_key)
 
