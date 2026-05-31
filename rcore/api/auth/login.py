@@ -1,10 +1,5 @@
-# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
-# For license information, please see license.txt
-
-
 import frappe
 from frappe.auth import LoginManager
-
 
 @frappe.whitelist(allow_guest=True)
 def login(usr, pwd):
