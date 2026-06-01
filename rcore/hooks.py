@@ -35,20 +35,22 @@ def get_scheduler_events():
     }
 
     if app_role == "tenant":
-        events["daily"].extend([
-            "rcore.tasks.manage_daily_tenders",
-            "rcore.tasks.manage_daily_funding",
-            "rcore.tasks.disable_expired_support_users",
-            "rcore.tasks.update_storage_usage",
-            "rcore.tasks.reset_monthly_token_usage",
-            "rcore.tasks.check_invoice_payments",
-            "rcore.tasks.pick_proactive_question",
-            "rcore.tasks.send_weekly_goal_reminders",
-            "rcore.tasks.send_friday_wins_reminders",
-            "rcore.tasks.archive_inactive_vault_files",
-            "rcore.tasks.check_protocol_99_sequences",
-            "rcore.tasks.archive_low_score_engrams"
-        ])
+        events["daily"].extend(
+            [
+                "rcore.tasks.manage_daily_tenders",
+                "rcore.tasks.manage_daily_funding",
+                "rcore.tasks.disable_expired_support_users",
+                "rcore.tasks.update_storage_usage",
+                "rcore.tasks.reset_monthly_token_usage",
+                "rcore.tasks.check_invoice_payments",
+                "rcore.tasks.pick_proactive_question",
+                "rcore.tasks.send_weekly_goal_reminders",
+                "rcore.tasks.send_friday_wins_reminders",
+                "rcore.tasks.archive_inactive_vault_files",
+                "rcore.tasks.check_protocol_99_sequences",
+                "rcore.tasks.archive_low_score_engrams",
+            ]
+        )
 
     return events
 
@@ -81,12 +83,16 @@ whitelisted_methods = {
     # AI Gateway
     "rcore.api.dispatch_ai_task": "rcore.api.rcore.dispatch_ai_task",
     "rcore.api.get_ai_result": "rcore.api.rcore.get_ai_result",
-    "rcore.api.generate_release_notes": "rcore.api.rcore.generate_release_notes"
+    "rcore.api.generate_release_notes": "rcore.api.rcore.generate_release_notes",
 }
 
 # After Install
 # -------------
-after_install = ["rcore.install.fetch_agent_scripts", "rcore.setup_ai.setup_ai_infrastructure", "rcore.tenant.api.announce_ready_to_control"]
+after_install = [
+    "rcore.install.fetch_agent_scripts",
+    "rcore.setup_ai.setup_ai_infrastructure",
+    "rcore.tenant.api.announce_ready_to_control",
+]
 after_migrate = "rcore.setup_ai.setup_ai_infrastructure"
 
 
@@ -195,18 +201,18 @@ if "lending" in installed_apps:
 
 if "doc_events" not in locals():
     doc_events = {}
-doc_events.update({
-    "Engram": {
-        "validate": "rcore.tasks.tag_engram_pillars"
-    },
-    "*": {
-        "on_submit": "rcore.utils.engram_builder.process_event_in_realtime",
-        "on_trash": "rcore.utils.engram_builder.process_event_in_realtime"
-    },
-    "Email Queue": {
-        "on_submit": "rcore.utils.engram_builder.process_event_in_realtime"
+doc_events.update(
+    {
+        "Engram": {"validate": "rcore.tasks.tag_engram_pillars"},
+        "*": {
+            "on_submit": "rcore.utils.engram_builder.process_event_in_realtime",
+            "on_trash": "rcore.utils.engram_builder.process_event_in_realtime",
+        },
+        "Email Queue": {
+            "on_submit": "rcore.utils.engram_builder.process_event_in_realtime"
+        },
     }
-})
+)
 
 
 # Fixtures

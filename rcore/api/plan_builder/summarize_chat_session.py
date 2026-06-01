@@ -1,5 +1,10 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
+
 
 @frappe.whitelist()
 def summarize_chat_session(session_id, messages):
@@ -8,7 +13,11 @@ def summarize_chat_session(session_id, messages):
     """
     try:
         import os
-        url = os.environ.get("ROK_COMPLETIONS_URL") or "http://127.0.0.1:8642/v1/chat/completions"
+
+        url = (
+            os.environ.get("ROK_COMPLETIONS_URL")
+            or "http://127.0.0.1:8642/v1/chat/completions"
+        )
         headers = {
             "Content-Type": "application/json",
         }
@@ -24,6 +33,7 @@ def summarize_chat_session(session_id, messages):
         if isinstance(messages, str):
             try:
                 import json
+
                 messages = json.loads(messages)
             except Exception:
                 pass
@@ -38,12 +48,16 @@ def summarize_chat_session(session_id, messages):
             "model": "hermes-agent",
             "messages": [
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Here is the conversation to summarize:\n{json.dumps(messages, indent=2)}"}
+                {
+                    "role": "user",
+                    "content": f"Here is the conversation to summarize:\n{json.dumps(messages, indent=2)}",
+                },
             ],
-            "stream": False
+            "stream": False,
         }
 
         import requests
+
         response = requests.post(url, json=payload, headers=headers, timeout=60.0)
         response.raise_for_status()
 
@@ -66,10 +80,7 @@ def summarize_chat_session(session_id, messages):
                     engram.summary = summary
                     engram.save(ignore_permissions=True)
 
-            return {
-                "status": "success",
-                "summary": summary
-            }
+            return {"status": "success", "summary": summary}
         return {"status": "error", "message": "No summary choice returned from ROK."}
 
     except Exception as e:

@@ -1,9 +1,16 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
-def generate_summary_and_update_engram(chat_transcript, reference_doctype, reference_name, user, modules=None):
+
+def generate_summary_and_update_engram(
+    chat_transcript, reference_doctype, reference_name, user, modules=None
+):
     """
     Background job that generates a summary and updates the Engram document.
     """
@@ -27,11 +34,16 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
             engram_doc.reference_name = reference_name
             engram_doc.name = engram_name
             from rcore.utils.engram_builder import get_document_title
-            engram_doc.reference_title = get_document_title(reference_doctype, reference_name)
+
+            engram_doc.reference_title = get_document_title(
+                reference_doctype, reference_name
+            )
 
         if modules:
             try:
-                modules_list = json.loads(modules) if isinstance(modules, str) else modules
+                modules_list = (
+                    json.loads(modules) if isinstance(modules, str) else modules
+                )
                 if isinstance(modules_list, list):
                     engram_doc.module = ", ".join(sorted(list(set(modules_list))))
             except (json.JSONDecodeError, TypeError):
@@ -44,9 +56,17 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
         engram_doc.source = "Chat Summary"
         user_full_name = frappe.get_fullname(user)
         new_summary_line = f"Chat Summary by {user_full_name} on {frappe.utils.getdate(frappe.utils.now())}:\n{summary_text}"
-        engram_doc.summary = (engram_doc.summary + "\n\n---\n\n" + new_summary_line) if engram_doc.summary else new_summary_line
+        engram_doc.summary = (
+            (engram_doc.summary + "\n\n---\n\n" + new_summary_line)
+            if engram_doc.summary
+            else new_summary_line
+        )
 
-        involved = set(engram_doc.get("involved_users", "").split(", ") if engram_doc.get("involved_users") else [])
+        involved = set(
+            engram_doc.get("involved_users", "").split(", ")
+            if engram_doc.get("involved_users")
+            else []
+        )
         involved.add(user_full_name)
         engram_doc.involved_users = ", ".join(sorted(list(filter(None, involved))))
 
@@ -55,16 +75,20 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
         frappe.db.commit()
 
         from rcore.services.llm_service import embed_text
+
         if engram_doc.summary:
             context_text = f"{reference_doctype} {reference_name} ({engram_doc.reference_title}):\n{engram_doc.summary}"
             vector = embed_text(context_text)
-            
+
             if vector:
-                frappe.db.sql("""
+                frappe.db.sql(
+                    """
                     UPDATE tabEngram 
                     SET embedding = %s 
                     WHERE name = %s
-                """, (str(vector), engram_doc.name))
+                """,
+                    (str(vector), engram_doc.name),
+                )
                 frappe.db.commit()
 
         frappe.db.commit()
@@ -73,5 +97,5 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
         frappe.db.rollback()
         frappe.log_error(
             f"Brain: Failed to generate or record chat summary for {reference_doctype} {reference_name}: {e}",
-            frappe.get_traceback()
+            frappe.get_traceback(),
         )

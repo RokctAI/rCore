@@ -988,7 +988,10 @@ def get_subscription_details():
     Caches the response from the control panel.
     """
     if frappe.flags.in_test:
-        return {"status": "Active", "modules": ["Memory", "HR", "Lending", "Strategic", "Vision", "Pillar"]}
+        return {
+            "status": "Active",
+            "modules": ["Memory", "HR", "Lending", "Strategic", "Vision", "Pillar"],
+        }
 
     if frappe.conf.get("app_role") != "tenant":
         frappe.throw(
@@ -1365,7 +1368,11 @@ def get_weather(location: str):
     api_url = (
         f"{scheme}://{control_plane_url}/api/method/control.control.api.get_weather"
     )
-    headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site, "Accept": "application/json"}
+    headers = {
+        "X-Rokct-Secret": api_secret,
+        "X-Rokct-Tenant": frappe.local.site,
+        "Accept": "application/json",
+    }
 
     try:
         # Use frappe.make_get_request which is a wrapper around requests
@@ -1409,7 +1416,11 @@ def set_weather_alias(original, corrected):
     scheme = frappe.conf.get("control_plane_scheme", "https")
     # Note: Target the definition in weather.py which is whitelisted
     api_url = f"{scheme}://{control_plane_url}/api/method/control.control.weather.set_weather_alias"
-    headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site, "Accept": "application/json"}
+    headers = {
+        "X-Rokct-Secret": api_secret,
+        "X-Rokct-Tenant": frappe.local.site,
+        "Accept": "application/json",
+    }
 
     # We use POST for state-changing operations
     try:
@@ -1432,27 +1443,34 @@ def announce_ready_to_control():
     """
     import os
     import requests
+
     token = os.environ.get("ROKCT_BOOTSTRAP_TOKEN")
-    control_plane_url = os.environ.get("ROKCT_CONTROL_PLANE_URL") or frappe.conf.get("control_plane_url")
-    
+    control_plane_url = os.environ.get("ROKCT_CONTROL_PLANE_URL") or frappe.conf.get(
+        "control_plane_url"
+    )
+
     if not token or not control_plane_url:
         return
 
-    scheme = os.environ.get("ROKCT_CONTROL_PLANE_SCHEME") or frappe.conf.get("control_plane_scheme") or "https"
+    scheme = (
+        os.environ.get("ROKCT_CONTROL_PLANE_SCHEME")
+        or frappe.conf.get("control_plane_scheme")
+        or "https"
+    )
     api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.subscription.announce_tenant_ready"
 
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "site_name": frappe.local.site
-    }
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    data = {"site_name": frappe.local.site}
 
     try:
         response = requests.post(api_url, headers=headers, json=data, timeout=30)
         response.raise_for_status()
-        frappe.log_error(f"Tenant '{frappe.local.site}' successfully announced readiness to Control Hub.", "Tenant Bootstrap")
+        frappe.log_error(
+            f"Tenant '{frappe.local.site}' successfully announced readiness to Control Hub.",
+            "Tenant Bootstrap",
+        )
     except Exception as e:
-        frappe.log_error(f"Tenant '{frappe.local.site}' failed to announce readiness: {e}\n{frappe.get_traceback()}", "Tenant Bootstrap Error")
-
+        frappe.log_error(
+            f"Tenant '{frappe.local.site}' failed to announce readiness: {e}\n{frappe.get_traceback()}",
+            "Tenant Bootstrap Error",
+        )

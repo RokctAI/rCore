@@ -1,15 +1,28 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
+
 @frappe.whitelist()
-def record_chat_summary(chat_transcript, reference_doctype=None, reference_name=None, modules=None):
+def record_chat_summary(
+    chat_transcript, reference_doctype=None, reference_name=None, modules=None
+):
     """
     Accepts a raw chat transcript, enqueues a background job to summarize it.
     """
-    if not chat_transcript or not isinstance(chat_transcript, str) or not chat_transcript.strip():
-        frappe.throw("`chat_transcript` must be a non-empty string.", title="Invalid Input")
+    if (
+        not chat_transcript
+        or not isinstance(chat_transcript, str)
+        or not chat_transcript.strip()
+    ):
+        frappe.throw(
+            "`chat_transcript` must be a non-empty string.", title="Invalid Input"
+        )
 
     if not reference_doctype or not reference_name:
         reference_doctype = "User"
@@ -24,7 +37,7 @@ def record_chat_summary(chat_transcript, reference_doctype=None, reference_name=
         reference_doctype=reference_doctype,
         reference_name=reference_name,
         user=frappe.session.user,
-        modules=modules
+        modules=modules,
     )
 
     return {"status": "accepted", "message": "Chat summary job has been queued."}

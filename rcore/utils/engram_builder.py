@@ -5,6 +5,7 @@ import frappe
 import json
 from frappe.utils import getdate, now_datetime
 from datetime import timedelta
+
 try:
     from rcore.utils.subscription_checker import check_subscription_feature
     from rcore.utils import is_ai_action
@@ -13,13 +14,15 @@ except ImportError:
     def check_subscription_feature(feature_name):
         def decorator(func):
             return func
+
         return decorator
-    
+
     def is_ai_action():
         return False
 
+
 def get_document_title(doctype, name):
-    """ Fetches the title of a document based on common title fields. """
+    """Fetches the title of a document based on common title fields."""
     if not frappe.db.exists(doctype, name):
         return name
     try:
@@ -31,6 +34,7 @@ def get_document_title(doctype, name):
         return name
     except Exception:
         return name
+
 
 def _get_field_changes(doc):
     """
@@ -45,7 +49,16 @@ def _get_field_changes(doc):
 
     # Define a list of fields we consider important enough to log.
     # This avoids logging minor changes like 'modified_by'.
-    important_fields = ["status", "workflow_state", "amount", "total", "grand_total", "due_date", "expected_start_date", "expected_end_date"]
+    important_fields = [
+        "status",
+        "workflow_state",
+        "amount",
+        "total",
+        "grand_total",
+        "due_date",
+        "expected_start_date",
+        "expected_end_date",
+    ]
 
     doc_meta = frappe.get_meta(doc.doctype)
     for field in important_fields:
@@ -55,9 +68,12 @@ def _get_field_changes(doc):
             if old_value != new_value:
                 # Format the change nicely
                 field_label = doc_meta.get_label(field)
-                changes.append(f"{field_label} changed from '{old_value}' to '{new_value}'")
+                changes.append(
+                    f"{field_label} changed from '{old_value}' to '{new_value}'"
+                )
 
     return "; ".join(changes) if changes else None
+
 
 def _get_allowed_roles(doc):
     """
@@ -73,13 +89,18 @@ def _get_allowed_roles(doc):
             allowed_roles.add(p.role)
 
     # Get roles from shares
-    shares = frappe.get_all("DocShare", fields=["user", "share_name"], filters={"share_doctype": doc.doctype, "share_name": doc.name, "read": 1})
+    shares = frappe.get_all(
+        "DocShare",
+        fields=["user", "share_name"],
+        filters={"share_doctype": doc.doctype, "share_name": doc.name, "read": 1},
+    )
     for share in shares:
         user_roles = frappe.get_roles(share.user)
         for role in user_roles:
             allowed_roles.add(role)
 
     return list(allowed_roles)
+
 
 def get_brain_module_doctypes():
     """
@@ -89,14 +110,21 @@ def get_brain_module_doctypes():
     brain_doctypes = frappe.cache().get_value("brain_module_doctypes")
     if brain_doctypes is None:
         try:
-            brain_doctypes = frappe.get_all("DocType", filters={"module": "Brain"}, pluck="name")
+            brain_doctypes = frappe.get_all(
+                "DocType", filters={"module": "Brain"}, pluck="name"
+            )
             # Cache for 72 hours
-            frappe.cache().set_value("brain_module_doctypes", brain_doctypes, expires_in_sec=259200)
+            frappe.cache().set_value(
+                "brain_module_doctypes", brain_doctypes, expires_in_sec=259200
+            )
         except Exception:
-            frappe.log_error(frappe.get_traceback(), "Failed to fetch Brain module doctypes")
+            frappe.log_error(
+                frappe.get_traceback(), "Failed to fetch Brain module doctypes"
+            )
             # Fallback to a hardcoded list in case of an error
             brain_doctypes = ["Engram"]
     return brain_doctypes
+
 
 def get_excluded_doctypes_from_control():
     """
@@ -113,17 +141,26 @@ def get_excluded_doctypes_from_control():
 
             scheme = frappe.conf.get("control_plane_scheme", "https")
             api_url = f"{scheme}://{control_plane_url}/api/v1/method/control.control.api.system.get_brain_exclusions"
-            headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
+            headers = {
+                "X-Rokct-Secret": api_secret,
+                "X-Rokct-Tenant": frappe.local.site,
+            }
 
             response = frappe.make_get_request(api_url, headers=headers)
             excluded = response.get("message", [])
 
             # Cache for 72 hours, as this list is unlikely to change often.
-            frappe.cache().set_value("brain_excluded_doctypes", excluded, expires_in_sec=259200)
+            frappe.cache().set_value(
+                "brain_excluded_doctypes", excluded, expires_in_sec=259200
+            )
         except Exception:
-            frappe.log_error(frappe.get_traceback(), "Failed to fetch brain exclusions from control panel")
+            frappe.log_error(
+                frappe.get_traceback(),
+                "Failed to fetch brain exclusions from control panel",
+            )
             excluded = []
     return excluded
+
 
 @check_subscription_feature("Memory")
 def process_event_in_realtime(doc, method):
@@ -143,20 +180,24 @@ def process_event_in_realtime(doc, method):
     # Fetch all exclusion lists
     brain_doctypes = get_brain_module_doctypes()
     control_excluded = get_excluded_doctypes_from_control()
-    
+
     # Combine the lists for a comprehensive exclusion policy.
     # We include common error/log doctypes to prevent junk memory.
-    ignored_doctypes = set(brain_doctypes + control_excluded + [
-        "Email Queue", 
-        "API Error Log", 
-        "Error Log", 
-        "Error Snapshot", 
-        "Scheduled Job Log",
-        "Activity Log",
-        "Access Log",
-        "Version",
-        "Tenant Error Log"
-    ])
+    ignored_doctypes = set(
+        brain_doctypes
+        + control_excluded
+        + [
+            "Email Queue",
+            "API Error Log",
+            "Error Log",
+            "Error Snapshot",
+            "Scheduled Job Log",
+            "Activity Log",
+            "Access Log",
+            "Version",
+            "Tenant Error Log",
+        ]
+    )
 
     if doc.doctype in ignored_doctypes or "Error" in doc.doctype:
         return
@@ -181,10 +222,13 @@ def process_event_in_realtime(doc, method):
             ref_name = doc.reference_name
             user_name = frappe.db.get_value("User", doc.owner, "full_name") or doc.owner
         else:
-            event_name = method.replace('on_', '').capitalize()
+            event_name = method.replace("on_", "").capitalize()
             ref_doctype = doc.doctype
             ref_name = doc.name
-            user_name = frappe.db.get_value("User", frappe.session.user, "full_name") or frappe.session.user
+            user_name = (
+                frappe.db.get_value("User", frappe.session.user, "full_name")
+                or frappe.session.user
+            )
 
         # Get or Create Engram
         engram_name = f"{ref_doctype}-{ref_name}"
@@ -214,7 +258,7 @@ def process_event_in_realtime(doc, method):
             if time_difference < timedelta(hours=24):
                 is_recent_activity = True
 
-        last_line = engram_doc.summary.split('\n')[-1] if engram_doc.summary else ""
+        last_line = engram_doc.summary.split("\n")[-1] if engram_doc.summary else ""
 
         # We compound the event if the activity is recent and by the same user.
         if is_recent_activity and engram_doc.last_modifying_user == frappe.session.user:
@@ -224,10 +268,10 @@ def process_event_in_realtime(doc, method):
             if event_name == "Update":
                 changes = _get_field_changes(doc)
                 if changes:
-                    new_line = new_line.strip('.') + f" ({changes})."
+                    new_line = new_line.strip(".") + f" ({changes})."
 
             if is_ai_action():
-                new_line = new_line.strip('.') + " (via AI)."
+                new_line = new_line.strip(".") + " (via AI)."
 
             engram_doc.summary += f"\n{new_line}"
         else:
@@ -242,18 +286,26 @@ def process_event_in_realtime(doc, method):
             if event_name == "Update":
                 changes = _get_field_changes(doc)
                 if changes:
-                    summary_line = summary_line.strip('.') + f" ({changes})."
+                    summary_line = summary_line.strip(".") + f" ({changes})."
 
-            engram_doc.summary = (engram_doc.summary + "\n" + summary_line) if engram_doc.summary else summary_line
+            engram_doc.summary = (
+                (engram_doc.summary + "\n" + summary_line)
+                if engram_doc.summary
+                else summary_line
+            )
 
         # Update involved users
-        involved = set(engram_doc.get("involved_users", "").split(", ") if engram_doc.get("involved_users") else [])
+        involved = set(
+            engram_doc.get("involved_users", "").split(", ")
+            if engram_doc.get("involved_users")
+            else []
+        )
         involved.add(user_name)
         engram_doc.involved_users = ", ".join(sorted(list(filter(None, involved))))
 
         engram_doc.last_activity_date = doc.modified
         engram_doc.last_modifying_user = frappe.session.user
-        
+
         # Make memory storage robust: ignore link validation errors (e.g. if User/Role is deleted)
         engram_doc.flags.ignore_links = True
         engram_doc.save(ignore_permissions=True)
@@ -262,24 +314,33 @@ def process_event_in_realtime(doc, method):
         # Added to handle Document Activity Logs (not just Chat Summaries)
         try:
             from rcore.services.llm_service import embed_text
+
             if engram_doc.summary:
                 # Context Injection: "Invoice INV-001 (Overdue): ..."
                 # This gives MiniLM the "Type" knowledge the user asked for.
                 context_text = f"{engram_doc.reference_doctype} {engram_doc.reference_name} ({engram_doc.reference_title}):\n{engram_doc.summary}"
                 vector = embed_text(context_text)
-                
+
                 if vector:
                     # Only create savepoint and rollback if we are actually attempting the write
                     try:
                         frappe.db.savepoint("vector_update")
-                        frappe.db.set_value("Engram", engram_doc.name, "embedding", str(vector))
+                        frappe.db.set_value(
+                            "Engram", engram_doc.name, "embedding", str(vector)
+                        )
                     except Exception as sql_e:
                         frappe.db.rollback(save_point="vector_update")
-                        frappe.log_error(f"Failed to write vector for {engram_doc.name}: {sql_e}", "Engram Vector Error")
+                        frappe.log_error(
+                            f"Failed to write vector for {engram_doc.name}: {sql_e}",
+                            "Engram Vector Error",
+                        )
 
         except Exception as e:
             # If embedding fails (e.g. API error), just log it, don't rollback the Engram creation
             frappe.log_error(f"Autovectorization skipped for {engram_doc.name}: {e}")
 
     except Exception:
-        frappe.log_error(frappe.get_traceback(), f"Failed to update Engram for {doc.doctype} {doc.name}")
+        frappe.log_error(
+            frappe.get_traceback(),
+            f"Failed to update Engram for {doc.doctype} {doc.name}",
+        )

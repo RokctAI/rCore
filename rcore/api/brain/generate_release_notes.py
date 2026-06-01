@@ -1,7 +1,12 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
+
 
 @frappe.whitelist()
 def generate_release_notes(repo_url, commit_log, version_name="vNext"):
@@ -9,7 +14,10 @@ def generate_release_notes(repo_url, commit_log, version_name="vNext"):
     Generates Release Notes via LLM.
     """
     if frappe.session.user == "Guest":
-        frappe.throw("Authentication Required: Please provide a valid API Token.", frappe.PermissionError)
+        frappe.throw(
+            "Authentication Required: Please provide a valid API Token.",
+            frappe.PermissionError,
+        )
 
     try:
         if "github.com/" in repo_url:
@@ -18,14 +26,19 @@ def generate_release_notes(repo_url, commit_log, version_name="vNext"):
         else:
             repo_owner = repo_url.split("/")[0]
     except Exception:
-        frappe.throw(f"Invalid Repo URL format: {repo_url}.", frappe.InvalidRequestError)
+        frappe.throw(
+            f"Invalid Repo URL format: {repo_url}.", frappe.InvalidRequestError
+        )
 
     settings = frappe.get_single("Brain Settings")
     allowed_owners = (settings.allowed_repo_owners or "").split(",")
     allowed_owners = [o.strip().lower() for o in allowed_owners if o.strip()]
-    
+
     if repo_owner.lower() not in allowed_owners:
-        frappe.throw(f"Repo Owner '{repo_owner}' is not authorized.", frappe.PermissionError)
-        
+        frappe.throw(
+            f"Repo Owner '{repo_owner}' is not authorized.", frappe.PermissionError
+        )
+
     from rcore.scripts.generate_release_notes import generate_release_notes as _generate
+
     return _generate(commit_log, version_name)

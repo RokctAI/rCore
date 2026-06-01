@@ -1,4 +1,9 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import frappe
+
 
 @frappe.whitelist()
 def update_naming_series(series_prefix, current):

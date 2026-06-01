@@ -1,7 +1,12 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
+
 
 @frappe.whitelist()
 def reject_stimulus(stimulus_name):
@@ -22,5 +27,7 @@ def reject_stimulus(stimulus_name):
         return {"status": "success", "message": f"Stimulus {stimulus_name} dismissed."}
     except Exception as e:
         frappe.db.rollback()
-        frappe.log_error(frappe.get_traceback(), f"Failed to dismiss stimulus {stimulus_name}")
+        frappe.log_error(
+            frappe.get_traceback(), f"Failed to dismiss stimulus {stimulus_name}"
+        )
         frappe.throw(f"An error occurred while dismissing the stimulus: {e}")
