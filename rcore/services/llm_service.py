@@ -152,7 +152,7 @@ def ask_brain(prompt, system=None, tools=None):
     Replacement for call_ollama. Routes directly to the active local ROK server (port 8642).
     """
     try:
-        url = "http://127.0.0.1:8642/v1/v1/chat/completions" if os.environ.get("ROK_API_URL") else "http://127.0.0.1:8642/v1/chat/completions"
+        url = os.environ.get("ROK_API_URL") or "http://127.0.0.1:8642/v1/chat/completions"
         headers = {
             "Content-Type": "application/json",
         }
