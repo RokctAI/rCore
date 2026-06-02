@@ -118,7 +118,7 @@ def setup_github_workflow(roadmap_name):
     }
 
     try:
-        response = requests.get(api_url, headers=headers)
+        response = requests.get(api_url, headers=headers, timeout=30)
         if response.status_code == 200:
             # If the file exists, the repo is considered linked.
             roadmap_doc.db_set("github_status", "Linked")

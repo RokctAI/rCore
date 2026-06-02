@@ -130,7 +130,7 @@ def send_error_to_control(doc):
         headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
         data = {"error_details": doc.as_json()}
 
-        requests.post(api_url, headers=headers, json=data)
+        requests.post(api_url, headers=headers, json=data, timeout=30)
         # We don't check the response, this is a "fire and forget" operation.
         # If it fails, the control panel will log its own error, and we avoid
         # an infinite loop.
@@ -312,7 +312,7 @@ def sync_usage_to_control(tokens_used, model_name):
         headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
         data = {"tokens_used": tokens_used, "model_name": model_name}
 
-        requests.post(api_url, headers=headers, json=data)
+        requests.post(api_url, headers=headers, json=data, timeout=30)
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Sync Usage to Control Failed")
 
@@ -336,7 +336,7 @@ def _notify_control_of_verification():
         headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
         # The site name is implicitly sent via the request's Host header,
         # which the control panel will use to identify the subscription.
-        response = requests.post(api_url, headers=headers)
+        response = requests.post(api_url, headers=headers, timeout=30)
         response.raise_for_status()
         response_json = response.json()
 
@@ -1017,7 +1017,7 @@ def get_subscription_details():
         api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.get_subscription_status"
 
         headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
-        response = requests.post(api_url, headers=headers)
+        response = requests.post(api_url, headers=headers, timeout=30)
         response.raise_for_status()
         response_json = response.json()
 
