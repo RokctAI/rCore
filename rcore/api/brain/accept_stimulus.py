@@ -1,13 +1,18 @@
 import json
 import frappe
+import sys
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
+from rcore.api.brain.record_event import record_event
 
 @frappe.whitelist()
-def accept_stimulus(stimulus_name, template_name="Default"):
+def accept_stimulus(stimulus_name: str, template_name: str = "Default") -> dict:
     """
     Claims a stimulus for the current user and triggers associated workflows.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "accept-stimulus-trace"
+    sys.stderr.write(f"[Trace: {trace_id}] accept_stimulus called with {stimulus_name}\n")
+
     stimulus = frappe.get_doc("Stimulus", stimulus_name)
     if stimulus.claimed_by:
         frappe.throw(f"This stimulus has already been claimed by {stimulus.claimed_by}.", title="Already Claimed")

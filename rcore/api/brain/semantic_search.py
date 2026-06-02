@@ -1,13 +1,17 @@
 import json
 import frappe
+import sys
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
 @frappe.whitelist()
-def semantic_search(query, limit=5, involved_user=None):
+def semantic_search(query: str, limit: int = 5, involved_user: str = None) -> list:
     """
     Performs vector similarity search using pgvector.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "semantic-search-trace"
+    sys.stderr.write(f"[Trace: {trace_id}] semantic_search called with query={query}\n")
+
     if not frappe.session.user:
         frappe.throw("Authentication Required", frappe.PermissionError)
         

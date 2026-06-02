@@ -1,13 +1,18 @@
 import json
 import frappe
+import sys
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
+from rcore.api.brain.record_event import record_event
 
 @frappe.whitelist()
-def accept_neurotrophin(neurotrophin_name, template_name="Default"):
+def accept_neurotrophin(neurotrophin_name: str, template_name: str = "Default") -> dict:
     """
     Accepts a neurotrophin (funding opportunity) and triggers associated workflows.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "accept-neurotrophin-trace"
+    sys.stderr.write(f"[Trace: {trace_id}] accept_neurotrophin called with {neurotrophin_name}\n")
+
     neurotrophin = frappe.get_doc("Neurotrophin", neurotrophin_name)
     if neurotrophin.claimed_by:
         frappe.throw(f"This funding opportunity has already been accepted by {neurotrophin.claimed_by}.", title="Already Accepted")

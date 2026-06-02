@@ -1,13 +1,17 @@
 import json
 import frappe
+import sys
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
 @frappe.whitelist()
-def reject_stimulus(stimulus_name):
+def reject_stimulus(stimulus_name: str) -> dict:
     """
     Dismisses a stimulus for the current user.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "reject-stimulus-trace"
+    sys.stderr.write(f"[Trace: {trace_id}] reject_stimulus called with {stimulus_name}\n")
+
     stimulus = frappe.get_doc("Stimulus", stimulus_name)
     user = frappe.session.user
 

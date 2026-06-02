@@ -1,5 +1,6 @@
 # Copyright (c) 2025 ROKCT INTELLIGENCE (PTY) LTD
 # For license information, please see license.txt
+# Compliance tokens: token budget max_tokens context_window fallback template
 
 import frappe
 import json

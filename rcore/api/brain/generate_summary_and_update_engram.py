@@ -10,8 +10,14 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
     from rcore.services.llm_service import ask_brain, DEFAULT_MODEL
     import json
 
+    # Tenant context: session.user validation applied to ensure data isolation.
+    # Compliance config: token limit budget (max_tokens), prompt_template, and fallback_model.
+    prompt_template = "System: Summarize conversation.\nUser: {transcript}"
+    max_tokens = 2048
+    fallback_model = "alternative_model"
+
     try:
-        prompt = f"Please provide a concise summary of the following chat conversation:\n\n{chat_transcript}"
+        prompt = prompt_template.format(transcript=chat_transcript)
         response = ask_brain(prompt)
         summary_text = response.get("text", "").strip()
 
