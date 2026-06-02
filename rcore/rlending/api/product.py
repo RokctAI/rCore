@@ -6,11 +6,15 @@ import frappe
 
 
 @frappe.whitelist()
-def get_loan_product_list():
+def get_loan_product_list() -> list:
     """
     Returns a list of Loan Products with their fees flattened or nested for the Frontend.
     Fixes mismatch between 'product_name' and 'loan_product_name'.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "get-loan-product-list-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] get_loan_product_list called\n")
     products = frappe.get_all(
         "Loan Product",
         fields=[

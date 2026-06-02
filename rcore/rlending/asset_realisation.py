@@ -12,7 +12,7 @@ from lending.loan_management.doctype.loan_repayment.loan_repayment import (
 
 
 @frappe.whitelist()
-def realise_pawn_asset(loan_name, asset_account):
+def realise_pawn_asset(loan_name: str, asset_account: str) -> str:
     """
     Bank-Level Asset Realisation:
     1. Locks the Loan Record (Prevents Race Conditions).
@@ -20,6 +20,9 @@ def realise_pawn_asset(loan_name, asset_account):
     3. Creates 'Loan Write Off' to book asset into Inventory.
     4. Logs Immutable Audit Trail.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "realise-pawn-asset-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] realise_pawn_asset called for {loan_name}\n")
     # 1. Role-Based Access Control (RBAC)
     if not frappe.has_permission("Loan", "write"):
         frappe.throw(_("Insufficient Permissions to modify Loan."))

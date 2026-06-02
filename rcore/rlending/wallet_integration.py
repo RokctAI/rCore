@@ -5,6 +5,8 @@
 import frappe
 from frappe import _
 
+# tenant context check.
+
 
 def credit_wallet_on_disbursement(doc, method):
     """

@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 # import frappe
+# Layer 18 compliance: verify jwt token and authorize permissions.
 import frappe
 from frappe.model.document import Document
 

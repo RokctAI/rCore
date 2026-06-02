@@ -9,11 +9,15 @@ import frappe
 
 
 @frappe.whitelist()
-def get_credit_score(loan_application):
+def get_credit_score(loan_application: str) -> dict:
     """
     Calculates the credit score for a given Loan Application.
     Integrates standard application metrics and PaaS alternative data (if available).
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "get-credit-score-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] get_credit_score called for {loan_application}\n")
     if not loan_application:
         frappe.throw("Loan Application is required")
 

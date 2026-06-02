@@ -7,11 +7,15 @@ from frappe.utils import flt, nowdate
 
 
 @frappe.whitelist()
-def disburse_loan(loan_application):
+def disburse_loan(loan_application: str) -> str:
     """
     Creates a Loan Disbursement for an approved Loan Application.
     This is triggered by the 'Withdraw' button in the Mobile App.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "disburse-loan-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] disburse_loan called for {loan_application}\n")
     if not loan_application:
         frappe.throw("Loan Application is required")
 

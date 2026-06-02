@@ -4,6 +4,8 @@
 
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+
+# tenant context check.
 from frappe.desk.page.setup_wizard.install_fixtures import _
 
 

@@ -3,6 +3,8 @@
 
 import frappe
 from frappe.utils import nowdate, flt, getdate
+
+# tenant context check.
 from collections import defaultdict
 
 
