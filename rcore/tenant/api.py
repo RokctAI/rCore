@@ -97,6 +97,25 @@ def _ensure_custom_fields_exist():
             },
         )
 
+    # Tracing observability fields
+    for doctype in ["User", "Company", "Employee", "Customer"]:
+        # Only check/create if DocType exists to prevent crash on missing sub-apps
+        if doctype == "Employee" and not frappe.db.exists("DocType", "Employee"):
+            continue
+        if doctype == "Customer" and not frappe.db.exists("DocType", "Customer"):
+            continue
+        if not frappe.db.exists("Custom Field", f"{doctype}-trace_id"):
+            create_custom_field(
+                doctype,
+                {
+                    "fieldname": "trace_id",
+                    "label": "Trace ID",
+                    "fieldtype": "Data",
+                    "insert_after": "status" if doctype != "Company" else "company_name",
+                    "read_only": 1,
+                },
+            )
+
 
 def forward_error_to_control(doc, method):
     """

@@ -43,3 +43,26 @@ def is_ai_action():
     if hasattr(frappe.local, "request") and frappe.local.request.headers.get("X-Action-Source") == "AI":
         return True
     return False
+
+def inject_trace_context(doc, method=None):
+    """
+    Wildcard doc event hook handler that captures the current active request's Trace ID
+    and automatically injects it into any document that implements a 'trace_id' field.
+    """
+    # tenant context check.
+    if not doc.meta.has_field("trace_id"):
+        return
+
+    trace_id = None
+    if hasattr(frappe.local, "trace_id") and frappe.local.trace_id:
+        trace_id = frappe.local.trace_id
+    elif hasattr(frappe.local, "request") and frappe.local.request:
+        headers = frappe.local.request.headers
+        for header in ["X-Trace-ID", "X-Request-ID", "trace_id", "trace-id"]:
+            val = headers.get(header)
+            if val:
+                trace_id = val
+                break
+
+    if trace_id:
+        doc.trace_id = trace_id

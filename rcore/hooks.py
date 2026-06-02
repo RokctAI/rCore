@@ -200,6 +200,8 @@ doc_events.update({
         "validate": "rcore.tasks.tag_engram_pillars"
     },
     "*": {
+        "before_insert": "rcore.utils.common.inject_trace_context",
+        "validate": "rcore.utils.common.inject_trace_context",
         "on_submit": "rcore.utils.engram_builder.process_event_in_realtime",
         "on_trash": "rcore.utils.engram_builder.process_event_in_realtime"
     },
