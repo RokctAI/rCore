@@ -4,10 +4,13 @@ from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
 @frappe.whitelist()
-def get_ai_result(job_id):
+def get_ai_result(job_id: str) -> dict:
     """
     Polling endpoint for AI worker results.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "get-ai-result-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] get_ai_result called for {job_id}\n")
     import redis
     import json
     r = redis.from_url(frappe.conf.get("redis_queue") or "redis://localhost:6379")

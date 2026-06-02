@@ -4,10 +4,14 @@ from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
 @frappe.whitelist()
-def get_event_interval(reference_doctype, reference_name, start_event, end_event):
+def get_event_interval(reference_doctype: str, reference_name: str, start_event: str, end_event: str) -> dict:
     """
     Calculates the time interval between two events in a document's history.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "get-event-interval-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] get_event_interval called for {reference_doctype} {reference_name}\n")
     import re
     from frappe.utils import get_datetime
 

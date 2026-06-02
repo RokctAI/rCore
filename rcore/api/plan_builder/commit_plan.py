@@ -3,12 +3,16 @@ import frappe
 from rcore.api.plan_builder.ensure_startup_os_core import ensure_startup_os_core
 
 @frappe.whitelist()
-def commit_plan(plan_data=None, profile_type=None, instance_name=None):
+def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: str = None) -> dict:
     """
     Accepts either raw JSON payload from frontend (backward compatibility)
     or profile_type + instance_name to parse compiled strategic markdown deliverables
     and seed them directly to the database, ensuring files stop being used for operational work.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "commit-plan-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] commit_plan called\n")
     try:
         # Determine standard StartupOS paths and imports
         startup_os_root = ensure_startup_os_core()

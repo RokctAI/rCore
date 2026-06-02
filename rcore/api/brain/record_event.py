@@ -4,10 +4,13 @@ from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
 @frappe.whitelist()
-def record_event(message, reference_doctype, reference_name, is_ai_action=False):
+def record_event(message: str, reference_doctype: str, reference_name: str, is_ai_action: bool = False) -> dict:
     """
     A secure API endpoint to record a custom event in the Brain's memory.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "record-event-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] record_event called for {reference_doctype} {reference_name}\n")
     try:
         class MockDoc:
             def __init__(self):

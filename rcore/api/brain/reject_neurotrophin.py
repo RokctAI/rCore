@@ -4,10 +4,13 @@ from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
 @frappe.whitelist()
-def reject_neurotrophin(neurotrophin_name):
+def reject_neurotrophin(neurotrophin_name: str) -> dict:
     """
     Dismisses a neurotrophin for the current user.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "reject-neurotrophin-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] reject_neurotrophin called for {neurotrophin_name}\n")
     neurotrophin = frappe.get_doc("Neurotrophin", neurotrophin_name)
     user = frappe.session.user
 

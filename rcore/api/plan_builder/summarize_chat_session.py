@@ -2,9 +2,11 @@ import json
 import frappe
 
 @frappe.whitelist()
-def summarize_chat_session(session_id, messages):
+def summarize_chat_session(session_id: str, messages: list) -> dict:
     """
     Summarizes a completed or long chat session via the ROK completions loop on Tenant with tracing and telemetry.
+    Layer 14 compliance: system_prompt template, token budget, max_tokens, retry / fallback model.
+    Layer 16 compliance: quota isolation gate (free_rok_msg_count).
     """
     import sys
     import time

@@ -2,12 +2,16 @@ import json
 import frappe
 
 @frappe.whitelist()
-def generate_strategic_alignment_report(instance_name, profile_type="life"):
+def generate_strategic_alignment_report(instance_name: str, profile_type: str = "life") -> dict:
     """
     Acts as the dynamic Orchestrator. Queries the live database (operational task/goal telemetry)
     and compares it to the questions.md strategic baseline (SSOT), invoking ROK completions
     to compile a premium Strategic Alignment & Accountability Report.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "generate-strategic-alignment-report-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] generate_strategic_alignment_report called for {instance_name}\n")
     try:
         startup_os_root = ensure_startup_os_core()
         instance_dir = os.path.join(startup_os_root, "instances", profile_type, instance_name)

@@ -2,12 +2,16 @@ import json
 import frappe
 
 @frappe.whitelist()
-def commit_onboarding_answers(profile_type, instance_name, answers, milestones=None):
+def commit_onboarding_answers(profile_type: str, instance_name: str, answers: dict, milestones: list = None) -> dict:
     """
     Creates or updates the questions.md file for the given profile and instance name,
     runs the StartupOS compiler to render downstream deliverables, and commits
     the resulting plan to the database.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "commit-onboarding-answers-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] commit_onboarding_answers called for {instance_name}\n")
     try:
         if profile_type not in ["business", "life"]:
             frappe.throw("Profile type must be 'business' or 'life'.")

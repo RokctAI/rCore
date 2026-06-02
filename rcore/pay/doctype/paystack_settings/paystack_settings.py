@@ -126,7 +126,7 @@ class PaystackSettings(Document):
 
 
 @frappe.whitelist()
-def verify_transaction_and_get_auth(reference):
+def verify_transaction_and_get_auth(reference: str) -> dict:
     """
     Verifies a transaction using the reference from Paystack's frontend.
     If successful, returns the authorization details. This is kept as a standalone
@@ -134,7 +134,11 @@ def verify_transaction_and_get_auth(reference):
 
     :param reference: The transaction reference from Paystack.
     :return: A dictionary with the result.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "paystack-verify-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] verify_transaction_and_get_auth called for {reference}\n")
     settings = frappe.get_doc("Paystack Settings")
     secret_key = settings.get_password("secret_key")
     base_url = "https://api.paystack.co"

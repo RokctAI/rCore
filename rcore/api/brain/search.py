@@ -4,10 +4,13 @@ from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
 @frappe.whitelist()
-def search(module=None, module_group=None, involved_user=None, limit=20):
+def search(module: str = None, module_group: str = None, involved_user: str = None, limit: int = 20) -> list:
     """
     A search API for finding relevant Engrams based on metadata.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "search-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] search called\n")
     if not frappe.session.user:
         frappe.throw("You must be logged in to use this feature.", frappe.PermissionError)
     

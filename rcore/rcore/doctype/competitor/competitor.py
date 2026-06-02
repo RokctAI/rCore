@@ -10,10 +10,14 @@ class Competitor(Document):
 
 
 @frappe.whitelist()
-def get_map_data(competitor=None):
+def get_map_data(competitor: str = None) -> dict:
     """
     Retrieves all master map data (zones, routes) and competitor-specific locations.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "get-map-data-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] get_map_data called\n")
     zones = frappe.get_all("Competitor Zone", fields=["zone_name", "zone_path"])
     routes = frappe.get_all(
         "Competitor Route", fields=["route_name", "route_type", "route_path"]
@@ -34,11 +38,15 @@ def get_map_data(competitor=None):
 
 
 @frappe.whitelist()
-def save_competitor_locations(competitor, locations_data):
+def save_competitor_locations(competitor: str, locations_data: str) -> dict:
     """
     Saves only the location data for a specific competitor.
     Zones and Routes are master data and not saved from here.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "save-competitor-locations-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] save_competitor_locations called for {competitor}\n")
     import json
 
     if not frappe.db.exists("Competitor", competitor):

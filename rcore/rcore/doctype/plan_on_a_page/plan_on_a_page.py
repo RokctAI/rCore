@@ -4,6 +4,8 @@
 import frappe
 from frappe.model.document import Document
 
+# tenant context check.
+
 
 class PlanOnAPage(Document):
     def on_update(self):

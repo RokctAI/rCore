@@ -2,7 +2,7 @@ import json
 import frappe
 
 @frappe.whitelist()
-def chat_with_rok(message, session_id=None, model=None):
+def chat_with_rok(message: str, session_id: str = None, model: str = None) -> dict:
     """
     Secure gateway proxy for Next.js (Vercel) to chat with ROK agent on the Tenant VPS.
     Propagates X-Trace-Id across the distributed hops and emits structured logs to stderr.

@@ -4,10 +4,13 @@ from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
 @frappe.whitelist()
-def dispatch_ai_task(task_type, data):
+def dispatch_ai_task(task_type: str, data: dict) -> dict:
     """
     Dispatches tasks to the AI workers.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "dispatch-ai-task-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] dispatch_ai_task called with {task_type}\n")
     if isinstance(data, str):
         data = frappe.parse_json(data)
         

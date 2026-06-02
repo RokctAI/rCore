@@ -2,11 +2,14 @@ import json
 import frappe
 
 @frappe.whitelist()
-def generate_alive_cv_pdf(instance_name, profile_type="life", role_focus=None):
+def generate_alive_cv_pdf(instance_name: str, profile_type: str = "life", role_focus: str = None) -> dict:
     """
     Dynamically parses professional historical milestones from the Single Source of Truth (questions.md)
     and compiles a beautifully formatted, premium CV/Resume PDF on-demand, customized for a specific role focus.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "generate-alive-cv-pdf-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] generate_alive_cv_pdf called for {instance_name}\n")
     try:
         startup_os_root = ensure_startup_os_core()
         instance_dir = os.path.join(startup_os_root, "instances", profile_type, instance_name)

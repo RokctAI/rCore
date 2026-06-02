@@ -2,11 +2,14 @@ import frappe
 from frappe.auth import LoginManager
 
 @frappe.whitelist(allow_guest=True)
-def login(usr, pwd):
+def login(usr: str, pwd: str) -> dict:
     """
     Standard Login endpoint that returns API Keys.
     Can be used on both Control Panel and Tenant sites.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "login-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] login called for {usr}\n")
     try:
         login_manager = LoginManager()
 

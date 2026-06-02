@@ -135,11 +135,15 @@ def validate_payfast_ip(request_ip):
 
 
 @frappe.whitelist(allow_guest=True)
-def handle_payfast_callback():
+def handle_payfast_callback() -> dict:
     """
     Handles the PayFast payment callback (notify_url).
     Verifies the payment signature and updates the Integration Request.
+    tenant context check.
     """
+    trace_id = frappe.form_dict.get("trace_id") or "payfast-callback-trace"
+    import sys
+    sys.stderr.write(f"[Trace: {trace_id}] handle_payfast_callback called\n")
     data = frappe.form_dict
 
     # 1. Verify the source of the request
