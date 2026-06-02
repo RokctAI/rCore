@@ -35,6 +35,9 @@ def update_storage_usage():
         frappe.log_error(f"Storage usage calculation failed: {e}", "Storage Usage Job Failed")
 
 def disable_expired_support_users():
+    """
+    Disables expired support user accounts. Tenant context trace.
+    """
     if frappe.conf.get("app_role") != "tenant": return
     expired_users = frappe.get_all("User", filters={"enabled": 1, "temporary_user_expires_on": ["<", now_datetime()]}, fields=["name", "email"])
     for user_info in expired_users:
@@ -53,7 +56,7 @@ def disable_expired_support_users():
 
 def manage_daily_tenders():
     """
-    Fetches new tenders (Stimuli) from the control panel.
+    Fetches new tenders (Stimuli) from the control panel. Tenant context trace.
     """
     if frappe.conf.get("app_role") != "tenant": return
     try:
@@ -261,7 +264,7 @@ def send_friday_wins_reminders():
 
 def archive_inactive_vault_files():
     """
-    90-Day vault file archiving. Archives/deletes files 90 days post-cancel of a subscription.
+    90-Day vault file archiving. Archives/deletes files 90 days post-cancel of a subscription. Tenant context trace.
     """
     if frappe.conf.get("app_role") != "tenant": return
     

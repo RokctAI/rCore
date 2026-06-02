@@ -43,6 +43,7 @@ def debit_wallet_on_repayment(doc, method):
 
 
 def update_wallet(customer, amount, transaction_type, description):
+    """Updates customer wallet. Tenant context trace."""
     # Find User associated with Customer
     # Try to get user from customer field first, else try to find user by email?
     # Standard generic logic: Customer often links to a user via `user` field if Portal User.

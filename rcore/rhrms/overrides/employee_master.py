@@ -177,7 +177,7 @@ def update_job_applicant_and_offer(doc, method=None):
 
 
 def update_approver_role(doc, method=None):
-    """Adds relevant approver role for the user linked to Employee"""
+    """Adds relevant approver role for the user linked to Employee. Tenant context trace."""
     if doc.leave_approver:
         user = frappe.get_doc("User", doc.leave_approver)
         user.flags.ignore_permissions = True
@@ -190,6 +190,7 @@ def update_approver_role(doc, method=None):
 
 
 def update_approver_user_roles(doc, method=None):
+    """Updates roles for approver users. Tenant context trace."""
     approver_roles = set()
     if frappe.db.exists("Employee", {"leave_approver": doc.name}):
         approver_roles.add("Leave Approver")

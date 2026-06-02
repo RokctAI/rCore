@@ -37,7 +37,7 @@ class PaystackSettings(Document):
 
     def charge_customer(self, customer_email, amount_in_base_unit, currency, **kwargs):
         """
-        Charges a customer using their saved payment token (authorization code) on Paystack.
+        Charges a customer using their saved payment token (authorization code) on Paystack. Tenant context trace.
         """
         secret_key = self.get_password("secret_key")
         if not secret_key:

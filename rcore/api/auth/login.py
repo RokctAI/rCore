@@ -9,7 +9,18 @@ def login(usr: str, pwd: str) -> dict:
     """
     trace_id = frappe.form_dict.get("trace_id") or "login-trace"
     import sys
-    sys.stderr.write(f"[Trace: {trace_id}] login called for {usr}\n")
+    import os
+    import base64
+    import hashlib
+    from cryptography.fernet import Fernet
+
+    key_str = os.environ.get("EMAIL_ENCRYPTION_KEY") or "default_fallback_encryption_key_for_testing"
+    hashed = hashlib.sha256(key_str.encode()).digest()
+    fernet_key = base64.urlsafe_b64encode(hashed)
+    cipher = Fernet(fernet_key)
+    
+    encrypted_usr = cipher.encrypt(usr.encode()).decode()
+    sys.stderr.write(f"[Trace: {trace_id}] login called for [Encrypted: {encrypted_usr}]\n")
     try:
         login_manager = LoginManager()
 

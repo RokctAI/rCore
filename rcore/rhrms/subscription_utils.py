@@ -65,6 +65,9 @@ def get_add_on_details(plan: str) -> dict[str, int]:
 
 
 def get_active_employees() -> int:
+    """
+    Returns count of active employees. Tenant context trace.
+    """
     return frappe.db.count("Employee", {"status": "Active"})
 
 

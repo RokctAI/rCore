@@ -56,6 +56,8 @@ class LoanApplication(BaseLoanApplication):
         if not self.get("is_withdrawable"):
             return
 
+        trace_id = self.get("trace_id") or frappe.local.get("trace_id") or "loan-kyc-validation-trace"
+
         # Check if there is a verified CRM Lead for this customer
         if self.applicant_type == "Customer":
             customer_email = frappe.db.get_value("Customer", self.applicant, "email_id")

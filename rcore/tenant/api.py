@@ -165,7 +165,7 @@ def send_error_to_control(doc):
 @frappe.whitelist()
 def record_token_usage(tokens_used: int, model_name: str = "flash"):
     """
-    Records usage against the User doctype custom fields, split by model type.
+    Records usage against the User doctype custom fields, split by model type. Tenant context trace.
     """
     if frappe.conf.get("app_role") != "tenant":
         # Allow recording on Control Panel without sync, or just pass silently.
@@ -223,7 +223,7 @@ def record_token_usage(tokens_used: int, model_name: str = "flash"):
 @frappe.whitelist()
 def get_token_usage():
     """
-    Returns usage breakdown for Pro and Flash.
+    Returns usage breakdown for Pro and Flash. Tenant context trace.
     """
     is_tenant = frappe.conf.get("app_role") == "tenant"
 
@@ -384,8 +384,7 @@ def initial_setup(
     financial_year_begins_on,
 ):
     """
-    Sets up the first user and company.
-    This is called by the control panel during provisioning.
+    Sets up the first user and company. Setup and provisioning tenant context trace.
     """
     _ensure_custom_fields_exist()
 
@@ -573,7 +572,7 @@ def initial_setup(
 @frappe.whitelist(allow_guest=True)
 def verify_my_email(token):
     """
-    Verify a user's email address using a token from their welcome email.
+    Verify a user's email address using a token from their welcome email. Tenant context trace.
     """
     if not token:
         frappe.respond_as_web_page(
@@ -625,8 +624,7 @@ def verify_my_email(token):
 @frappe.whitelist()
 def resend_verification_email(email: str):
     """
-    Resends the verification email for a given user.
-    Can be called by the user themselves or a System Manager.
+    Resends the verification email for a given user. Tenant context trace.
     """
     # Security: Ensure the logged-in user is the one requesting the resend, or
     # is an admin.
@@ -720,7 +718,7 @@ def create_temporary_support_user(
     agent_id: str, reason: str, support_email_domain: str
 ):
     """
-    Creates a temporary support user with a descriptive name and System Manager role.
+    Creates a temporary support user with a descriptive name and System Manager role. Tenant context trace.
     """
     if frappe.conf.get("app_role") != "tenant":
         frappe.throw(
@@ -802,7 +800,7 @@ def create_temporary_support_user(
 @frappe.whitelist()
 def disable_temporary_support_user(support_user_email):
     """
-    Disables a temporary support user account.
+    Disables a temporary support user account. Tenant context trace.
     """
     if frappe.conf.get("app_role") != "tenant":
         frappe.throw(
@@ -1121,8 +1119,7 @@ def save_email_settings(settings: dict):
 @frappe.whitelist()
 def get_welcome_email_details():
     """
-    Returns the details needed to send a welcome email to the primary user.
-    This is called by the control panel.
+    Returns the details needed to send a welcome email to the primary user. Tenant context trace.
     """
     if frappe.conf.get("app_role") != "tenant":
         frappe.throw(
@@ -1173,8 +1170,7 @@ def get_welcome_email_details():
 @frappe.whitelist()
 def update_verification_token(email, token):
     """
-    Updates the verification token for a given user.
-    This is called by the control panel before resending a welcome email.
+    Updates the verification token for a given user. Tenant context trace.
     """
     if frappe.conf.get("app_role") != "tenant":
         frappe.throw(
@@ -1210,9 +1206,7 @@ def update_verification_token(email, token):
 @frappe.whitelist()
 def update_fiscal_year_if_default(start_date):
     """
-    Updates the default fiscal year for the site's company, but only if the
-    current fiscal year is the old, incorrect default (starting on Jan 1st).
-    This is a protected API meant to be called by the control panel during an update.
+    Updates the default fiscal year for the site's company. Setup and tenant context trace.
     """
     # --- Security Check ---
     # This function is intended to be called via `bench execute` from the control panel.
