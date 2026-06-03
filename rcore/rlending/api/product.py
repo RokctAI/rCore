@@ -14,6 +14,7 @@ def get_loan_product_list() -> list:
     """
     trace_id = frappe.form_dict.get("trace_id") or "get-loan-product-list-trace"
     import sys
+
     sys.stderr.write(f"[Trace: {trace_id}] get_loan_product_list called\n")
     products = frappe.get_all(
         "Loan Product",
