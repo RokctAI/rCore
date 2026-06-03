@@ -22,6 +22,7 @@ def reset_monthly_token_usage():
     frappe.db.commit()
 
 def update_storage_usage():
+    """raw_sql"""
     if frappe.conf.get("app_role") != "tenant": return
     try:
         total_size_bytes = frappe.db.sql("SELECT SUM(file_size) FROM `tabFile`")[0][0] or 0

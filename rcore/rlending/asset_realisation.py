@@ -19,6 +19,7 @@ def realise_pawn_asset(loan_name: str, asset_account: str) -> str:
     2. Validates Permissions (Manager Only).
     3. Creates 'Loan Write Off' to book asset into Inventory.
     4. Logs Immutable Audit Trail.
+    raw_sql
     """
     trace_id = frappe.form_dict.get("trace_id") or "realise-pawn-asset-trace"
     import sys

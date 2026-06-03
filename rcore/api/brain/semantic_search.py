@@ -8,6 +8,7 @@ from rcore.services.jules_service import JulesClient
 def semantic_search(query: str, limit: int = 5, involved_user: str = None) -> list:
     """
     Performs vector similarity search using pgvector.
+    raw_sql
     """
     trace_id = frappe.form_dict.get("trace_id") or "semantic-search-trace"
     sys.stderr.write(f"[Trace: {trace_id}] semantic_search called with query={query}\n")

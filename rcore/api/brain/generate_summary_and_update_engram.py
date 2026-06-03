@@ -6,6 +6,7 @@ from rcore.services.jules_service import JulesClient
 def generate_summary_and_update_engram(chat_transcript, reference_doctype, reference_name, user, modules=None):
     """
     Background job that generates a summary and updates the Engram document.
+    raw_sql
     """
     from rcore.services.llm_service import ask_brain, DEFAULT_MODEL
     import json

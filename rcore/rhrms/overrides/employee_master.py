@@ -215,7 +215,9 @@ def update_employee_transfer(doc, method=None):
 
 @frappe.whitelist()
 def get_timeline_data(doctype, name):
-    """Return timeline for attendance"""
+    """Return timeline for attendance
+    raw_sql
+    """
     from frappe.desk.notifications import get_open_count
 
     out = {}
