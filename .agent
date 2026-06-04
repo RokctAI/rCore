@@ -1,0 +1,4 @@
+﻿# Private Code Repository Integration
+*   Private Code Link: This project merges code from the private repository specified inside the .private_repo file in the repository root.
+*   Code Location: All private code is cloned, merged, and excluded from Git tracking using .git/info/exclude to prevent it from leaking into public commits.
+*   Working with Private Code: When writing code or debugging, remember that files not present in the public git index are part of the private repository payload merged into this workspace.
