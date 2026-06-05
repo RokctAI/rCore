@@ -36,6 +36,7 @@ def get_scheduler_events():
 
     if app_role == "tenant":
         events["daily"].extend([
+            "rcore.tenant.api.sync_visitors_to_control",
             "rcore.tasks.manage_daily_tenders",
             "rcore.tasks.manage_daily_funding",
             "rcore.tasks.disable_expired_support_users",
@@ -81,7 +82,8 @@ whitelisted_methods = {
     # AI Gateway
     "rcore.api.dispatch_ai_task": "rcore.api.rcore.dispatch_ai_task",
     "rcore.api.get_ai_result": "rcore.api.rcore.get_ai_result",
-    "rcore.api.generate_release_notes": "rcore.api.rcore.generate_release_notes"
+    "rcore.api.generate_release_notes": "rcore.api.rcore.generate_release_notes",
+    "rcore.tenant.api.record_unique_visit": "rcore.tenant.api.record_unique_visit"
 }
 
 # After Install

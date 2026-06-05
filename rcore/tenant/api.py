@@ -1469,3 +1469,67 @@ def announce_ready_to_control():
     except Exception as e:
         frappe.log_error(f"Tenant '{frappe.local.site}' failed to announce readiness: {e}\n{frappe.get_traceback()}", "Tenant Bootstrap Error")
 
+
+@frappe.whitelist(allow_guest=True)
+def record_unique_visit(visitor_id: str, client_ip: str = None, user_id: str = None):
+    """
+    Records a unique visit on the tenant side.
+    Deduplicates using visitor IP + visitor_id in a Redis Set.
+    Also logs user identification if user_id is provided.
+    """
+    if not visitor_id:
+        return {"status": "error", "message": "Missing visitor_id"}
+    
+    ip = client_ip or frappe.local.request.ip or "unknown"
+    date_str = nowdate()
+    cache_key = f"unique_visitors:{date_str}"
+    
+    frappe.cache().sadd(cache_key, f"{ip}:{visitor_id}")
+    frappe.cache().expire(cache_key, 172800)
+    
+    if user_id:
+        frappe.log_error(
+            message=f"Telemetry: Visitor {visitor_id} from IP {ip} identified as user {user_id}",
+            title="User Identified"
+        )
+        
+    return {"status": "success"}
+
+
+def sync_visitors_to_control():
+    """
+    Scheduled task to sync yesterday's unique visitor counts to the control panel.
+    """
+    try:
+        from frappe.utils.data import add_days
+        yesterday = add_days(nowdate(), -1)
+        cache_key = f"unique_visitors:{yesterday}"
+        
+        unique_count = frappe.cache().scard(cache_key) or 0
+        
+        control_plane_url = frappe.conf.get("control_plane_url")
+        api_secret = frappe.conf.get("api_secret")
+        
+        if not control_plane_url or not api_secret:
+            return
+            
+        import requests
+        scheme = frappe.conf.get("control_plane_scheme", "https")
+        api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.tenant.report_tenant_visitors"
+        
+        headers = {
+            "X-Rokct-Secret": api_secret,
+            "X-Rokct-Tenant": frappe.local.site
+        }
+        data = {
+            "date": yesterday,
+            "unique_visitors": unique_count
+        }
+        
+        response = requests.post(api_url, headers=headers, json=data, timeout=30)
+        response.raise_for_status()
+        
+    except Exception as e:
+        frappe.log_error(f"Failed to sync visitor count to control panel: {e}\n{frappe.get_traceback()}", "Visitor Sync Failed")
+
+
