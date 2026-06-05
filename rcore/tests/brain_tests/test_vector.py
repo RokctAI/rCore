@@ -1,9 +1,9 @@
-
 import frappe
 import unittest
 from rcore.services.llm_service import embed_text
 from rcore.api import semantic_search
 from rcore.utils.engram_builder import process_event_in_realtime
+
 
 class TestBrainVector(unittest.TestCase):
     def setUp(self):
@@ -21,7 +21,7 @@ class TestBrainVector(unittest.TestCase):
 
         text = "Hello World"
         vector = embed_text(text)
-        
+
         # Check if vector is returned
         if vector is None:
             # If worker is not running, this might fail or return None if using mock
@@ -37,20 +37,18 @@ class TestBrainVector(unittest.TestCase):
         Test if Engram creation triggers vector generation.
         """
         # Create a mock document event
-        doc = frappe.get_doc({
-            "doctype": "ToDo",
-            "description": "Vector Test Task",
-            "status": "Open"
-        }).insert(ignore_permissions=True)
-        
+        doc = frappe.get_doc(
+            {"doctype": "ToDo", "description": "Vector Test Task", "status": "Open"}
+        ).insert(ignore_permissions=True)
+
         # Trigger the hook manually (since hooks might not fire in test runner same way)
         process_event_in_realtime(doc, "on_update")
-        
+
         # Fetch the Engram
         engram_name = f"ToDo-{doc.name}"
         if frappe.db.exists("Engram", engram_name):
             engram = frappe.get_doc("Engram", engram_name)
-            
+
             # If worker is running, embedding should be populated (async timing issue potential)
             # In real unit test we'd mock the worker to return immediately.
             # Here we just check if the logic ran without error.
@@ -62,7 +60,7 @@ class TestBrainVector(unittest.TestCase):
         """
         # We can't easily test accurate semantic retrieval without a running model and populated DB
         # But we can test the SQL generation fails gracefully or runs
-        
+
         try:
             results = semantic_search("test query", limit=1)
             self.assertIsInstance(results, list)

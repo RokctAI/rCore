@@ -1,5 +1,10 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
+
 
 @frappe.whitelist()
 def summarize_chat_session(session_id: str, messages: list) -> dict:
@@ -15,28 +20,39 @@ def summarize_chat_session(session_id: str, messages: list) -> dict:
     # 1. Resolve or Generate a Unique Trace ID for Distributed Correlation
     trace_id = None
     if hasattr(frappe, "request") and frappe.request:
-        trace_id = frappe.request.headers.get("X-Trace-Id") or frappe.request.headers.get("X-Request-Id")
+        trace_id = frappe.request.headers.get(
+            "X-Trace-Id"
+        ) or frappe.request.headers.get("X-Request-Id")
     if not trace_id:
         trace_id = frappe.generate_hash(length=16)
 
     user_id = frappe.session.user or "guest"
     start_time = time.time()
 
-    sys.stderr.write(json.dumps({
-        "event": "rok_tenant_summarize_request_received",
-        "trace_id": trace_id,
-        "session_id": session_id,
-        "user_id": user_id
-    }) + "\n")
+    sys.stderr.write(
+        json.dumps(
+            {
+                "event": "rok_tenant_summarize_request_received",
+                "trace_id": trace_id,
+                "session_id": session_id,
+                "user_id": user_id,
+            }
+        )
+        + "\n"
+    )
     sys.stderr.flush()
 
     try:
         import os
-        url = os.environ.get("ROK_COMPLETIONS_URL") or "http://127.0.0.1:8642/v1/chat/completions"
+
+        url = (
+            os.environ.get("ROK_COMPLETIONS_URL")
+            or "http://127.0.0.1:8642/v1/chat/completions"
+        )
         headers = {
             "Content-Type": "application/json",
             "X-Trace-Id": trace_id,
-            "X-Request-Id": trace_id
+            "X-Request-Id": trace_id,
         }
         if session_id:
             headers["X-Hermes-Session-Id"] = session_id
@@ -62,20 +78,28 @@ def summarize_chat_session(session_id: str, messages: list) -> dict:
             "model": "hermes-agent",
             "messages": [
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Here is the conversation to summarize:\n{json.dumps(messages, indent=2)}"}
+                {
+                    "role": "user",
+                    "content": f"Here is the conversation to summarize:\n{json.dumps(messages, indent=2)}",
+                },
             ],
-            "stream": False
+            "stream": False,
         }
 
         response = requests.post(url, json=payload, headers=headers, timeout=60.0)
-        
+
         if response.status_code != 200:
-            sys.stderr.write(json.dumps({
-                "event": "rok_tenant_summarize_upstream_error",
-                "trace_id": trace_id,
-                "status_code": response.status_code,
-                "response_body": response.text[:500]
-            }) + "\n")
+            sys.stderr.write(
+                json.dumps(
+                    {
+                        "event": "rok_tenant_summarize_upstream_error",
+                        "trace_id": trace_id,
+                        "status_code": response.status_code,
+                        "response_body": response.text[:500],
+                    }
+                )
+                + "\n"
+            )
             sys.stderr.flush()
 
         response.raise_for_status()
@@ -86,15 +110,20 @@ def summarize_chat_session(session_id: str, messages: list) -> dict:
 
         if choices:
             summary = choices[0].get("message", {}).get("content", "")
-            
-            sys.stderr.write(json.dumps({
-                "event": "rok_tenant_summarize_success",
-                "trace_id": trace_id,
-                "session_id": session_id,
-                "user_id": user_id,
-                "duration_sec": round(duration, 3),
-                "summary_len": len(summary)
-            }) + "\n")
+
+            sys.stderr.write(
+                json.dumps(
+                    {
+                        "event": "rok_tenant_summarize_success",
+                        "trace_id": trace_id,
+                        "session_id": session_id,
+                        "user_id": user_id,
+                        "duration_sec": round(duration, 3),
+                        "summary_len": len(summary),
+                    }
+                )
+                + "\n"
+            )
             sys.stderr.flush()
 
             # Save Engram memory if brain app exists
@@ -112,38 +141,49 @@ def summarize_chat_session(session_id: str, messages: list) -> dict:
                     engram.summary = summary
                     engram.save(ignore_permissions=True)
 
-            return {
-                "status": "success",
-                "summary": summary,
-                "trace_id": trace_id
-            }
+            return {"status": "success", "summary": summary, "trace_id": trace_id}
 
-        sys.stderr.write(json.dumps({
-            "event": "rok_tenant_summarize_empty_choices",
-            "trace_id": trace_id,
-            "session_id": session_id,
-            "user_id": user_id,
-            "duration_sec": round(duration, 3)
-        }) + "\n")
+        sys.stderr.write(
+            json.dumps(
+                {
+                    "event": "rok_tenant_summarize_empty_choices",
+                    "trace_id": trace_id,
+                    "session_id": session_id,
+                    "user_id": user_id,
+                    "duration_sec": round(duration, 3),
+                }
+            )
+            + "\n"
+        )
         sys.stderr.flush()
-        return {"status": "error", "message": "No summary choice returned from ROK.", "trace_id": trace_id}
+        return {
+            "status": "error",
+            "message": "No summary choice returned from ROK.",
+            "trace_id": trace_id,
+        }
 
     except Exception as e:
         duration = time.time() - start_time
         import traceback
-        sys.stderr.write(json.dumps({
-            "event": "rok_tenant_summarize_failed",
-            "trace_id": trace_id,
-            "session_id": session_id,
-            "user_id": user_id,
-            "duration_sec": round(duration, 3),
-            "error": str(e),
-            "traceback": traceback.format_exc()
-        }) + "\n")
+
+        sys.stderr.write(
+            json.dumps(
+                {
+                    "event": "rok_tenant_summarize_failed",
+                    "trace_id": trace_id,
+                    "session_id": session_id,
+                    "user_id": user_id,
+                    "duration_sec": round(duration, 3),
+                    "error": str(e),
+                    "traceback": traceback.format_exc(),
+                }
+            )
+            + "\n"
+        )
         sys.stderr.flush()
 
         frappe.log_error(
             title=f"ROK Tenant Summarization failed [Trace: {trace_id}]",
-            message=f"Trace ID: {trace_id}\nSession ID: {session_id}\nUser ID: {user_id}\nError: {e}\n\nTraceback:\n{traceback.format_exc()}"
+            message=f"Trace ID: {trace_id}\nSession ID: {session_id}\nUser ID: {user_id}\nError: {e}\n\nTraceback:\n{traceback.format_exc()}",
         )
         return {"status": "error", "message": str(e), "trace_id": trace_id}
