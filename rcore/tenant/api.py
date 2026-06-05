@@ -1501,6 +1501,14 @@ def sync_visitors_to_control():
     Scheduled task to sync yesterday's unique visitor counts to the control panel.
     """
     try:
+        # Check if visitor tracking is disabled/rejected for this tenant
+        try:
+            sub_details = get_subscription_details()
+            if sub_details and sub_details.get("reject_visitor_tracking"):
+                return
+        except Exception:
+            pass
+
         from frappe.utils.data import add_days
         yesterday = add_days(nowdate(), -1)
         cache_key = f"unique_visitors:{yesterday}"

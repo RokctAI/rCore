@@ -11,9 +11,10 @@ Returns usage breakdown for Pro and Flash. Tenant context trace.
 A secure proxy API for the frontend to get subscription details.
 Caches the response from the control panel.
 
-### `def record_unique_visit(visitor_id, client_ip=None)`
+### `def record_unique_visit(visitor_id, client_ip=None, user_id=None)`
 Records a unique visit on the tenant side.
 Deduplicates using visitor IP + visitor_id in a Redis Set.
+Also logs user identification if user_id is provided.
 
 ## Documented Module Functions
 
