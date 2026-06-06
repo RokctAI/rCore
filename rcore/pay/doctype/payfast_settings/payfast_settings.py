@@ -14,7 +14,11 @@ class PayFastSettings(Document):
         try:
             # Skip during site creation / migration / testing to prevent transactional errors
             # when tables don't exist yet!
-            if frappe.flags.in_migrate or frappe.flags.in_install or frappe.flags.in_test:
+            if (
+                frappe.flags.in_migrate
+                or frappe.flags.in_install
+                or frappe.flags.in_test
+            ):
                 return
 
             if not frappe.db.table_exists("Payment Gateway"):
@@ -143,6 +147,7 @@ def handle_payfast_callback() -> dict:
     """
     trace_id = frappe.form_dict.get("trace_id") or "payfast-callback-trace"
     import sys
+
     sys.stderr.write(f"[Trace: {trace_id}] handle_payfast_callback called\n")
     data = frappe.form_dict
 
