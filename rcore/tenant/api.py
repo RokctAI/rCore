@@ -117,6 +117,25 @@ def _ensure_custom_fields_exist():
             )
 
 
+@frappe.whitelist(allow_guest=True)
+def report_client_error(title: str, error: str):
+    """
+    Called by guest/client apps to report an exception.
+    Creates an API Error Log document, which is then automatically forwarded to the control panel.
+    """
+    if not title or not error:
+        return {"status": "error", "message": "Missing title or error"}
+        
+    doc = frappe.get_doc({
+        "doctype": "API Error Log",
+        "title": title,
+        "error": error
+    })
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+    return {"status": "success"}
+
+
 def forward_error_to_control(doc, method):
     """
     This function is called by a hook when a new API Error Log is created.
@@ -1471,11 +1490,11 @@ def announce_ready_to_control():
 
 
 @frappe.whitelist(allow_guest=True)
-def record_unique_visit(visitor_id: str, client_ip: str = None, user_id: str = None):
+def record_unique_visit(visitor_id: str, client_ip: str = None, user_id: str = None, app_version: str = None, os: str = None, os_version: str = None):
     """
     Records a unique visit on the tenant side.
     Deduplicates using visitor IP + visitor_id in a Redis Set.
-    Also logs user identification if user_id is provided.
+    Also logs user identification and device metadata.
     """
     if not visitor_id:
         return {"status": "error", "message": "Missing visitor_id"}
@@ -1487,11 +1506,11 @@ def record_unique_visit(visitor_id: str, client_ip: str = None, user_id: str = N
     frappe.cache().sadd(cache_key, f"{ip}:{visitor_id}")
     frappe.cache().expire(cache_key, 172800)
     
-    if user_id:
-        frappe.log_error(
-            message=f"Telemetry: Visitor {visitor_id} from IP {ip} identified as user {user_id}",
-            title="User Identified"
-        )
+    metadata = f"OS: {os or 'unknown'}, OS Version: {os_version or 'unknown'}, App Version: {app_version or 'unknown'}"
+    frappe.log_error(
+        message=f"Telemetry: Visitor {visitor_id} from IP {ip}. Metadata: {metadata}. Identified as user {user_id or 'guest'}",
+        title="Visitor Telemetry"
+    )
         
     return {"status": "success"}
 

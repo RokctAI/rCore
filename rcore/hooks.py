@@ -83,7 +83,8 @@ whitelisted_methods = {
     "rcore.api.dispatch_ai_task": "rcore.api.rcore.dispatch_ai_task",
     "rcore.api.get_ai_result": "rcore.api.rcore.get_ai_result",
     "rcore.api.generate_release_notes": "rcore.api.rcore.generate_release_notes",
-    "rcore.tenant.api.record_unique_visit": "rcore.tenant.api.record_unique_visit"
+    "rcore.tenant.api.record_unique_visit": "rcore.tenant.api.record_unique_visit",
+    "rcore.tenant.api.report_client_error": "rcore.tenant.api.report_client_error"
 }
 
 # After Install
@@ -198,6 +199,9 @@ if "lending" in installed_apps:
 if "doc_events" not in locals():
     doc_events = {}
 doc_events.update({
+    "API Error Log": {
+        "after_insert": "rcore.tenant.api.forward_error_to_control"
+    },
     "Engram": {
         "validate": "rcore.tasks.tag_engram_pillars"
     },
