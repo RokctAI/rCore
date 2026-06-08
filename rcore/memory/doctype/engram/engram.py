@@ -5,8 +5,10 @@
 import frappe
 from frappe.model.document import Document
 
+
 class Engram(Document):
     pass
+
 
 def get_permission_query_conditions(user):
     if not user:
