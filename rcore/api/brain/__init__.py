@@ -1,7 +1,9 @@
 from rcore.api.brain.query import query
 from rcore.api.brain.record_event import record_event
 from rcore.api.brain.record_chat_summary import record_chat_summary
-from rcore.api.brain.generate_summary_and_update_engram import generate_summary_and_update_engram
+from rcore.api.brain.generate_summary_and_update_engram import (
+    generate_summary_and_update_engram,
+)
 from rcore.api.brain.get_event_interval import get_event_interval
 from rcore.api.brain.accept_stimulus import accept_stimulus
 from rcore.api.brain.reject_stimulus import reject_stimulus
