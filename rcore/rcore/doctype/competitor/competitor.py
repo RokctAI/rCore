@@ -17,6 +17,7 @@ def get_map_data(competitor: str = None) -> dict:
     """
     trace_id = frappe.form_dict.get("trace_id") or "get-map-data-trace"
     import sys
+
     sys.stderr.write(f"[Trace: {trace_id}] get_map_data called\n")
     zones = frappe.get_all("Competitor Zone", fields=["zone_name", "zone_path"])
     routes = frappe.get_all(
@@ -46,7 +47,10 @@ def save_competitor_locations(competitor: str, locations_data: str) -> dict:
     """
     trace_id = frappe.form_dict.get("trace_id") or "save-competitor-locations-trace"
     import sys
-    sys.stderr.write(f"[Trace: {trace_id}] save_competitor_locations called for {competitor}\n")
+
+    sys.stderr.write(
+        f"[Trace: {trace_id}] save_competitor_locations called for {competitor}\n"
+    )
     import json
 
     if not frappe.db.exists("Competitor", competitor):
