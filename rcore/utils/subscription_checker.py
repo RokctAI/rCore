@@ -19,7 +19,17 @@ def check_subscription_feature(feature_module):
 
             if not subscription:
                 if frappe.flags.in_test:
-                    subscription = {"status": "Active", "modules": ["Memory", "HR", "Lending", "Strategic", "Vision", "Pillar"]}
+                    subscription = {
+                        "status": "Active",
+                        "modules": [
+                            "Memory",
+                            "HR",
+                            "Lending",
+                            "Strategic",
+                            "Vision",
+                            "Pillar",
+                        ],
+                    }
                 else:
                     # If not in cache, fetch from API
                     subscription = get_subscription_details()
@@ -59,7 +69,10 @@ def get_cached_subscription_details():
     Returns the subscription details, using the cache if available.
     """
     if frappe.flags.in_test:
-        return {"status": "Active", "modules": ["Memory", "HR", "Lending", "Strategic", "Vision", "Pillar"]}
+        return {
+            "status": "Active",
+            "modules": ["Memory", "HR", "Lending", "Strategic", "Vision", "Pillar"],
+        }
 
     cache_key = "subscription_details"
     subscription = frappe.cache().get_value(cache_key)
