@@ -4,6 +4,7 @@
 import unittest
 from rcore.ai_manager import _verify_name_match
 
+
 class TestBrainUtils(unittest.TestCase):
     def test_verify_name_match_exact(self):
         self.assertTrue(_verify_name_match("John Smith", "John Smith"))
@@ -30,6 +31,7 @@ class TestBrainUtils(unittest.TestCase):
     def test_verify_name_match_special_chars(self):
         self.assertTrue(_verify_name_match("O'Connor", "O Connor"))
         self.assertTrue(_verify_name_match("Mary-Jane", "Mary Jane"))
+
 
 if __name__ == "__main__":
     unittest.main()
