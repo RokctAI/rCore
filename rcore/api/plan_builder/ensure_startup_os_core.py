@@ -45,7 +45,7 @@ def ensure_startup_os_core():
             parent = os.path.dirname(os.path.abspath(__file__))
             for _ in range(7):
                 parent = os.path.dirname(parent)
-                probe_path = os.path.join(parent, "The-Rokct-Protocol", "core", "skills", "startup_os", "scripts", "core", f_name)
+                probe_path = os.path.join(parent, "The-Rokct-Protocol", "core", "skills", ".rok", "startup_os", "scripts", "core", f_name)
                 if os.path.exists(probe_path):
                     import shutil
                     shutil.copy(probe_path, dest_file)
@@ -57,7 +57,7 @@ def ensure_startup_os_core():
         if not resolved and not (in_test and not is_in_docker):
             try:
                 print(f"[StartupOS] Attempting remote fetch for {f_name}...")
-                github_url = f"https://raw.githubusercontent.com/RokctAI/The-Rokct-Protocol/main/core/skills/startup_os/scripts/core/{f_name}"
+                github_url = f"https://raw.githubusercontent.com/RokctAI/The-Rokct-Protocol/main/core/skills/.rok/startup_os/scripts/core/{f_name}"
                 req = urllib.request.Request(
                     github_url,
                     headers={"User-Agent": "ROKCT-Bootstrap-Agent/1.0"}
