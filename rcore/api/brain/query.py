@@ -1,7 +1,12 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
+
 
 @frappe.whitelist()
 def query(doctype: str, name: str) -> dict:
@@ -12,15 +17,19 @@ def query(doctype: str, name: str) -> dict:
     """
     trace_id = frappe.form_dict.get("trace_id") or "query-trace"
     import sys
+
     sys.stderr.write(f"[Trace: {trace_id}] query called for {doctype} {name}\n")
     if not frappe.has_permission(doctype, "read", doc=name):
-        frappe.throw(f"You do not have permission to access the memory of {doctype} {name}", frappe.PermissionError)
+        frappe.throw(
+            f"You do not have permission to access the memory of {doctype} {name}",
+            frappe.PermissionError,
+        )
 
     try:
         engram_name = f"{doctype}-{name}"
         engram_doc = frappe.get_doc("Engram", engram_name)
         response_data = engram_doc.as_dict()
-        response_data['brain_version'] = brain_version
+        response_data["brain_version"] = brain_version
         return response_data
     except frappe.DoesNotExistError:
         frappe.throw(f"No Engram found for {doctype} {name}", frappe.NotFound)
