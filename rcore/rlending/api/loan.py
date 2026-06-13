@@ -15,7 +15,10 @@ def disburse_loan(loan_application: str) -> str:
     """
     trace_id = frappe.form_dict.get("trace_id") or "disburse-loan-trace"
     import sys
-    sys.stderr.write(f"[Trace: {trace_id}] disburse_loan called for {loan_application}\n")
+
+    sys.stderr.write(
+        f"[Trace: {trace_id}] disburse_loan called for {loan_application}\n"
+    )
     if not loan_application:
         frappe.throw("Loan Application is required")
 
