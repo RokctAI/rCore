@@ -111,7 +111,9 @@ def _ensure_custom_fields_exist():
                     "fieldname": "trace_id",
                     "label": "Trace ID",
                     "fieldtype": "Data",
-                    "insert_after": "status" if doctype != "Company" else "company_name",
+                    "insert_after": "status"
+                    if doctype != "Company"
+                    else "company_name",
                     "read_only": 1,
                 },
             )
@@ -125,12 +127,8 @@ def report_client_error(title: str, error: str):
     """
     if not title or not error:
         return {"status": "error", "message": "Missing title or error"}
-        
-    doc = frappe.get_doc({
-        "doctype": "API Error Log",
-        "title": title,
-        "error": error
-    })
+
+    doc = frappe.get_doc({"doctype": "API Error Log", "title": title, "error": error})
     doc.insert(ignore_permissions=True)
     frappe.db.commit()
     return {"status": "success"}
@@ -1024,7 +1022,10 @@ def get_subscription_details():
     Caches the response from the control panel.
     """
     if frappe.flags.in_test:
-        return {"status": "Active", "modules": ["Memory", "HR", "Lending", "Strategic", "Vision", "Pillar"]}
+        return {
+            "status": "Active",
+            "modules": ["Memory", "HR", "Lending", "Strategic", "Vision", "Pillar"],
+        }
 
     if frappe.conf.get("app_role") != "tenant":
         frappe.throw(
@@ -1397,7 +1398,11 @@ def get_weather(location: str):
     api_url = (
         f"{scheme}://{control_plane_url}/api/method/control.control.api.get_weather"
     )
-    headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site, "Accept": "application/json"}
+    headers = {
+        "X-Rokct-Secret": api_secret,
+        "X-Rokct-Tenant": frappe.local.site,
+        "Accept": "application/json",
+    }
 
     try:
         # Use frappe.make_get_request which is a wrapper around requests
@@ -1441,7 +1446,11 @@ def set_weather_alias(original, corrected):
     scheme = frappe.conf.get("control_plane_scheme", "https")
     # Note: Target the definition in weather.py which is whitelisted
     api_url = f"{scheme}://{control_plane_url}/api/method/control.control.weather.set_weather_alias"
-    headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site, "Accept": "application/json"}
+    headers = {
+        "X-Rokct-Secret": api_secret,
+        "X-Rokct-Tenant": frappe.local.site,
+        "Accept": "application/json",
+    }
 
     # We use POST for state-changing operations
     try:
@@ -1464,33 +1473,48 @@ def announce_ready_to_control():
     """
     import os
     import requests
+
     token = os.environ.get("ROKCT_BOOTSTRAP_TOKEN")
-    control_plane_url = os.environ.get("ROKCT_CONTROL_PLANE_URL") or frappe.conf.get("control_plane_url")
-    
+    control_plane_url = os.environ.get("ROKCT_CONTROL_PLANE_URL") or frappe.conf.get(
+        "control_plane_url"
+    )
+
     if not token or not control_plane_url:
         return
 
-    scheme = os.environ.get("ROKCT_CONTROL_PLANE_SCHEME") or frappe.conf.get("control_plane_scheme") or "https"
+    scheme = (
+        os.environ.get("ROKCT_CONTROL_PLANE_SCHEME")
+        or frappe.conf.get("control_plane_scheme")
+        or "https"
+    )
     api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.subscription.announce_tenant_ready"
 
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "site_name": frappe.local.site
-    }
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    data = {"site_name": frappe.local.site}
 
     try:
         response = requests.post(api_url, headers=headers, json=data, timeout=30)
         response.raise_for_status()
-        frappe.log_error(f"Tenant '{frappe.local.site}' successfully announced readiness to Control Hub.", "Tenant Bootstrap")
+        frappe.log_error(
+            f"Tenant '{frappe.local.site}' successfully announced readiness to Control Hub.",
+            "Tenant Bootstrap",
+        )
     except Exception as e:
-        frappe.log_error(f"Tenant '{frappe.local.site}' failed to announce readiness: {e}\n{frappe.get_traceback()}", "Tenant Bootstrap Error")
+        frappe.log_error(
+            f"Tenant '{frappe.local.site}' failed to announce readiness: {e}\n{frappe.get_traceback()}",
+            "Tenant Bootstrap Error",
+        )
 
 
 @frappe.whitelist(allow_guest=True)
-def record_unique_visit(visitor_id: str, client_ip: str = None, user_id: str = None, app_version: str = None, os: str = None, os_version: str = None):
+def record_unique_visit(
+    visitor_id: str,
+    client_ip: str = None,
+    user_id: str = None,
+    app_version: str = None,
+    os: str = None,
+    os_version: str = None,
+):
     """
     Records a unique visit on the tenant side.
     Deduplicates using visitor IP + visitor_id in a Redis Set.
@@ -1498,20 +1522,20 @@ def record_unique_visit(visitor_id: str, client_ip: str = None, user_id: str = N
     """
     if not visitor_id:
         return {"status": "error", "message": "Missing visitor_id"}
-    
+
     ip = client_ip or frappe.local.request.ip or "unknown"
     date_str = nowdate()
     cache_key = f"unique_visitors:{date_str}"
-    
+
     frappe.cache().sadd(cache_key, f"{ip}:{visitor_id}")
     frappe.cache().expire(cache_key, 172800)
-    
+
     metadata = f"OS: {os or 'unknown'}, OS Version: {os_version or 'unknown'}, App Version: {app_version or 'unknown'}"
     frappe.log_error(
         message=f"Telemetry: Visitor {visitor_id} from IP {ip}. Metadata: {metadata}. Identified as user {user_id or 'guest'}",
-        title="Visitor Telemetry"
+        title="Visitor Telemetry",
     )
-        
+
     return {"status": "success"}
 
 
@@ -1529,34 +1553,31 @@ def sync_visitors_to_control():
             pass
 
         from frappe.utils.data import add_days
+
         yesterday = add_days(nowdate(), -1)
         cache_key = f"unique_visitors:{yesterday}"
-        
+
         unique_count = frappe.cache().scard(cache_key) or 0
-        
+
         control_plane_url = frappe.conf.get("control_plane_url")
         api_secret = frappe.conf.get("api_secret")
-        
+
         if not control_plane_url or not api_secret:
             return
-            
+
         import requests
+
         scheme = frappe.conf.get("control_plane_scheme", "https")
         api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.tenant.report_tenant_visitors"
-        
-        headers = {
-            "X-Rokct-Secret": api_secret,
-            "X-Rokct-Tenant": frappe.local.site
-        }
-        data = {
-            "date": yesterday,
-            "unique_visitors": unique_count
-        }
-        
+
+        headers = {"X-Rokct-Secret": api_secret, "X-Rokct-Tenant": frappe.local.site}
+        data = {"date": yesterday, "unique_visitors": unique_count}
+
         response = requests.post(api_url, headers=headers, json=data, timeout=30)
         response.raise_for_status()
-        
+
     except Exception as e:
-        frappe.log_error(f"Failed to sync visitor count to control panel: {e}\n{frappe.get_traceback()}", "Visitor Sync Failed")
-
-
+        frappe.log_error(
+            f"Failed to sync visitor count to control panel: {e}\n{frappe.get_traceback()}",
+            "Visitor Sync Failed",
+        )

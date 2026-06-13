@@ -5,6 +5,7 @@ import frappe
 import requests
 import json
 
+
 def call_control(method, data=None):
     """
     Centralized utility to make secure API calls from a tenant to the control panel.
@@ -14,17 +15,20 @@ def call_control(method, data=None):
     api_secret = frappe.conf.get("api_secret")
 
     if not control_plane_url or not api_secret:
-        frappe.log_error("Tenant site not configured for control panel communication.", "Control API Error")
+        frappe.log_error(
+            "Tenant site not configured for control panel communication.",
+            "Control API Error",
+        )
         return None
 
     scheme = frappe.conf.get("control_plane_scheme", "https")
     # Endpoint follows the pattern control.control.api.<method>
     api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.{method}"
-    
+
     headers = {
         "X-Rokct-Secret": api_secret,
         "X-Rokct-Tenant": frappe.local.site,
-        "Accept": "application/json"
+        "Accept": "application/json",
     }
 
     try:
@@ -32,17 +36,24 @@ def call_control(method, data=None):
         response.raise_for_status()
         return response.json().get("message")
     except Exception as e:
-        frappe.log_error(f"Control API Call Failed ({method}): {str(e)}", "Control API Error")
+        frappe.log_error(
+            f"Control API Call Failed ({method}): {str(e)}", "Control API Error"
+        )
         return None
+
 
 def is_ai_action():
     """
     Checks if the current Frappe request was initiated by the AI agent
     by looking for a specific HTTP header.
     """
-    if hasattr(frappe.local, "request") and frappe.local.request.headers.get("X-Action-Source") == "AI":
+    if (
+        hasattr(frappe.local, "request")
+        and frappe.local.request.headers.get("X-Action-Source") == "AI"
+    ):
         return True
     return False
+
 
 def inject_trace_context(doc, method=None):
     """
