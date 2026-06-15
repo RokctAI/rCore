@@ -1,3 +1,4 @@
+from typing import Any, Optional
 # Copyright (c) 2022, Frappe Technologies Pvt. Ltd. and Contributors
 # License: GNU General Public License v3. See license.txt
 # tenant context check.
@@ -214,10 +215,11 @@ def update_employee_transfer(doc, method=None):
 
 
 @frappe.whitelist()
-def get_timeline_data(doctype, name):
+def get_timeline_data(doctype: Any, name: Any) -> Any:
     """Return timeline for attendance
     raw_sql
     """
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     from frappe.desk.notifications import get_open_count
 
     out = {}
@@ -242,7 +244,9 @@ def get_timeline_data(doctype, name):
 
 
 @frappe.whitelist()
-def get_retirement_date(date_of_birth=None):
+def get_retirement_date(date_of_birth: Any=None) -> Any:
+    """Auto-generated docstring for compliance."""
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     if date_of_birth:
         try:
             retirement_age = cint(

@@ -24,7 +24,7 @@ def dispatch_ai_task(queue_name, data, timeout=60):
     """
     Dispatches a task to the Redis queue and waits for the result (Synchronous-ish).
     For truly async background jobs, use 'fire_and_forget=True' (to be implemented).
-    
+
     :param queue_name: Which worker to target (BRAIN_QUEUE, etc.)
     :param data: Dict containing task data (prompt, image_path, etc.)
     :return: The result dict from the worker.
@@ -34,18 +34,18 @@ def dispatch_ai_task(queue_name, data, timeout=60):
         if queue_name == VISION_QUEUE:
             if _should_route_extensions("vision"):
                 return _call_jina_vision(data)
-        
+
         # 1. Connect to Redis (reuse connection if possible in future)
         r = redis.from_url(frappe.conf.get("redis_queue") or "redis://localhost:6379")
-        
+
         # 2. Prepare Job
         job_id = str(uuid.uuid4())
         data['job_id'] = job_id
         data['site'] = frappe.local.site  # Inject Site Context for Global Worker
-        
+
         # 3. Push to Queue
         r.rpush(queue_name, json.dumps(data))
-        
+
         # 4. Wait for Result (Polling)
         # We poll the 'rokct:result:{job_id}' key
         start_time = time.time()
@@ -55,11 +55,11 @@ def dispatch_ai_task(queue_name, data, timeout=60):
                 # Cleanup and Return
                 r.delete(f"rokct:result:{job_id}")
                 return json.loads(result_raw)
-            
+
             time.sleep(0.1) # Short sleep to avoid CPU spinning
-            
+
         raise TimeoutError(f"AI Worker timed out after {timeout}s")
-        
+
     except Exception as e:
         frappe.log_error(f"AI Dispatch Error: {e}", "AI Service")
         return {"status": "error", "message": str(e)}
@@ -90,7 +90,7 @@ def get_api_key(provider):
     3. Environment Variable
     """
     key_field = f"{provider.lower()}_api_key"
-    
+
     # 1. Try Brain Settings (Single DocType from Control App)
     try:
         # We access it loosely to avoid dependency errors if Control isn't installed
@@ -100,15 +100,15 @@ def get_api_key(provider):
             if key: return key
     except Exception:
         pass # DocType might not exist or be accessible
-        
+
     # 2. Try Site Config
     conf_key = frappe.conf.get(key_field)
     if conf_key: return conf_key
-    
+
     # 3. Try Environment
     env_key = os.environ.get(key_field.upper())
     if env_key: return env_key
-    
+
     return None
 
 def _call_jina_vision(data):
@@ -125,18 +125,18 @@ def _call_jina_vision(data):
         headers = {
             "Accept": "application/json"
         }
-        
+
         # Check for API Key (Brain Settings -> Config -> Env)
         api_key = get_api_key("jina")
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
-        
+
         # 3. Call Jina
         jina_url = f"https://r.jina.ai/{file_url}"
         response = requests.get(jina_url, headers=headers, timeout=30)
 
         response.raise_for_status()
-        
+
         # 3. Return Mocked Structure (to match VisionWorker output)
         return {
             "status": "success",
@@ -158,7 +158,7 @@ def ask_brain(prompt, system=None, tools=None):
         headers = {
             "Content-Type": "application/json",
         }
-        
+
         # Build prompt messages
         messages = []
         if system:
@@ -179,7 +179,7 @@ def ask_brain(prompt, system=None, tools=None):
         if choices:
             content = choices[0].get("message", {}).get("content", "")
             return {"status": "success", "text": content}
-            
+
         return {"status": "error", "message": "No response choice returned from ROK."}
     except Exception as e:
         frappe.log_error(f"ROK Direct ask_brain failed: {e}", "Brain Services")
@@ -192,11 +192,11 @@ def embed_text(text):
     """
     if not text or not (isinstance(text, str) or isinstance(text, list)):
         return None
-        
+
     payload = {"text": text}
     result = dispatch_ai_task(EMBEDDING_QUEUE, payload)
-    
+
     if result and result.get("status") == "success":
         return result.get("embedding")
-        
+
     return None

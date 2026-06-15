@@ -15,22 +15,22 @@ def setup_ai_infrastructure():
     3. Models: Downloads necessary models to /opt/rokct_models.
     """
     print("\n\n--- 🧠 Setting up ROKCT Hybrid AI Infrastructure ---")
-    
+
     _cleanup_legacy_ai_services()
     _install_python_dependencies()
     _setup_model_directory()
     _download_models()
-    
+
     print("--- 🧠 AI Infrastructure Setup Complete ---\n")
 
 def _cleanup_legacy_ai_services():
     """Stops, disables, and REMOVES legacy AI services like Ollama."""
     print("--- 🧹 Cleanup: Checking for legacy AI services ---")
-    
+
     # 1. Check if Ollama exists
     ollama_path = shutil.which("ollama")
     service_path = "/etc/systemd/system/ollama.service"
-    
+
     if not ollama_path and not os.path.exists(service_path):
         print("✅ Ollama is not installed. Skipping cleanup.")
         return
@@ -41,17 +41,17 @@ def _cleanup_legacy_ai_services():
         subprocess.run(["sudo", "systemctl", "stop", "ollama"], check=False, capture_output=True)
         subprocess.run(["sudo", "systemctl", "disable", "ollama"], check=False, capture_output=True)
         print("✅ 'ollama' service stopped and disabled.")
-        
+
         # 3. Remove Binary and Service File
         if ollama_path:
              print(f"Removing binary: {ollama_path}")
              subprocess.run(["sudo", "rm", ollama_path], check=True)
-             
+
         if os.path.exists(service_path):
             print(f"Removing service file: {service_path}")
             subprocess.run(["sudo", "rm", service_path], check=True)
             subprocess.run(["sudo", "systemctl", "daemon-reload"], check=True)
-            
+
         print("✅ Ollama completely removed.")
 
         # 4. Remove Nginx Config
@@ -61,7 +61,7 @@ def _cleanup_legacy_ai_services():
             subprocess.run(["sudo", "rm", nginx_conf], check=True)
             subprocess.run(["sudo", "systemctl", "reload", "nginx"], check=True)
             print("✅ Nginx config removed and service reloaded.")
-            
+
     except Exception as e:
         print(f"⚠️ Could not cleanup ollama/nginx: {e}")
 
@@ -81,7 +81,7 @@ def _setup_model_directory():
     """Creates the persistent directory for AI models."""
     model_dir = "/opt/rokct_models"
     print(f"--- 📂 Storage: Preparing {model_dir} ---")
-    
+
     if not os.path.exists(model_dir):
         try:
             # We use sudo because /opt usually requires root
@@ -97,11 +97,11 @@ def _setup_model_directory():
                 model_dir = os.path.expanduser("~/rokct_models")
                 os.makedirs(model_dir, exist_ok=True)
                 print(f"✅ Created {model_dir}")
-                
+
             # Set this path in site config so ai_manager knows where to look
             from frappe.installer import update_site_config
             update_site_config("ai_model_path", model_dir)
-            
+
         except Exception as e:
             frappe.log_error(f"Failed to create model directory: {e}")
             raise
@@ -109,7 +109,7 @@ def _setup_model_directory():
 def _download_models():
     """Downloads OR Removes models based on brain_config.json."""
     print("--- ⬇️ Models: Synchronizing AI Models ---")
-    
+
     model_dir = frappe.conf.get("ai_model_path") or "/opt/rokct_models"
     if not os.path.exists(model_dir):
         model_dir = os.path.expanduser("~/rokct_models")
@@ -121,7 +121,7 @@ def _download_models():
         brain_config_path = frappe.get_app_path("rcore", "ai_config", "brain_config.json")
     except Exception:
         # Fallback for weird path issues
-        brain_config_path = os.path.join(os.path.dirname(__file__), "ai_config", "brain_config.json")
+        brain_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "ai_config", "brain_config.json"))
     config = {}
     try:
         if os.path.exists(brain_config_path):
@@ -154,10 +154,10 @@ def _download_models():
 
     try:
         from huggingface_hub import snapshot_download
-        
+
         for task in tasks:
             backend = config.get(task["config_key"], "local") # Default to local if missing
-            local_path = os.path.join(model_dir, task["dir"])
+            local_path = os.path.abspath(os.path.join(model_dir, task["dir"]))
 
             if backend == "local":
                 # Install / Update
@@ -180,10 +180,10 @@ def _download_models():
                     print(f"✨ {task['name']}: Backend is {backend.upper()}. No local files to clean.")
 
         # Always ensure Embeddings (small, useful utility)
-        embed_path = os.path.join(model_dir, "minilm")
+        embed_path = os.path.abspath(os.path.join(model_dir, "minilm"))
         print("📥 Embeddings: Verifying...")
         snapshot_download(repo_id="sentence-transformers/all-MiniLM-L6-v2", local_dir=embed_path, local_dir_use_symlinks=False)
-            
+
     except ImportError:
         print("⚠️ huggingface_hub library not found. Skipping model sync.")
     except Exception as e:

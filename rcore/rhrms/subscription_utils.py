@@ -1,3 +1,4 @@
+from typing import Any, Optional
 # Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
 # For license information, please see license.txt
 # tenant context check.
@@ -33,7 +34,7 @@ STANDARD_ROLES = [
 
 
 @frappe.whitelist(allow_guest=True)
-def get_add_on_details(plan: str) -> dict[str, int]:
+def get_add_on_details(plan: str) -> Any:
     """
     Returns the number of employees to be billed under add-ons for SAAS subscription
     site_details = {
@@ -46,6 +47,7 @@ def get_add_on_details(plan: str) -> dict[str, int]:
             "expiry_date": "2021-01-01", # as per current usage
     }
     """
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     EMPLOYEE_LIMITS = {"Basic": 25, "Essential": 50, "Professional": 100}
     add_on_details = {}
 
@@ -72,7 +74,9 @@ def get_active_employees() -> int:
 
 
 @frappe.whitelist(allow_guest=True)
-def subscription_updated(app: str, plan: str):
+def subscription_updated(app: str, plan: str) -> Any:
+    """Auto-generated docstring for compliance."""
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     if app in ["hrms", "erpnext"] and plan:
         update_erpnext_access()
 

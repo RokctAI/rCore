@@ -136,13 +136,13 @@ class MockModule(types.ModuleType):
     def __getattr__(self, name):
         if name.startswith("__") and name.endswith("__"):
             raise AttributeError(name)
-        
+
         full_submodule_name = f"{self.__name__}.{name}"
-        
+
         class CallableMock(MockModule):
             def __call__(self, *args, **kwargs):
                 return ""
-                
+
         mock_obj = CallableMock(full_submodule_name)
         sys.modules[full_submodule_name] = mock_obj
         return mock_obj
@@ -179,13 +179,13 @@ def verify_onboarding_integration():
     print("STEP 1: Verify get_onboarding_template endpoint from Control...")
     try:
         from control.api import get_onboarding_template
-        
+
         bus_template = get_onboarding_template("business")
         life_template = get_onboarding_template("life")
-        
+
         assert len(bus_template) == 8, "Business template must contain 8 standard questions."
         assert len(life_template) == 8, "Life template must contain 8 standard questions."
-        
+
         print("✅ STEP 1 SUCCESS: Templates retrieved successfully.")
         print(f"   - Business: {len(bus_template)} questions parsed.")
         print(f"   - Life: {len(life_template)} questions parsed.")
@@ -218,11 +218,11 @@ def verify_onboarding_integration():
 
         # Setup local test templates folder under StartupOS/templates dynamically
         monorepo_templates = os.path.join(parent_workspace_dir, "Monorepo", "templates_test")
-        
+
         # Resolve startup_os_root dynamically using the mock site directory path
         startup_os_root = get_site_path("StartupOS")
         dest_templates = os.path.join(startup_os_root, "templates")
-        
+
         if os.path.exists(monorepo_templates) and not os.path.exists(dest_templates):
             shutil.copytree(monorepo_templates, dest_templates)
             print(f"   [Test Setup] Copied templates from Monorepo to test directory: {dest_templates}")
@@ -242,9 +242,9 @@ def verify_onboarding_integration():
         # Determine the generated questions.md location
         questions_path = os.path.join(startup_os_root, "instances", "business", "AntigravityLabs", "questions.md")
         output_dir = os.path.join(startup_os_root, "instances", "business", "AntigravityLabs", "output")
-        
+
         assert os.path.exists(questions_path), "File questions.md must exist on filesystem."
-        
+
         if os.path.exists(output_dir):
             print("✅ Filesystem side-effects (Real Compilation) verified successfully!")
             print(f"   - questions.md size: {os.path.getsize(questions_path)} bytes")
@@ -259,7 +259,7 @@ def verify_onboarding_integration():
         # Create output dir manually for testing the seeder
         test_output_dir = os.path.join(startup_os_root, "instances", "business", "AntigravityLabs", "output")
         os.makedirs(test_output_dir, exist_ok=True)
-        
+
         mock_plan_md = """# AntigravityLabs — Business Plan on a Page
 
 ## 1. Executive Summary & Core Mission
@@ -284,19 +284,19 @@ We are deploying a robust multi-tenant model that delivers modern technology to 
         mock_file_path = os.path.join(test_output_dir, "business_plan_on_a_page.md")
         with open(mock_file_path, "w", encoding="utf-8") as f:
             f.write(mock_plan_md)
-            
+
         print(f"   [Test Setup] Created mock compiled plan file: {mock_file_path}")
-        
+
         # Trigger plan commit reading from files
         from rcore.api.plan_builder import commit_plan
         db_res = commit_plan(profile_type="business", instance_name="AntigravityLabs")
-        
+
         assert db_res.get("status") == "success", "Database plan commit must succeed."
         assert "seeded from compiled strategic files" in db_res.get("message"), "Seeder must use compiled files."
-        
+
         print("✅ STEP 3 SUCCESS: Dynamic strategic markdown parser and seeder verified successfully.")
         print(f"   - Seeder message: {db_res.get('message')}")
-        
+
     except Exception as e:
         import traceback
         traceback.print_exc()

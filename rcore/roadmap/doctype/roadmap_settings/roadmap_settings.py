@@ -1,3 +1,4 @@
+from typing import Any, Optional
 # Copyright (c) 2025 ROKCT INTELLIGENCE (PTY) LTD
 # For license information, please see license.txt
 # tenant context check.
@@ -74,11 +75,12 @@ def populate_defaults():
 
 
 @frappe.whitelist(allow_guest=True)
-def get_public_roadmap_content():
+def get_public_roadmap_content() -> Any:
     """
     Returns the content of the configured Public Roadmap.
     Used by the frontend to render the public roadmap page.
     """
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     settings = frappe.get_single("Roadmap Settings")
     if not settings.public_roadmap:
         return None

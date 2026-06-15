@@ -8,7 +8,7 @@ import glob
 import sys
 
 fixtures_dir = r"C:\Users\sinya\Desktop\RokctAI\Repos\rcore\rcore\fixtures"
-json_files = glob.glob(os.path.join(fixtures_dir, "*.json"))
+json_files = glob.glob(os.path.abspath(os.path.join(fixtures_dir, "*.json")))
 
 total_files = 0
 total_records = 0

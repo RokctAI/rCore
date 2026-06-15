@@ -1,3 +1,4 @@
+import os
 import json
 import frappe
 
@@ -14,8 +15,8 @@ def generate_strategic_alignment_report(instance_name: str, profile_type: str = 
     sys.stderr.write(f"[Trace: {trace_id}] generate_strategic_alignment_report called for {instance_name}\n")
     try:
         startup_os_root = ensure_startup_os_core()
-        instance_dir = os.path.join(startup_os_root, "instances", profile_type, instance_name)
-        questions_path = os.path.join(instance_dir, "questions.md")
+        instance_dir = os.path.abspath(os.path.join(startup_os_root, "instances", profile_type, instance_name))
+        questions_path = os.path.abspath(os.path.join(instance_dir, "questions.md"))
 
         if not os.path.exists(questions_path):
             frappe.throw(f"Active strategic baseline questions.md not found for '{instance_name}'.")
@@ -43,7 +44,7 @@ def generate_strategic_alignment_report(instance_name: str, profile_type: str = 
                 # Query Pillars
                 pillars = frappe.get_all("Pillar", filters={"parent_vision": v_name}, fields=["name", "title", "description"])
                 db_telemetry["pillars"] = pillars
-                
+
                 # Query Objectives & KPIs
                 for p in pillars:
                     objs = frappe.get_all("Strategic Objective", filters={"pillar": p["name"]}, fields=["name", "title", "description", "status"])

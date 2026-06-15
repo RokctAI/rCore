@@ -13,7 +13,7 @@ def search(module: str = None, module_group: str = None, involved_user: str = No
     sys.stderr.write(f"[Trace: {trace_id}] search called\n")
     if not frappe.session.user:
         frappe.throw("You must be logged in to use this feature.", frappe.PermissionError)
-    
+
     t_engram = frappe.qb.DocType("Engram")
     query = (
         frappe.qb.from_(t_engram)

@@ -31,14 +31,14 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
                 frappe.db.delete("Strategic Objective", {"pillar": p.name})
             frappe.db.delete("Pillar", {"vision": old_vision})
             frappe.db.delete("Vision", {"name": old_vision})
-            
+
             plan_doc.vision = None
             plan_doc.save(ignore_permissions=True)
 
         # 2. Case A: Raw plan_data passed (backward compatibility)
         if plan_data:
             data = json.loads(plan_data)
-            
+
             # Create the Vision
             vision_doc = frappe.new_doc("Vision")
             vision_doc.title = data.get("vision_title")
@@ -76,7 +76,7 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
             frappe.throw("Invalid arguments. Must supply either plan_data or profile_type + instance_name.")
 
         output_dir = os.path.join(startup_os_root, "instances", profile_type, instance_name, "output")
-        
+
         has_compiled_files = False
         parsed_plans = []
 
@@ -96,22 +96,22 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
                 "description": "",
                 "pillars": []
             }
-            
+
             current_pillar = None
             current_objective = None
             description_lines = []
             in_h1_intro = False
-            
+
             for line in lines:
                 line_strip = line.strip()
                 if not line_strip:
                     continue
-                    
+
                 if line_strip.startswith("# "):
                     parsed_data["title"] = line_strip[2:].strip()
                     in_h1_intro = True
                     continue
-                    
+
                 if line_strip.startswith("## "):
                     in_h1_intro = False
                     p_title = line_strip[3:].strip()
@@ -124,7 +124,7 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
                     parsed_data["pillars"].append(current_pillar)
                     current_objective = None
                     continue
-                    
+
                 if line_strip.startswith("### "):
                     in_h1_intro = False
                     if not current_pillar:
@@ -134,7 +134,7 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
                             "objectives": []
                         }
                         parsed_data["pillars"].append(current_pillar)
-                    
+
                     obj_title = line_strip[4:].strip()
                     obj_title = re.sub(r"^[A-Z0-9]+[\.\s\-]+", "", obj_title)
                     current_objective = {
@@ -144,11 +144,11 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
                     }
                     current_pillar["objectives"].append(current_objective)
                     continue
-                    
+
                 if line_strip.startswith(("* ", "- ", "1. ", "2. ", "3. ", "4. ", "5. ")):
                     in_h1_intro = False
                     bullet_content = re.sub(r"^(\*\s*|-\s*|\d+[\.\s\-]+)", "", line_strip).strip()
-                    
+
                     if ":" in bullet_content:
                         b_title, b_val = bullet_content.split(":", 1)
                         b_title = b_title.strip()
@@ -156,7 +156,7 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
                     else:
                         b_title = bullet_content
                         b_val = bullet_content
-                        
+
                     if current_objective:
                         current_objective["kpis"].append({
                             "title": b_title,
@@ -170,7 +170,7 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
                                 "objectives": []
                             }
                             parsed_data["pillars"].append(current_pillar)
-                        
+
                         obj = {
                             "title": b_title,
                             "description": b_val,
@@ -178,7 +178,7 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
                         }
                         current_pillar["objectives"].append(obj)
                     continue
-                    
+
                 if in_h1_intro:
                     description_lines.append(line_strip)
                 elif current_objective:
@@ -188,7 +188,7 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
 
             if description_lines:
                 parsed_data["description"] = "\n".join(description_lines)
-                
+
             return parsed_data
 
         if os.path.exists(output_dir):
@@ -196,7 +196,7 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
             md_files = glob.glob(os.path.join(output_dir, "*.md"))
             # Filter out narratives/resumes (cv.md and obituary.md)
             strategic_files = [f for f in md_files if os.path.basename(f) not in ["cv.md", "obituary.md"]]
-            
+
             if strategic_files:
                 has_compiled_files = True
                 for f_path in strategic_files:
@@ -216,7 +216,7 @@ def commit_plan(plan_data: str = None, profile_type: str = None, instance_name: 
                 if "plan_on_a_page" in p["title"].lower() or "plan on a page" in p["title"].lower():
                     primary_plan = p
                     break
-            
+
             vision_doc = frappe.new_doc("Vision")
             vision_doc.title = primary_plan["title"]
             vision_doc.description = primary_plan["description"] or f"Strategic Plan on a Page for {instance_name}"

@@ -65,11 +65,11 @@ def generate_summary_and_update_engram(chat_transcript, reference_doctype, refer
         if engram_doc.summary:
             context_text = f"{reference_doctype} {reference_name} ({engram_doc.reference_title}):\n{engram_doc.summary}"
             vector = embed_text(context_text)
-            
+
             if vector:
                 frappe.db.sql("""
-                    UPDATE tabEngram 
-                    SET embedding = %s 
+                    UPDATE tabEngram
+                    SET embedding = %s
                     WHERE name = %s
                 """, (str(vector), engram_doc.name))
                 frappe.db.commit()

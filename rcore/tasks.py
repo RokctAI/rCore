@@ -64,11 +64,11 @@ def manage_daily_tenders():
         from rcore.utils.subscription_checker import get_cached_subscription_details
         sub = get_cached_subscription_details()
         if not sub.get("enable_tenders"): return
-        
+
         allowed_country = sub.get("tender_country")
         default_company = frappe.get_single("Global Defaults").default_company
         if not default_company: return
-        
+
         company_country = frappe.db.get_value("Company", default_company, "country")
         if company_country != allowed_country: return
     except: return
@@ -79,7 +79,7 @@ def manage_daily_tenders():
 def _fetch_and_upsert_stimuli():
     settings = frappe.get_single("Synaptic Convergence Settings")
     filters = {"category": settings.main_procurement_category}
-    
+
     # Call the NEW consolidated API on control
     relevant_tenders = call_control("tenders.get_relevant_tenders", {"filters": json.dumps(filters)})
     if not relevant_tenders: return
@@ -134,7 +134,7 @@ def manage_daily_funding():
     _fetch_and_upsert_neurotrophins("grants")
     # Fetch Equity
     _fetch_and_upsert_neurotrophins("equity")
-    
+
     _delete_expired_funding()
 
 def _fetch_and_upsert_neurotrophins(opp_type):
@@ -181,13 +181,13 @@ def check_invoice_payments():
     and triggers reminders/system logs.
     """
     if frappe.conf.get("app_role") != "tenant": return
-    
+
     unpaid_invoices = frappe.get_all("Sales Invoice", filters={
         "docstatus": 1,
         "status": ["not in", ["Paid", "Draft", "Cancelled"]],
         "outstanding_amount": [">", 0]
     }, fields=["name", "customer", "outstanding_amount", "due_date"])
-    
+
     for inv in unpaid_invoices:
         try:
             frappe.log_error(
@@ -203,13 +203,13 @@ def pick_proactive_question():
     and triggers a system notification/log or logs it under ToDos.
     """
     if frappe.conf.get("app_role") != "tenant": return
-    
+
     questions = frappe.get_all("Question Bank", filters={"is_active": 1}, fields=["question", "category"])
     if not questions: return
-    
+
     import random
     selected = random.choice(questions)
-    
+
     doc = frappe.get_doc({
         "doctype": "ToDo",
         "description": f"ROK Daily Question ({selected.category}): {selected.question}",
@@ -218,7 +218,7 @@ def pick_proactive_question():
     })
     doc.insert(ignore_permissions=True)
     frappe.db.commit()
-    
+
     frappe.log_error(f"Proactive Question selected: {selected.question}", "Proactive Question Bank Picker")
 
 def send_weekly_goal_reminders():
@@ -226,12 +226,12 @@ def send_weekly_goal_reminders():
     Weekly goal cron. Triggers Monday morning check-in prompts for active Personal Mastery Goals.
     """
     if frappe.conf.get("app_role") != "tenant": return
-    
+
     # We check if it is Monday (weekday == 0) before executing the check-in reminders
     import datetime
     if datetime.datetime.today().weekday() != 0:
         return
-        
+
     active_goals = frappe.get_all("Personal Mastery Goal", filters={"status": ["not in", ["Achieved", "Cancelled"]]}, fields=["name", "title"])
     for goal in active_goals:
         try:
@@ -248,12 +248,12 @@ def send_friday_wins_reminders():
     Friday Wins Chron. Triggers prompts to capture achievement logs / wins every Friday afternoon.
     """
     if frappe.conf.get("app_role") != "tenant": return
-    
+
     # We check if it is Friday (weekday == 4) before executing the win capture reminders
     import datetime
     if datetime.datetime.today().weekday() != 4:
         return
-        
+
     try:
         frappe.log_error(
             message="Friday Wins prep: What were your top wins and achievements this week? Take a moment to reflect and log them with ROK!",
@@ -268,15 +268,15 @@ def archive_inactive_vault_files():
     90-Day vault file archiving. Archives/deletes files 90 days post-cancel of a subscription. Tenant context trace.
     """
     if frappe.conf.get("app_role") != "tenant": return
-    
+
     from frappe.utils import add_days, nowdate
     ninety_days_ago = add_days(nowdate(), -90)
-    
+
     expired_tenants = frappe.get_all("User", filters={
         "enabled": 0,
         "temporary_user_expires_on": ["<", ninety_days_ago]
     }, fields=["name", "email"])
-    
+
     for tenant in expired_tenants:
         files = frappe.get_all("File", filters={"owner": tenant.name}, fields=["name"])
         for f in files:
@@ -292,15 +292,15 @@ def check_protocol_99_sequences():
     Checks active sequences and releases vault packages after 6 hours.
     """
     if frappe.conf.get("app_role") != "tenant": return
-    
+
     from frappe.utils import add_hours, now_datetime
     six_hours_ago = add_hours(now_datetime(), -6)
-    
+
     active_releases = frappe.get_all("Legacy Vault", filters={
         "release_status": "Initiated",
         "release_initiated_at": ["<=", six_hours_ago]
     }, fields=["name", "owner", "will_document_url"])
-    
+
     for release in active_releases:
         try:
             relationship = frappe.get_value("Legacy Relationship", {"parent": release.owner}, ["executor_details", "name"], as_dict=True)
@@ -330,7 +330,7 @@ def tag_engram_pillars(doc, method=None):
         tags.append("Life")
     if any(w in text for w in ["legacy", "vault", "obituary", "will", "executor"]):
         tags.append("Legacy")
-        
+
     if tags:
         doc.set("tags", ", ".join(tags))
 
@@ -339,16 +339,16 @@ def archive_low_score_engrams():
     Engram scoring & expiry. Archives engrams older than 1 year with low score.
     """
     if frappe.conf.get("app_role") != "tenant": return
-    
+
     from frappe.utils import add_days, nowdate
     one_year_ago = add_days(nowdate(), -365)
-    
+
     if frappe.db.exists("DocType", "Engram"):
         low_score_engrams = frappe.get_all("Engram", filters={
             "creation": ["<", one_year_ago],
             "relevance_score": ["<", 0.5]
         }, fields=["name"])
-        
+
         for engram in low_score_engrams:
             try:
                 frappe.db.set_value("Engram", engram.name, "is_archived", 1)

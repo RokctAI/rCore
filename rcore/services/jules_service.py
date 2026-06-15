@@ -11,9 +11,12 @@ class JulesClient:
     def _get_headers(self, api_key):
         if not api_key:
             frappe.throw("Jules API Key is missing.")
+        # Propagate trace id
+        trace_id = frappe.request.headers.get("x-trace-id") if (hasattr(frappe, "request") and frappe.request) else "jules-client-trace"
         return {
             "Content-Type": "application/json",
-            "X-Goog-Api-Key": api_key
+            "X-Goog-Api-Key": api_key,
+            "x-trace-id": trace_id or ""
         }
 
     def create_session(self, api_key, prompt, source_repo, automation_mode="AUTO_CREATE_PR", require_approval=False, title=None, branch="main"):
@@ -35,7 +38,7 @@ class JulesClient:
         }
         if title:
             payload["title"] = title
-        
+
         try:
             response = requests.post(url, json=payload, headers=self._get_headers(api_key), timeout=30)
             response.raise_for_status()
@@ -72,7 +75,7 @@ class JulesClient:
             return response.json().get("activities", [])
         except requests.exceptions.RequestException as e:
             self._handle_error(e)
-            
+
     def get_sessions(self, api_key):
         """Fetches all sessions."""
         url = f"{self.BASE_URL}/sessions"
@@ -122,6 +125,6 @@ class JulesClient:
                 msg += f" - {error_data}"
             except:
                 msg += f" - {error.response.text}"
-        
+
         frappe.log_error(msg, "Jules Service Error")
         frappe.throw(msg)

@@ -20,7 +20,7 @@ def call_control(method, data=None):
     scheme = frappe.conf.get("control_plane_scheme", "https")
     # Endpoint follows the pattern control.control.api.<method>
     api_url = f"{scheme}://{control_plane_url}/api/method/control.control.api.{method}"
-    
+
     headers = {
         "X-Rokct-Secret": api_secret,
         "X-Rokct-Tenant": frappe.local.site,

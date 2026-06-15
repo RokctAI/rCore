@@ -13,17 +13,17 @@ def get_jules_sessions(api_key: str = None) -> dict:
     If no API key is provided, uses the default credentials configured in the system.
     """
     trace_id = str(uuid.uuid4())
-    
+
     def log_info(message):
         entry = {"trace_id": trace_id, "message": message, "level": "info"}
         print(json.dumps(entry), file=sys.stderr)
-    
+
     def log_error(message):
         entry = {"trace_id": trace_id, "message": message, "level": "error"}
         print(json.dumps(entry), file=sys.stderr)
 
     log_info(f"Fetching Jules sessions with api_key provided: {bool(api_key)}")
-    
+
     try:
         client = JulesClient()
         result = client.get_sessions(api_key)

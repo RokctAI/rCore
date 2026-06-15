@@ -12,17 +12,17 @@ def start_jules_session(prompt: str, source_repo: str, api_key: str = None, auto
     Start a new Jules session with the given prompt and source repository.
     """
     trace_id = str(uuid.uuid4())
-    
+
     def log_info(message):
         entry = {"trace_id": trace_id, "message": message, "level": "info"}
         print(json.dumps(entry), file=sys.stderr)
-    
+
     def log_error(message):
         entry = {"trace_id": trace_id, "message": message, "level": "error"}
         print(json.dumps(entry), file=sys.stderr)
 
     log_info(f"Starting Jules session with prompt: {prompt[:50]}... if len(prompt) > 50 else prompt, source_repo: {source_repo}, api_key provided: {bool(api_key)}")
-    
+
     try:
         client = JulesClient()
         result = client.create_session(api_key, prompt, source_repo, automation_mode, require_approval, title)

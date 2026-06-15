@@ -20,10 +20,10 @@ def record_event(message: str, reference_doctype: str, reference_name: str, is_a
                 self.owner = frappe.session.user
                 self.is_ai_action = is_ai_action
                 self._doc_before_save = None
-            
+
             def has_field(self, fieldname):
                 return False
-                
+
             def get(self, key, default=None):
                 return getattr(self, key, default)
 

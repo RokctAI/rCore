@@ -35,13 +35,13 @@ def accept_stimulus(stimulus_name: str, template_name: str = "Default") -> dict:
                 raw_data = json.loads(stimulus.custom_workflow_json)
                 tasks_to_create = raw_data.get("tasks", [])
             except: pass
-            
+
         if not tasks_to_create:
             try:
                 from rcore.utils.common import call_control
                 opportunities = call_control("get_public_opportunities", {
-                    "opportunity_type": "tenders", 
-                    "filters": json.dumps({"slug": stimulus_name}) 
+                    "opportunity_type": "tenders",
+                    "filters": json.dumps({"slug": stimulus_name})
                 })
                 if opportunities:
                     tasks_to_create = opportunities[0].get("tasks", [])
@@ -51,7 +51,7 @@ def accept_stimulus(stimulus_name: str, template_name: str = "Default") -> dict:
             for task_template in tasks_to_create:
                 subject = task_template.get("subject") if isinstance(task_template, dict) else task_template
                 offset = task_template.get("due_date_offset_days", 7) if isinstance(task_template, dict) else 7
-                
+
                 frappe.get_doc({
                     "doctype": "Task",
                     "subject": subject,

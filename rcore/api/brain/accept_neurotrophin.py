@@ -40,8 +40,8 @@ def accept_neurotrophin(neurotrophin_name: str, template_name: str = "Default") 
             try:
                 from rcore.utils.common import call_control
                 opportunities = call_control("get_public_opportunities", {
-                    "opportunity_type": "grants", 
-                    "filters": json.dumps({"slug": neurotrophin.slug}) 
+                    "opportunity_type": "grants",
+                    "filters": json.dumps({"slug": neurotrophin.slug})
                 })
                 if opportunities:
                     tasks_to_create = opportunities[0].get("tasks", [])
@@ -51,7 +51,7 @@ def accept_neurotrophin(neurotrophin_name: str, template_name: str = "Default") 
             for task_subject in tasks_to_create:
                 subject = task_subject.get("subject") if isinstance(task_subject, dict) else task_subject
                 offset = task_subject.get("due_date_offset_days", 7) if isinstance(task_subject, dict) else 7
-                
+
                 frappe.get_doc({
                     "doctype": "Task",
                     "subject": subject,

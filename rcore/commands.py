@@ -10,7 +10,7 @@ def update_tenant_ecosystem_command():
     Triggers self-update for the tenant spoke (rcore).
     """
     from rcore.update_manager import update_tenant_ecosystem
-    
+
     if not frappe.local.site:
         print("Please provide a site using --site [site]")
         return

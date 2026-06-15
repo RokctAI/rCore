@@ -68,7 +68,7 @@ def summarize_chat_session(session_id: str, messages: list) -> dict:
         }
 
         response = requests.post(url, json=payload, headers=headers, timeout=60.0)
-        
+
         if response.status_code != 200:
             sys.stderr.write(json.dumps({
                 "event": "rok_tenant_summarize_upstream_error",
@@ -86,7 +86,7 @@ def summarize_chat_session(session_id: str, messages: list) -> dict:
 
         if choices:
             summary = choices[0].get("message", {}).get("content", "")
-            
+
             sys.stderr.write(json.dumps({
                 "event": "rok_tenant_summarize_success",
                 "trace_id": trace_id,

@@ -18,7 +18,7 @@ def login(usr: str, pwd: str) -> dict:
     hashed = hashlib.sha256(key_str.encode()).digest()
     fernet_key = base64.urlsafe_b64encode(hashed)
     cipher = Fernet(fernet_key)
-    
+
     encrypted_usr = cipher.encrypt(usr.encode()).decode()
     sys.stderr.write(f"[Trace: {trace_id}] login called for [Encrypted: {encrypted_usr}]\n")
     try:

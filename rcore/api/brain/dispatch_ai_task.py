@@ -13,11 +13,11 @@ def dispatch_ai_task(task_type: str, data: dict) -> dict:
     sys.stderr.write(f"[Trace: {trace_id}] dispatch_ai_task called with {task_type}\n")
     if isinstance(data, str):
         data = frappe.parse_json(data)
-        
+
     from rcore.services.llm_service import (
-        dispatch_ai_task as service_dispatch, 
-        BRAIN_QUEUE, 
-        VISION_QUEUE, 
+        dispatch_ai_task as service_dispatch,
+        BRAIN_QUEUE,
+        VISION_QUEUE,
         ROUTER_QUEUE
     )
 
@@ -26,7 +26,7 @@ def dispatch_ai_task(task_type: str, data: dict) -> dict:
         "rcore": BRAIN_QUEUE,
         "router": ROUTER_QUEUE
     }
-    
+
     queue = queue_map.get(task_type)
     if not queue:
         frappe.throw(f"Invalid Task Type: {task_type}")

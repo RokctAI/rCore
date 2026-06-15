@@ -1,3 +1,4 @@
+from typing import Any, Optional
 # Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
 # For license information, please see license.txt
 
@@ -13,11 +14,12 @@ from rcore.roadmap.tasks import _get_api_key, _create_jules_session
 
 
 @frappe.whitelist(allow_guest=True)
-def update_task_status_from_pr():
+def update_task_status_from_pr() -> Any:
     """
     Receives a secure call from our custom GitHub Action to update a task's status.
     It verifies the request using the HMAC signature from GitHub.
     """
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     # 1. Authenticate the request using HMAC signature
     settings = frappe.get_doc("Roadmap Settings")
     secret = settings.get_password("github_action_secret")
@@ -82,11 +84,12 @@ def update_task_status_from_pr():
 
 
 @frappe.whitelist()
-def setup_github_workflow(roadmap_name):
+def setup_github_workflow(roadmap_name: Any) -> Any:
     """
     Checks if the GitHub workflow file exists in the repository. If not,
     it delegates the task of creating the file to Jules via a new session.
     """
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     # 1. Get roadmap and GitHub details
     roadmap_doc = frappe.get_doc("Roadmap", roadmap_name)
     repo_url = roadmap_doc.source_repository

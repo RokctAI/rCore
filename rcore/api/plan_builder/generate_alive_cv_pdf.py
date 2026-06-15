@@ -1,3 +1,5 @@
+import os
+import re
 import json
 import frappe
 
@@ -12,8 +14,8 @@ def generate_alive_cv_pdf(instance_name: str, profile_type: str = "life", role_f
     sys.stderr.write(f"[Trace: {trace_id}] generate_alive_cv_pdf called for {instance_name}\n")
     try:
         startup_os_root = ensure_startup_os_core()
-        instance_dir = os.path.join(startup_os_root, "instances", profile_type, instance_name)
-        questions_path = os.path.join(instance_dir, "questions.md")
+        instance_dir = os.path.abspath(os.path.join(startup_os_root, "instances", profile_type, instance_name))
+        questions_path = os.path.abspath(os.path.join(instance_dir, "questions.md"))
 
         if not os.path.exists(questions_path):
             frappe.throw(f"Active strategic profile '{instance_name}' not found under {profile_type}.")
@@ -24,7 +26,7 @@ def generate_alive_cv_pdf(instance_name: str, profile_type: str = "life", role_f
 
         full_name_match = re.search(r'# (?:Business Strategic Questions|Life Strategic Questions): (.*)', q_content)
         full_name = full_name_match.group(1) if full_name_match else instance_name
-        
+
         primary_base_match = re.search(r'\*\s+\*\*Primary Base\*\*:[^*]*\*\s+\*\*Answer\*\*:\s*(.*)', q_content)
         primary_base = primary_base_match.group(1) if primary_base_match else "Cape Town, South Africa"
 
@@ -55,7 +57,7 @@ def generate_alive_cv_pdf(instance_name: str, profile_type: str = "life", role_f
                 # Use Completions to optimize the introductory profile for the target role focus
                 system_prompt = "You are a professional CV Optimizer. Rewrite the user's career/life summary to dynamically align with the requested target role focus. Keep it concise (max 3 sentences)."
                 user_content = f"Name: {full_name}\nOriginal summary: {life_purpose}\nTarget Role Focus: {role_focus}"
-                
+
                 # Dynamic completion via ROK completions endpoint
                 import requests
                 import os

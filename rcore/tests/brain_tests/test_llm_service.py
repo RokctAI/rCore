@@ -12,7 +12,7 @@ class TestLLMService(FrappeTestCase):
     def test_dispatch_ai_task_success(self, mock_redis_url):
         mock_r = MagicMock()
         mock_redis_url.return_value = mock_r
-        
+
         # Simulate worker response in Redis
         job_id = None
         def mock_get(key):
@@ -22,11 +22,11 @@ class TestLLMService(FrappeTestCase):
                 job_id = key.split(":")[-1]
                 return json.dumps({"status": "success", "text": "AI Response"})
             return None
-            
+
         mock_r.get.side_effect = mock_get
-        
+
         result = dispatch_ai_task(BRAIN_QUEUE, {"prompt": "hello"})
-        
+
         self.assertEqual(result["status"], "success")
         self.assertEqual(result["text"], "AI Response")
         self.assertTrue(mock_r.rpush.called)
@@ -38,15 +38,15 @@ class TestLLMService(FrappeTestCase):
         mock_r = MagicMock()
         mock_redis_url.return_value = mock_r
         mock_r.get.return_value = None # Never returns result
-        
+
         # Mock time to simulate timeout
         # We need enough values for the loop.
         # Initial call + several loop calls + final check
         # Let's use a generator or a large list to be safe.
-        mock_time.side_effect = [0, 0, 10, 20, 30, 70, 80, 90] 
-        
+        mock_time.side_effect = [0, 0, 10, 20, 30, 70, 80, 90]
+
         result = dispatch_ai_task(BRAIN_QUEUE, {"prompt": "timeout test"}, timeout=50)
-        
+
         self.assertEqual(result["status"], "error")
         self.assertIn("timed out", result["message"])
 
@@ -55,9 +55,9 @@ class TestLLMService(FrappeTestCase):
     def test_hybrid_routing_vision(self, mock_jina, mock_should_route):
         mock_should_route.return_value = True
         mock_jina.return_value = {"status": "success", "message": "Jina Response"}
-        
+
         result = dispatch_ai_task(VISION_QUEUE, {"file_url": "http://example.com/img.jpg"})
-        
+
         self.assertEqual(result["message"], "Jina Response")
         mock_jina.assert_called_once()
 
@@ -66,9 +66,9 @@ class TestLLMService(FrappeTestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"choices": [{"message": {"content": "Juvo here"}}]}
         mock_post.return_value = mock_response
-        
+
         result = ask_brain("Who are you?")
-        
+
         self.assertEqual(result["text"], "Juvo here")
         mock_post.assert_called_once()
         args, kwargs = mock_post.call_args
@@ -79,15 +79,15 @@ class TestLLMService(FrappeTestCase):
     def test_embed_text_list(self, mock_dispatch):
         """test that list inputs are accepted and dispatched correctly"""
         mock_dispatch.return_value = {"status": "success", "embedding": [[0.1, 0.2], [0.3, 0.4]]}
-        
+
         from rcore.services.llm_service import embed_text
-        
+
         inputs = ["Hello", "World"]
         result = embed_text(inputs)
-        
+
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], [0.1, 0.2])
-        
+
         args, _ = mock_dispatch.call_args
         self.assertEqual(args[1]["text"], inputs)
 

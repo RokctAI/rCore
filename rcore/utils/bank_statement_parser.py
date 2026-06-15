@@ -42,7 +42,7 @@ class BankStatementParser:
         # This is a basic implementation to start with.
         # 2024-01-01  Salary  25000.00
         pattern = re.compile(r'(\d{4}-\d{2}-\d{2}|\d{2}/\d{2}/\d{4})\s+(.+?)\s+(-?\d+\.\d{2})')
-        
+
         for line in lines:
             match = pattern.search(line)
             if match:
@@ -53,7 +53,7 @@ class BankStatementParser:
                          dt = datetime.strptime(date_str, '%Y-%m-%d')
                     else:
                          dt = datetime.strptime(date_str, '%d/%m/%Y')
-                         
+
                     self.transactions.append({
                         'date': dt,
                         'description': desc.strip(),
@@ -114,7 +114,7 @@ class BankStatementParser:
             return
 
         text = self.file_content
-        
+
         # Heuristics for common South African and International bank statements
         # 1. Account Number
         acc_pattern = re.compile(r'(?:Statement for Account|Account Number|Acc No|Acc Number|Account No|Account)[\s:]+(\d{7,13})', re.IGNORECASE)

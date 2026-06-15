@@ -9,7 +9,7 @@ def ensure_startup_os_core():
     """
     Ensures that the compiler.py and parser.py are available for the plan builder API.
     Resolves the StartupOS path dynamically. Always uses the site-specific StartupOS folder
-    to ensure clean isolation and prevent workspace cluttering. If files are missing, 
+    to ensure clean isolation and prevent workspace cluttering. If files are missing,
     fetches them from raw GitHub.
     """
     # Trigger bootstrap secrets handshake first to hydrate API keys in-memory
@@ -30,7 +30,7 @@ def ensure_startup_os_core():
 
     for f_name in core_files:
         dest_file = os.path.join(core_dir, f_name)
-        
+
         # If the file already exists locally, keep it (do not auto-fetch or overwrite)
         if os.path.exists(dest_file):
             continue
@@ -52,15 +52,16 @@ def ensure_startup_os_core():
                     resolved = True
                     print(f"[StartupOS] Resolved and loaded local core module: {f_name}")
                     break
-        
+
         # 2. If missing (e.g. running in isolated production Docker without submodules), fetch remotely from raw GitHub
         if not resolved and not (in_test and not is_in_docker):
             try:
                 print(f"[StartupOS] Attempting remote fetch for {f_name}...")
                 github_url = f"https://raw.githubusercontent.com/RokctAI/The-Rokct-Protocol/main/core/skills/.rok/startup_os/scripts/core/{f_name}"
+                trace_id = frappe.request.headers.get("x-trace-id") if (hasattr(frappe, "request") and frappe.request) else "startup-os-core-trace"
                 req = urllib.request.Request(
                     github_url,
-                    headers={"User-Agent": "ROKCT-Bootstrap-Agent/1.0"}
+                    headers={"User-Agent": "ROKCT-Bootstrap-Agent/1.0", "x-trace-id": trace_id or ""}
                 )
                 with urllib.request.urlopen(req, timeout=10) as response:
                     with open(dest_file, "wb") as out_f:

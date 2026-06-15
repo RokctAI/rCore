@@ -11,16 +11,16 @@ class TestBrainHooks(FrappeTestCase):
         # Create a document that is submittable (e.g., Task if customized, or use a generic one)
         # Note: We just need to check if the hook path in hooks.py is triggered.
         # doc_events = {"*": {"on_submit": "..."}}
-        
+
         doc = frappe.get_doc({
             "doctype": "Note",
             "title": "Hook Test Note",
             "content": "Testing hooks"
         }).insert()
-        
+
         # Simulate submit event
         doc.run_method("on_submit")
-        
+
         # Verify hook was triggered
         self.assertTrue(mock_process.called)
         args, _ = mock_process.call_args
@@ -34,9 +34,9 @@ class TestBrainHooks(FrappeTestCase):
             "title": "Trash Hook Test",
             "content": "Testing trash hook"
         }).insert()
-        
+
         doc.delete()
-        
+
         # Verify hook was triggered
         self.assertTrue(mock_process.called)
         args, _ = mock_process.call_args

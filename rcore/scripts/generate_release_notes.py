@@ -10,7 +10,7 @@ def generate_release_notes(commit_log, version_name="vNext"):
     """
     Generates AI-written release notes using Groq (Llama 3) for the provided commit log.
     This function is designed to be called via API.
-    
+
     :param commit_log: String containing the raw git log
     :param version_name: String version identifier
     :return: String containing the Markdown release notes
@@ -25,10 +25,10 @@ def generate_release_notes(commit_log, version_name="vNext"):
 
     # 2. Call Groq (Llama 3 70B)
     print(f"📝 Asking Brain (Groq 70B) to summarize commits for {version_name}...")
-    
-    system_prompt = """You are an expert Release Manager. 
+
+    system_prompt = """You are an expert Release Manager.
     Analyze the following git commit logs and write a high-quality, professional Release Note in Markdown format.
-    
+
     Rules:
     - Group changes logically (Features, Fixes, Chores, Refactors).
     - Ignore trivial updates (typos, README).
@@ -37,7 +37,7 @@ def generate_release_notes(commit_log, version_name="vNext"):
     - Mention the Version Name in the title.
     - Do NOT include 'Here are the release notes' filler text. Just the markdown.
     """
-    
+
     payload = {
         "model": "llama3-70b-8192",
         "messages": [
@@ -46,19 +46,19 @@ def generate_release_notes(commit_log, version_name="vNext"):
         ],
         "temperature": 0.5
     }
-    
+
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
-    
+
     try:
         response = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=60)
         response.raise_for_status()
-        
+
         ai_response = response.json()
         content = ai_response['choices'][0]['message']['content']
         return content
-        
+
     except Exception as e:
         return f"AI Error: {e}"

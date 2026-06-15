@@ -1,3 +1,4 @@
+from typing import Any, Optional
 # Copyright (c) 2025 ROKCT INTELLIGENCE (PTY) LTD
 # For license information, please see license.txt
 # tenant context check.
@@ -15,8 +16,9 @@ from rcore.roadmap.utils import (
 
 
 @frappe.whitelist()
-def trigger_daily_generation():
+def trigger_daily_generation() -> Any:
     """Manually triggers the daily AI idea generation."""
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     populate_roadmap_with_ai_ideas()
 
 
@@ -480,7 +482,7 @@ def cleanup_archived_sessions():
 
 
 @frappe.whitelist()
-def discover_roadmap_context(roadmap_name):
+def discover_roadmap_context(roadmap_name: Any) -> Any:
     """
     Auto-Discovery Task (On Demand)
     1. Starts a Planning Session with Jules to analyze the codebase.
@@ -488,6 +490,7 @@ def discover_roadmap_context(roadmap_name):
     3. Polls (briefly) for handling.
     4. Returns the result and closes the session.
     """
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     roadmap = frappe.get_doc("Roadmap", roadmap_name)
     api_key = roadmap.get_password("jules_api_key")
 

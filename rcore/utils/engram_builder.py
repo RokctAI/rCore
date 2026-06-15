@@ -15,7 +15,7 @@ except ImportError:
         def decorator(func):
             return func
         return decorator
-    
+
     def is_ai_action():
         return False
 
@@ -144,14 +144,14 @@ def process_event_in_realtime(doc, method):
     # Fetch all exclusion lists
     brain_doctypes = get_brain_module_doctypes()
     control_excluded = get_excluded_doctypes_from_control()
-    
+
     # Combine the lists for a comprehensive exclusion policy.
     # We include common error/log doctypes to prevent junk memory.
     ignored_doctypes = set(brain_doctypes + control_excluded + [
-        "Email Queue", 
-        "API Error Log", 
-        "Error Log", 
-        "Error Snapshot", 
+        "Email Queue",
+        "API Error Log",
+        "Error Log",
+        "Error Snapshot",
         "Scheduled Job Log",
         "Activity Log",
         "Access Log",
@@ -254,7 +254,7 @@ def process_event_in_realtime(doc, method):
 
         engram_doc.last_activity_date = doc.modified
         engram_doc.last_modifying_user = frappe.session.user
-        
+
         # Make memory storage robust: ignore link validation errors (e.g. if User/Role is deleted)
         engram_doc.flags.ignore_links = True
         engram_doc.save(ignore_permissions=True)
@@ -268,7 +268,7 @@ def process_event_in_realtime(doc, method):
                 # This gives MiniLM the "Type" knowledge the user asked for.
                 context_text = f"{engram_doc.reference_doctype} {engram_doc.reference_name} ({engram_doc.reference_title}):\n{engram_doc.summary}"
                 vector = embed_text(context_text)
-                
+
                 if vector:
                     # Only create savepoint and rollback if we are actually attempting the write
                     try:

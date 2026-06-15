@@ -13,7 +13,7 @@ class TestBankStatementParser(unittest.TestCase):
 2024-01-03,Groceries,-200.00"""
         parser = BankStatementParser(csv_content, file_type='csv')
         metrics = parser.parse()
-        
+
         self.assertEqual(len(parser.transactions), 3)
         self.assertEqual(metrics['total_income'], 5000.00)
         self.assertEqual(metrics['total_expenses'], 1700.00)
@@ -24,23 +24,23 @@ class TestBankStatementParser(unittest.TestCase):
         Statement for Account 123456789
         Bank Name: FNB
         Account Holder: JOHN DOE
-        
+
         2024-01-01  Salary Payment  10000.00
         02/01/2024  ATM Withdrawal  -500.00
         2024-01-05  Overdraft Fee   -50.00
         """
         parser = BankStatementParser(ocr_text, file_type='text')
         metrics = parser.parse()
-        
+
         # Test transactions
         self.assertEqual(len(parser.transactions), 3)
         self.assertEqual(parser.transactions[0]['amount'], 10000.00)
         self.assertEqual(parser.transactions[1]['amount'], -500.00)
-        
+
         # Test metrics
         self.assertEqual(metrics['total_income'], 10000.00)
         self.assertEqual(metrics['overdraft_incidents'], 1)
-        
+
         # Test bank details
         self.assertEqual(parser.bank_details['bank_name'], 'FNB')
         self.assertEqual(parser.bank_details['bank_account_number'], '123456789')
@@ -50,7 +50,7 @@ class TestBankStatementParser(unittest.TestCase):
         text = "Acc No: 987654321 Branch Code: 250655 Nedbank Statement Name: JANE SMITH"
         parser = BankStatementParser(text, file_type='text')
         parser.parse()
-        
+
         self.assertEqual(parser.bank_details['bank_name'], 'Nedbank')
         self.assertEqual(parser.bank_details['bank_account_number'], '987654321')
         self.assertEqual(parser.bank_details['bank_branch_code'], '250655')

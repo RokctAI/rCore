@@ -175,7 +175,7 @@ def main():
     if os.path.abspath(__file__) != dest_initiate:
         ensure_file(src_initiate, dest_initiate)
     print("[init] Copied initiate.py -> .rokct/initiate.py")
-    
+
     cfg = os.path.join(ROKCT_DIR, ".workspace_config.json")
     if not os.path.exists(cfg):
         try:

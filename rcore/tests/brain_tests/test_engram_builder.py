@@ -36,7 +36,7 @@ class TestEngramBuilder(FrappeTestCase):
             "status": "Draft",
             "assigned_by": "test@example.com" # Ensure _doc_before_save has required fields if any
         })
-        
+
         changes = _get_field_changes(doc)
         self.assertIn("Status changed from 'Draft' to 'Open'", changes)
 
@@ -45,10 +45,10 @@ class TestEngramBuilder(FrappeTestCase):
     def test_process_event_exclusion_logic(self, mock_control, mock_brain):
         mock_brain.return_value = ["Engram"]
         mock_control.return_value = ["ExcludedDoc"]
-        
+
         # Capture real get_value
         real_get_value = frappe.db.get_value
-        
+
         def side_effect(doctype, docname, fieldname=None, **kwargs):
             if doctype == "DocType" and fieldname == "module":
                 if docname == "Loan":
@@ -81,7 +81,7 @@ class TestEngramBuilder(FrappeTestCase):
         mock_now.return_value = datetime(2025, 1, 1, 12, 0, 0)
         # Mock successful embedding
         mock_embed.return_value = [0.1] * 384
-        
+
         doc = frappe.get_doc({
             "doctype": "ToDo",
             "description": "Compounding ToDo",
@@ -89,15 +89,15 @@ class TestEngramBuilder(FrappeTestCase):
         doc.insert(ignore_permissions=True)
         # Ensure the object has the mocked date, overriding system time
         doc.modified = "2025-01-01 12:00:00"
-        
+
         # 1. Initial event
         process_event_in_realtime(doc, "on_submit")
         engram_name = f"ToDo-{doc.name}"
-        
+
         engram = frappe.get_doc("Engram", engram_name)
         # DEBUG: Print what we got
         # print(f"DEBUG: Summary is: {engram.summary}")
-        
+
         # Verify 'Submit' (method name) not 'Submitted'
         self.assertIn("Submit by Test Engram on 2025-01-01.", engram.summary)
 
@@ -105,9 +105,9 @@ class TestEngramBuilder(FrappeTestCase):
         mock_now.return_value = datetime(2025, 1, 1, 15, 0, 0)
         # Manually update date on object
         doc.modified = "2025-01-01 15:00:00"
-        
+
         process_event_in_realtime(doc, "on_update")
-        
+
         engram.reload()
         # print(f"DEBUG: Summary after update is: {engram.summary}")
         self.assertIn("Submit by Test Engram on 2025-01-01.\nUpdate by Test Engram on 2025-01-01.", engram.summary)
@@ -119,7 +119,7 @@ class TestEngramBuilder(FrappeTestCase):
         mock_now.return_value = datetime(2025, 1, 1, 12, 0, 0)
         # Mock successful embedding
         mock_embed.return_value = [0.1] * 384
-        
+
         doc = frappe.get_doc({
             "doctype": "ToDo",
             "description": "Session ToDo",
@@ -127,24 +127,24 @@ class TestEngramBuilder(FrappeTestCase):
         doc.insert(ignore_permissions=True)
         # Force the date on object
         doc.modified = "2025-01-01 12:00:00"
-        
+
         # 1. Initial event
         process_event_in_realtime(doc, "on_submit")
-        
+
         # 2. New session (after 24h)
         mock_now.return_value = datetime(2025, 1, 3, 12, 0, 0)
         # Force new date on object
         doc.modified = "2025-01-03 12:00:00"
-        
+
         process_event_in_realtime(doc, "on_update")
-        
+
         engram_name = f"ToDo-{doc.name}"
         engram = frappe.get_doc("Engram", engram_name)
-        
+
         # Use simple string split
         lines = engram.summary.strip().split("\n")
         # print(f"DEBUG: Session Summary lines: {lines}")
-        
+
         self.assertEqual(len(lines), 2)
         # Check first line date
         self.assertIn("2025-01-01", lines[0])

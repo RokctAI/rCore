@@ -94,7 +94,7 @@ def chat_with_rok(message: str, session_id: str = None, model: str = None) -> di
         }
 
         response = requests.post(url, json=payload, headers=headers, timeout=60.0)
-        
+
         # Log intermediate failures with explicit details
         if response.status_code != 200:
             sys.stderr.write(json.dumps({
@@ -109,7 +109,7 @@ def chat_with_rok(message: str, session_id: str = None, model: str = None) -> di
 
         result = response.json()
         choices = result.get("choices", [])
-        
+
         duration = time.time() - start_time
         if choices:
             response_content = choices[0].get("message", {}).get("content", "")

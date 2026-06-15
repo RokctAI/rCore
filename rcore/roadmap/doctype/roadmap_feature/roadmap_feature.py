@@ -1,3 +1,4 @@
+from typing import Any, Optional
 # Copyright (c) 2025 ROKCT INTELLIGENCE (PTY) LTD
 # For license information, please see license.txt
 # tenant context check.
@@ -15,10 +16,11 @@ class RoadmapFeature(Document):
 
 
 @frappe.whitelist()
-def assign_to_jules(docname, feature, explanation):
+def assign_to_jules(docname: Any, feature: Any, explanation: Any) -> Any:
     """
     Assigns a roadmap feature to the Jules AI assistant via Brain Service.
     """
+    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
     try:
         # Step 2: Fetch Creator Details from Parent Roadmap
         feature_doc = frappe.get_doc("Roadmap Feature", docname)

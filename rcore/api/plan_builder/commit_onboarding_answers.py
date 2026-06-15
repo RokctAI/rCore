@@ -1,3 +1,5 @@
+import os
+import re
 import json
 import frappe
 
@@ -21,7 +23,7 @@ def commit_onboarding_answers(profile_type: str, instance_name: str, answers: di
 
         # Ensure core engines are loaded dynamically
         startup_os_root = ensure_startup_os_core()
-        
+
         from core.compiler import compile_instance
 
         # Handle answers payload (deserialize if string)
@@ -31,9 +33,9 @@ def commit_onboarding_answers(profile_type: str, instance_name: str, answers: di
             milestones = json.loads(milestones)
 
         # 1. Determine instance folder and write questions.md
-        instance_dir = os.path.join(startup_os_root, "instances", profile_type, instance_name)
+        instance_dir = os.path.abspath(os.path.join(startup_os_root, "instances", profile_type, instance_name))
         os.makedirs(instance_dir, exist_ok=True)
-        questions_path = os.path.join(instance_dir, "questions.md")
+        questions_path = os.path.abspath(os.path.join(instance_dir, "questions.md"))
 
         # Human-friendly trading name
         display_name = re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', instance_name).strip()
