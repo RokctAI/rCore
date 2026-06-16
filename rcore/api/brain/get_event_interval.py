@@ -1,17 +1,27 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
+
 @frappe.whitelist()
-def get_event_interval(reference_doctype: str, reference_name: str, start_event: str, end_event: str) -> dict:
+def get_event_interval(
+    reference_doctype: str, reference_name: str, start_event: str, end_event: str
+) -> dict:
     """
     Calculates the time interval between two events in a document's history.
     tenant context check.
     """
     trace_id = frappe.form_dict.get("trace_id") or "get-event-interval-trace"
     import sys
-    sys.stderr.write(f"[Trace: {trace_id}] get_event_interval called for {reference_doctype} {reference_name}\n")
+
+    sys.stderr.write(
+        f"[Trace: {trace_id}] get_event_interval called for {reference_doctype} {reference_name}\n"
+    )
     import re
     from frappe.utils import get_datetime
 
@@ -22,10 +32,14 @@ def get_event_interval(reference_doctype: str, reference_name: str, start_event:
         start_date = None
         end_date = None
 
-        start_pattern = re.compile(rf"{re.escape(start_event)} by .* on (\d{{4}}-\d{{2}}-\d{{2}})")
-        end_pattern = re.compile(rf"{re.escape(end_event)} by .* on (\d{{4}}-\d{{2}}-\d{{2}})")
+        start_pattern = re.compile(
+            rf"{re.escape(start_event)} by .* on (\d{{4}}-\d{{2}}-\d{{2}})"
+        )
+        end_pattern = re.compile(
+            rf"{re.escape(end_event)} by .* on (\d{{4}}-\d{{2}}-\d{{2}})"
+        )
 
-        for line in summary.split('\n'):
+        for line in summary.split("\n"):
             if not start_date:
                 start_match = start_pattern.search(line)
                 if start_match:
@@ -41,7 +55,10 @@ def get_event_interval(reference_doctype: str, reference_name: str, start_event:
                 return {"error": "End event occurred before start event."}
 
             interval = end_date - start_date
-            return {"interval_days": interval.days, "interval_seconds": interval.total_seconds()}
+            return {
+                "interval_days": interval.days,
+                "interval_seconds": interval.total_seconds(),
+            }
 
         missing = []
         if not start_date:
@@ -49,10 +66,14 @@ def get_event_interval(reference_doctype: str, reference_name: str, start_event:
         if not end_date:
             missing.append(end_event)
 
-        return {"error": f"Could not find one or more events in the document's history: {', '.join(missing)}"}
+        return {
+            "error": f"Could not find one or more events in the document's history: {', '.join(missing)}"
+        }
 
     except frappe.DoesNotExistError:
         return {"error": f"No Engram found for {reference_doctype} {reference_name}"}
     except Exception as e:
-        frappe.log_error(f"Brain: Failed to get event interval: {e}", frappe.get_traceback())
+        frappe.log_error(
+            f"Brain: Failed to get event interval: {e}", frappe.get_traceback()
+        )
         frappe.throw(f"An error occurred while calculating the event interval: {e}")
