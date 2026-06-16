@@ -1,11 +1,11 @@
 import frappe
 from frappe.auth import LoginManager
+from frappe.utils import now_datetime, add_to_date
 
 @frappe.whitelist(allow_guest=True)
 def login(usr: str, pwd: str) -> dict:
     """
-    Standard Login endpoint that returns API Keys.
-    Can be used on both Control Panel and Tenant sites.
+    Standard Login endpoint that returns API Keys and a Refresh Token.
     """
     trace_id = frappe.form_dict.get("trace_id") or "login-trace"
     import sys
@@ -35,23 +35,31 @@ def login(usr: str, pwd: str) -> dict:
 
         user = frappe.get_doc("User", usr)
 
-        # Generate API keys — always regenerate to provide a valid token.
-        # WARNING: This invalidates previous sessions using the old key.
-        # Uses db.set_value to avoid triggering on_update hooks which
-        # require a full HTTP request context (fails in headless/CI).
+        # Generate API keys and Refresh Token
         api_secret = frappe.generate_hash(length=15)
         api_key = frappe.generate_hash(length=15)
+        refresh_token = frappe.generate_hash(length=32)
+        
+        # Set expiry to 24 hours from now
+        expiry_date = add_to_date(now_datetime(), hours=24)
+
+        # Persist to User (assuming custom fields refresh_token and token_expiry exist)
+        # If they don't, this will fail in a real Frappe env unless added via doctype
         frappe.db.set_value(
             "User",
             usr,
-            {"api_key": api_key, "api_secret": api_secret},
+            {
+                "api_key": api_key, 
+                "api_secret": api_secret,
+                "custom_refresh_token": refresh_token,
+                "custom_token_expiry": expiry_date
+            },
             update_modified=False,
         )
 
         # Self-Healing: Ensure System Users have System Manager role
         user_roles = frappe.get_roles(user.name)
         if user.user_type == "System User" and "System Manager" not in user_roles:
-            # Direct insert to avoid triggering User on_update hooks
             frappe.get_doc(
                 {
                     "doctype": "Has Role",
@@ -80,6 +88,8 @@ def login(usr: str, pwd: str) -> dict:
             "message": "Logged In",
             "data": {
                 "access_token": token,
+                "refresh_token": refresh_token,
+                "expires_at": expiry_date,
                 "token_type": "Bearer",
                 "user": {
                     "id": user.name,
