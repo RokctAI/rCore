@@ -1,8 +1,15 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
 
+
 @frappe.whitelist()
-def commit_onboarding_answers(profile_type: str, instance_name: str, answers: dict, milestones: list = None) -> dict:
+def commit_onboarding_answers(
+    profile_type: str, instance_name: str, answers: dict, milestones: list = None
+) -> dict:
     """
     Creates or updates the questions.md file for the given profile and instance name,
     runs the StartupOS compiler to render downstream deliverables, and commits
@@ -11,7 +18,10 @@ def commit_onboarding_answers(profile_type: str, instance_name: str, answers: di
     """
     trace_id = frappe.form_dict.get("trace_id") or "commit-onboarding-answers-trace"
     import sys
-    sys.stderr.write(f"[Trace: {trace_id}] commit_onboarding_answers called for {instance_name}\n")
+
+    sys.stderr.write(
+        f"[Trace: {trace_id}] commit_onboarding_answers called for {instance_name}\n"
+    )
     try:
         if profile_type not in ["business", "life"]:
             frappe.throw("Profile type must be 'business' or 'life'.")
@@ -21,7 +31,7 @@ def commit_onboarding_answers(profile_type: str, instance_name: str, answers: di
 
         # Ensure core engines are loaded dynamically
         startup_os_root = ensure_startup_os_core()
-        
+
         from core.compiler import compile_instance
 
         # Handle answers payload (deserialize if string)
@@ -31,19 +41,25 @@ def commit_onboarding_answers(profile_type: str, instance_name: str, answers: di
             milestones = json.loads(milestones)
 
         # 1. Determine instance folder and write questions.md
-        instance_dir = os.path.join(startup_os_root, "instances", profile_type, instance_name)
+        instance_dir = os.path.join(
+            startup_os_root, "instances", profile_type, instance_name
+        )
         os.makedirs(instance_dir, exist_ok=True)
         questions_path = os.path.join(instance_dir, "questions.md")
 
         # Human-friendly trading name
-        display_name = re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', instance_name).strip()
+        display_name = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", instance_name).strip()
 
         if profile_type == "business":
             trading_name = answers.get("trading_name") or display_name
             primary_base = answers.get("primary_base") or "Cape Town, South Africa"
-            core_value_proposition = answers.get("core_value_proposition") or "Pending — dynamic values."
+            core_value_proposition = (
+                answers.get("core_value_proposition") or "Pending — dynamic values."
+            )
             customer_segments = answers.get("customer_segments") or "Pending."
-            power_strategy = answers.get("power_continuity_strategy") or "Off-grid solar."
+            power_strategy = (
+                answers.get("power_continuity_strategy") or "Off-grid solar."
+            )
             y1 = answers.get("projected_year_1") or "Pending Year 1 projection."
             y2 = answers.get("projected_year_2") or "Pending Year 2 projection."
             y3 = answers.get("projected_year_3") or "Pending Year 3 projection."
@@ -134,7 +150,7 @@ This file is the Single Source of Truth (SSOT) for {full_name}'s life developmen
                 if m_text:
                     content += f"\n*   **[{m_date}] ({m_category})**: {m_text}"
 
-        with open(questions_path, 'w', encoding='utf-8') as f:
+        with open(questions_path, "w", encoding="utf-8") as f:
             f.write(content)
 
         # 2. Trigger the dynamic compiler
@@ -147,7 +163,9 @@ This file is the Single Source of Truth (SSOT) for {full_name}'s life developmen
         try:
             companies = frappe.get_all("Company", limit_page_length=1)
             if companies:
-                frappe.db.set_value("Company", companies[0].name, "onboarding_complete", 1)
+                frappe.db.set_value(
+                    "Company", companies[0].name, "onboarding_complete", 1
+                )
                 frappe.db.commit()
         except Exception as e:
             frappe.log_error(f"Failed to set onboarding_complete: {e}")
@@ -155,7 +173,7 @@ This file is the Single Source of Truth (SSOT) for {full_name}'s life developmen
         return {
             "status": "success",
             "message": "Questions committed, compiled, and database plan updated successfully.",
-            "db_result": db_result
+            "db_result": db_result,
         }
 
     except Exception as e:
