@@ -1,4 +1,9 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import frappe
+
 
 @frappe.whitelist()
 def update_naming_series(series_prefix: str, current: int) -> dict:
@@ -7,7 +12,10 @@ def update_naming_series(series_prefix: str, current: int) -> dict:
     """
     trace_id = frappe.form_dict.get("trace_id") or "update-naming-series-trace"
     import sys
-    sys.stderr.write(f"[Trace: {trace_id}] update_naming_series called for {series_prefix}\n")
+
+    sys.stderr.write(
+        f"[Trace: {trace_id}] update_naming_series called for {series_prefix}\n"
+    )
     if not series_prefix or current is None:
         frappe.throw("Series Prefix and Current Value are required.")
 
