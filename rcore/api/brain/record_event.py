@@ -1,17 +1,31 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
 from rcore import __version__ as brain_version
 from rcore.services.jules_service import JulesClient
 
+
 @frappe.whitelist()
-def record_event(message: str, reference_doctype: str, reference_name: str, is_ai_action: bool = False) -> dict:
+def record_event(
+    message: str,
+    reference_doctype: str,
+    reference_name: str,
+    is_ai_action: bool = False,
+) -> dict:
     """
     A secure API endpoint to record a custom event in the Brain's memory.
     """
     trace_id = frappe.form_dict.get("trace_id") or "record-event-trace"
     import sys
-    sys.stderr.write(f"[Trace: {trace_id}] record_event called for {reference_doctype} {reference_name}\n")
+
+    sys.stderr.write(
+        f"[Trace: {trace_id}] record_event called for {reference_doctype} {reference_name}\n"
+    )
     try:
+
         class MockDoc:
             def __init__(self):
                 self.doctype = reference_doctype
@@ -20,22 +34,25 @@ def record_event(message: str, reference_doctype: str, reference_name: str, is_a
                 self.owner = frappe.session.user
                 self.is_ai_action = is_ai_action
                 self._doc_before_save = None
-            
+
             def has_field(self, fieldname):
                 return False
-                
+
             def get(self, key, default=None):
                 return getattr(self, key, default)
 
             @property
             def meta(self):
                 class MockMeta:
-                    def get_label(self, f): return f
+                    def get_label(self, f):
+                        return f
+
                 return MockMeta()
 
         mock_doc = MockDoc()
 
         from rcore.utils.engram_builder import process_event_in_realtime
+
         process_event_in_realtime(mock_doc, message)
 
         return {"status": "success", "message": "Event recorded."}
