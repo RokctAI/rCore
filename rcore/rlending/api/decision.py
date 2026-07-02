@@ -17,7 +17,10 @@ def get_credit_score(loan_application: str) -> dict:
     """
     trace_id = frappe.form_dict.get("trace_id") or "get-credit-score-trace"
     import sys
-    sys.stderr.write(f"[Trace: {trace_id}] get_credit_score called for {loan_application}\n")
+
+    sys.stderr.write(
+        f"[Trace: {trace_id}] get_credit_score called for {loan_application}\n"
+    )
     if not loan_application:
         frappe.throw("Loan Application is required")
 
