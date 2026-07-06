@@ -1,3 +1,7 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import json
 import frappe
 import sys
@@ -13,17 +17,17 @@ def get_jules_sources(api_key: str = None) -> dict:
     If no API key is provided, uses the default credentials configured in the system.
     """
     trace_id = str(uuid.uuid4())
-    
+
     def log_info(message):
         entry = {"trace_id": trace_id, "message": message, "level": "info"}
         print(json.dumps(entry), file=sys.stderr)
-    
+
     def log_error(message):
         entry = {"trace_id": trace_id, "message": message, "level": "error"}
         print(json.dumps(entry), file=sys.stderr)
 
     log_info(f"Fetching Jules sources with api_key provided: {bool(api_key)}")
-    
+
     try:
         client = JulesClient()
         result = client.get_sources(api_key)
