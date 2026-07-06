@@ -1,0 +1,10 @@
+include *.txt
+include *.md
+recursive-include rcore *.html
+recursive-include rcore *.txt
+recursive-include rcore *.js
+recursive-include rcore *.css
+recursive-include rcore *.png
+recursive-include rcore *.svg
+recursive-include rcore *.json
+recursive-include rcore *.md

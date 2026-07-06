@@ -1,0 +1,52 @@
+{
+  "name": "rcore_app",
+  "version": "1.0.0",
+  "description": "Frappe App Shell for Rcore Core Platform",
+  "modules": [
+    {
+      "name": "auth",
+      "enabled": true,
+      "path": "../Users/auth/frappe"
+    },
+    {
+      "name": "users",
+      "enabled": true,
+      "path": "../Users/users/frappe"
+    },
+    {
+      "name": "subscriptions",
+      "enabled": true,
+      "path": "../SDKs/subscriptions/frappe"
+    },
+    {
+      "name": "agent",
+      "enabled": true,
+      "path": "../SDKs/agent/frappe"
+    },
+    {
+      "name": "polaris",
+      "enabled": true,
+      "path": "../SDKs/polaris/frappe"
+    },
+    {
+      "name": "pay",
+      "enabled": true,
+      "path": "../SDKs/payments/frappe"
+    },
+    {
+      "name": "telemetry",
+      "enabled": true,
+      "path": "../SDKs/telemetry/frappe"
+    },
+    {
+      "name": "productivity",
+      "enabled": true,
+      "path": "../SDKs/productivity/frappe"
+    },
+    {
+      "name": "weather",
+      "enabled": true,
+      "path": "../zones/weather/frappe"
+    }
+  ]
+}

@@ -1,8 +1,1 @@
-pay
-rcrm
-rhrms
-rlending
-roadmap
 rcore
-memory
-synaptic

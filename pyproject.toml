@@ -5,15 +5,7 @@ description = "Core ROKCT Logic"
 authors = [
     { name = "RokctAI", email = "admin@rokct.ai"}
 ]
-dependencies = [
-    "torch",
-    "transformers",
-    "accelerate",
-    "sentencepiece",
-    "protobuf",
-    "huggingface-hub",
-    "Pillow"
-]
+dependencies = []
 
 
 [build-system]
