@@ -4,3 +4,4 @@
 2026-07-08 19:58:41,470 - INFO - Synced: docs/api/.shared-workflows_scripts_update_docs.md <- .shared-workflows/scripts/update_docs.py
 2026-07-08 19:58:41,489 - INFO - Auto-creating missing documentation for: .shared-workflows/scripts/compliance/layer_11.py
 2026-07-08 19:58:41,489 - INFO - Auto-created missing doc: docs/api/.shared-workflows_scripts_compliance_layer_11.md <- .shared-workflows/scripts/compliance/layer_11.py
+2026-07-10 23:49:51,127 - INFO - Detected project type: python for /home/runner/work/rCore/rCore
