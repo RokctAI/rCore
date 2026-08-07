@@ -43,3 +43,6 @@
 2026-07-24 23:56:21,470 - INFO - Auto-creating missing documentation for: .shared-workflows/scripts/tests/test_compliance_layers.py
 2026-07-24 23:56:21,545 - INFO - Auto-created missing doc: docs/api/.shared-workflows_scripts_tests_test_compliance_layers.md <- .shared-workflows/scripts/tests/test_compliance_layers.py
 2026-07-31 23:54:20,027 - INFO - Detected project type: python for /home/runner/work/rCore/rCore
+2026-08-07 23:25:08,389 - INFO - Detected project type: python for /home/runner/work/rCore/rCore
+2026-08-07 23:25:08,675 - INFO - Auto-creating missing documentation for: .shared-workflows/scripts/sdk_validator.py
+2026-08-07 23:25:08,688 - INFO - Auto-created missing doc: docs/api/.shared-workflows_scripts_sdk_validator.md <- .shared-workflows/scripts/sdk_validator.py
