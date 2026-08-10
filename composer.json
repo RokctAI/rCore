@@ -92,6 +92,15 @@
       "path": "../agent/lms/frappe",
       "ref": "main",
       "_comment": "Supacharge's home SDK (LMS domain: lessons, schedule, partner links). Moved here from paas/composer.json (2026-07-24) so lms is always present for every tenant via rcore, same as brain, gated by a subscription flag instead of by paas-plan eligibility — a tenant on a non-paas plan no longer loses lms access."
+    },
+    {
+      "name": "crm",
+      "enabled": true,
+      "source": "git",
+      "git": "https://github.com/RokctAI/productivity",
+      "path": "../productivity/crm/frappe",
+      "ref": "main",
+      "_comment": "Core CRM slice (leads, deals, contacts, organizations, notes, tasks, call logs, statuses) ported from Frappenize/crm (frappe/crm fork) into the productivity SDK. Composing this module replaces installing the standalone frappe/crm app — a site must NOT have frappe/crm installed alongside rcore, since the doctype names (CRM Lead, CRM Deal, ...) are intentionally identical and would double-define. Existing sites need one 'bench execute rcore.patches.crm_seed_defaults.execute' to seed default statuses."
     }
   ]
 }
