@@ -47,3 +47,4 @@
 2026-08-07 23:25:08,675 - INFO - Auto-creating missing documentation for: .shared-workflows/scripts/sdk_validator.py
 2026-08-07 23:25:08,688 - INFO - Auto-created missing doc: docs/api/.shared-workflows_scripts_sdk_validator.md <- .shared-workflows/scripts/sdk_validator.py
 2026-08-10 11:09:48,467 - INFO - Detected project type: python for /home/runner/work/rCore/rCore
+2026-08-10 17:39:01,999 - INFO - Detected project type: python for /home/runner/work/rCore/rCore
