@@ -1,7 +1,8 @@
-# compliance-silent
+# compliance-ignore-file: structural-special-dirs
 import os
 import sys
 import json
+import re
 import hashlib
 import subprocess
 import urllib.request
@@ -35,26 +36,41 @@ def extract_new_sections(child_path, parent_path, repo, session):
     # to prevent duplication during additive sync
     if not os.path.exists(child_path):
         return None
-    child_content = open(child_path, "r", encoding="utf-8").read()
-
+    child_content = open(child_path, "r", encoding="utf-8").read().strip()
+    if not child_content:
+        return None
+        
+    already_synced = ""
     if os.path.exists(parent_path):
         parent_content = open(parent_path, "r", encoding="utf-8").read()
-        # Only extract what child has that parent doesn't
-        if child_content == parent_content.strip() or child_content.strip() in parent_content:
-            return None
-        # Find lines unique to child (bottom-only append)
-        child_lines = child_content.splitlines()
-        parent_lines = parent_content.splitlines()
-        new_lines = []
-        for line in child_lines:
-            if line not in parent_lines:
-                new_lines.append(line)
-        if not new_lines:
-            return None
-        new_content = "\n".join(new_lines)
-    else:
-        new_content = child_content.strip()
+        # Find all synced blocks for this specific repository
+        escaped_repo = re.escape(repo)
+        pattern = r"<!-- ROKCT-SYNC-START: " + escaped_repo + r"/.*? -->\n(.*?)\n<!-- ROKCT-SYNC-END: " + escaped_repo + r"/.*? -->"
+        matches = re.findall(pattern, parent_content, re.DOTALL)
+        if matches:
+            already_synced = "\n".join(m.strip() for m in matches).strip()
 
+    if already_synced and child_content.startswith(already_synced):
+        new_content = child_content[len(already_synced):].strip()
+    else:
+        # Fallback if child has no synced prefix
+        child_lines = child_content.splitlines()
+        if os.path.exists(parent_path):
+            parent_content = open(parent_path, "r", encoding="utf-8").read()
+            if child_content in parent_content:
+                return None
+            new_lines = []
+            for line in reversed(child_lines):
+                if line in parent_content:
+                    break
+                new_lines.insert(0, line)
+            new_content = "\n".join(new_lines).strip()
+        else:
+            new_content = child_content
+
+    if not new_content:
+        return None
+    
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     return HEADER.format(repo=repo, session=session, ts=ts) + new_content + "\n" + FOOTER.format(repo=repo, session=session, ts=ts)
 
@@ -73,8 +89,8 @@ def fetch_maintenance_workflow(dest_path):
     """Fetch maintenance.yml from the protocol remote repository."""
     url = "https://raw.githubusercontent.com/RokctAI/The-Rokct-Protocol/main/workflows/maintenance.yml"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req) as r:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "X-Trace-Id": "agent-http"})
+        with urllib.request.urlopen(req, timeout=10) as r:
             content = r.read()
             os.makedirs(os.path.dirname(dest_path), exist_ok=True)
             with open(dest_path, "wb") as f:
@@ -87,7 +103,7 @@ def fetch_maintenance_workflow(dest_path):
 def check_and_update_maintenance(parent_clone):
     """Ensure parent has the maintenance workflow. Only installs if missing to avoid overriding custom cron."""
     maintenance_path = os.path.join(parent_clone, ".github", "workflows", "maintenance.yml")
-
+    
     if os.path.exists(maintenance_path):
         # If it exists, we assume developers may have customized the cron or logic.
         # We do not overwrite it to avoid losing those customizations.
@@ -96,8 +112,8 @@ def check_and_update_maintenance(parent_clone):
     print("[sync] Parent is missing maintenance workflow. Installing...")
     url = "https://raw.githubusercontent.com/RokctAI/The-Rokct-Protocol/main/workflows/maintenance.yml"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req) as r:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "X-Trace-Id": "agent-http"})
+        with urllib.request.urlopen(req, timeout=10) as r:
             remote_content = r.read()
             os.makedirs(os.path.dirname(maintenance_path), exist_ok=True)
             with open(maintenance_path, "wb") as f:
@@ -115,12 +131,12 @@ def sync_to_parent(config):
     if not parent_repo:
         print("[sync] No parent_repo in config")
         return
-
+    
     session = config.get("session_id", "unknown")
     child_repo = get_child_repo()
-
+    
     parent_clone = os.path.join(ROKCT_DIR, ".parent_clone")
-
+    
     if os.path.isdir(parent_clone):
         subprocess.run(["git", "-C", parent_clone, "fetch", "origin"], capture_output=True)
         subprocess.run(["git", "-C", parent_clone, "reset", "--hard", f"origin/{config.get('parent_branch', 'main')}"], capture_output=True)
@@ -133,18 +149,18 @@ def sync_to_parent(config):
         if result.returncode != 0:
             print(f"[sync] Clone failed: {result.stderr}")
             return
-
+    
     parent_rokct = os.path.join(parent_clone, ".rokct")
     os.makedirs(parent_rokct, exist_ok=True)
-
+    
     # Guard: Ensure parent has the LATEST maintenance workflow
     any_changes = check_and_update_maintenance(parent_clone)
-
+    
     for rel_file in working_files:
 
         child_path = os.path.join(ROKCT_DIR, rel_file)
         parent_path = os.path.join(parent_rokct, rel_file)
-
+        
         section = extract_new_sections(child_path, parent_path, child_repo, session)
         if section:
             os.makedirs(os.path.dirname(parent_path), exist_ok=True)
@@ -157,11 +173,11 @@ def sync_to_parent(config):
             any_changes = True
         else:
             print(f"[sync] No new content for .rokct/{rel_file}")
-
+    
     if not any_changes:
         print("[sync] No changes to push")
         return
-
+    
     subprocess.run(["git", "-C", parent_clone, "config", "user.email", "rokct-bot@users.noreply.github.com"], capture_output=True)
     subprocess.run(["git", "-C", parent_clone, "config", "user.name", "rokct-bot"], capture_output=True)
     subprocess.run(["git", "-C", parent_clone, "add", ".rokct/"], capture_output=True)
@@ -178,7 +194,7 @@ def main():
     if not config:
         return
     sync_to_parent(config)
-
+    
     # Remove the sync marker after attempting sync
     sync_marker = os.path.join(ROKCT_DIR, ".sync_ready")
     if os.path.exists(sync_marker):
