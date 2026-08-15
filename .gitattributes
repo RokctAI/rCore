@@ -1,5 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+*.py text eol=lf
 
 # GitHub Release Archive Exclusions
 .github/ export-ignore
