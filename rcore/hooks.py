@@ -14,3 +14,9 @@ whitelisted_methods = {
     "rokct.platform.api.tenant": "rcore.platform.api.execute_tenant",
     "rokct.platform.api.control": "rcore.platform.api.execute_control",
 }
+
+# Frappe's dispatcher resolves aliases from this hook (see frappe.override_whitelisted_method)
+override_whitelisted_methods = {
+    "rokct.platform.api.tenant": "rcore.platform.api.execute_tenant",
+    "rokct.platform.api.control": "rcore.platform.api.execute_control",
+}
