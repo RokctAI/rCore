@@ -10,13 +10,11 @@ app_license = "mit"
 
 # Whitelisted Methods (Public APIs)
 whitelisted_methods = {
-    # The two universal entry points for the platform
-    "rokct.platform.api.tenant": "rcore.platform.api.execute_tenant",
-    "rokct.platform.api.control": "rcore.platform.api.execute_control",
+    # The single universal entry point for the platform (routes by site role)
+    "rokct.platform.api": "rcore.platform.api.execute",
 }
 
 # Frappe's dispatcher resolves aliases from this hook (see frappe.override_whitelisted_method)
 override_whitelisted_methods = {
-    "rokct.platform.api.tenant": "rcore.platform.api.execute_tenant",
-    "rokct.platform.api.control": "rcore.platform.api.execute_control",
+    "rokct.platform.api": "rcore.platform.api.execute",
 }
