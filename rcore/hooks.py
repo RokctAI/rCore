@@ -18,3 +18,9 @@ whitelisted_methods = {
 override_whitelisted_methods = {
     "rokct.platform.api": "rcore.platform.api.execute",
 }
+
+# Add API v1 routes for DocType resources
+website_route_rules = [
+	{"from_route": "/api/v1/resource/<doctype>", "to_route": "frappe.api.handle_api_request"},
+	{"from_route": "/api/v1/resource/<doctype>/<name>", "to_route": "frappe.api.handle_api_request"},
+]
