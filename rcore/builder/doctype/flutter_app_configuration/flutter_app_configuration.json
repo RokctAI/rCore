@@ -1,0 +1,306 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "creation": "2025-09-21 01:15:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "build_config_section",
+    "source_project",
+    "build_target",
+    "base_version",
+    "app_details_section",
+    "app_display_name",
+    "package_name",
+    "sha256_fingerprint",
+    "ios_package_name",
+    "apple_team_id",
+    "app_description",
+    "app_icon",
+    "google_services_json",
+    "theming_section",
+    "custom_font_file",
+    "brand_logo",
+    "login_bg_image",
+    "primary_color",
+    "bottom_nav_color",
+    "text_grey_color",
+    "splash_screen_section",
+    "splash_bg_color",
+    "splash_logo",
+    "functionality_api_keys_section",
+    "is_demo",
+    "column_break_1",
+    "google_api_key",
+    "uri_prefix",
+    "admin_page_url",
+    "web_url",
+    "firebase_web_key",
+    "section_break_2",
+    "payfast_merchant_id",
+    "payfast_merchant_key",
+    "payfast_passphrase",
+    "section_break_3",
+    "default_latitude",
+    "default_longitude",
+    "build_status_section",
+    "build_status",
+    "build_log",
+    "apk_download_link"
+  ],
+  "fields": [
+    {
+      "fieldname": "build_config_section",
+      "fieldtype": "Section Break",
+      "label": "Build Configuration"
+    },
+    {
+      "fieldname": "source_project",
+      "fieldtype": "Data",
+      "label": "Source Project",
+      "reqd": 1,
+      "default": "customer"
+    },
+    {
+      "fieldname": "build_target",
+      "fieldtype": "Select",
+      "label": "Build Target",
+      "reqd": 1
+    },
+    {
+      "fieldname": "base_version",
+      "fieldtype": "Data",
+      "label": "Base Version",
+      "read_only": 1,
+      "description": "The original version from the source project."
+    },
+    {
+      "fieldname": "app_details_section",
+      "fieldtype": "Section Break",
+      "label": "App Metadata & Package"
+    },
+    {
+      "fieldname": "app_display_name",
+      "fieldtype": "Data",
+      "label": "App Display Name",
+      "description": "The name shown under the app icon on the device.",
+      "reqd": 1
+    },
+    {
+      "fieldname": "package_name",
+      "fieldtype": "Data",
+      "label": "Android Package Name",
+      "reqd": 1
+    },
+    {
+      "fieldname": "ios_package_name",
+      "fieldtype": "Data",
+      "label": "iOS Package Name",
+      "reqd": 1
+    },
+    {
+      "fieldname": "apple_team_id",
+      "fieldtype": "Data",
+      "label": "Apple Team ID"
+    },
+    {
+      "fieldname": "sha256_fingerprint",
+      "fieldtype": "Small Text",
+      "label": "SHA-256 Fingerprint(s)"
+    },
+    {
+      "fieldname": "app_description",
+      "fieldtype": "Small Text",
+      "label": "App Description"
+    },
+    {
+      "fieldname": "app_icon",
+      "fieldtype": "Attach Image",
+      "label": "Main App Icon (for launcher)"
+    },
+    {
+      "fieldname": "google_services_json",
+      "fieldtype": "Attach",
+      "label": "google-services.json"
+    },
+    {
+      "fieldname": "theming_section",
+      "fieldtype": "Section Break",
+      "label": "Branding & Theming"
+    },
+    {
+      "fieldname": "custom_font_file",
+      "fieldtype": "Attach",
+      "label": "Custom Font File (.ttf, .otf)"
+    },
+    {
+      "fieldname": "brand_logo",
+      "fieldtype": "Attach Image",
+      "label": "In-App Logo"
+    },
+    {
+      "fieldname": "login_bg_image",
+      "fieldtype": "Attach Image",
+      "label": "Login Screen Background"
+    },
+    {
+      "fieldname": "primary_color",
+      "fieldtype": "Color",
+      "label": "Primary Color"
+    },
+    {
+      "fieldname": "bottom_nav_color",
+      "fieldtype": "Color",
+      "label": "Bottom Navigation Bar Color"
+    },
+    {
+      "fieldname": "text_grey_color",
+      "fieldtype": "Color",
+      "label": "Text Grey Color"
+    },
+    {
+      "fieldname": "splash_screen_section",
+      "fieldtype": "Section Break",
+      "label": "Splash Screen"
+    },
+    {
+      "fieldname": "splash_bg_color",
+      "fieldtype": "Color",
+      "label": "Splash Screen Background Color"
+    },
+    {
+      "fieldname": "splash_logo",
+      "fieldtype": "Attach Image",
+      "label": "Splash Screen Logo"
+    },
+    {
+      "fieldname": "functionality_api_keys_section",
+      "fieldtype": "Section Break",
+      "label": "Functionality & API Keys"
+    },
+    {
+      "fieldname": "is_demo",
+      "fieldtype": "Check",
+      "label": "Enable Demo Mode",
+      "default": "0"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "google_api_key",
+      "fieldtype": "Data",
+      "label": "Google Maps API Key",
+      "read_only": 1
+    },
+    {
+      "fieldname": "uri_prefix",
+      "fieldtype": "Data",
+      "label": "URI Prefix",
+      "read_only": 1
+    },
+    {
+      "fieldname": "admin_page_url",
+      "fieldtype": "Data",
+      "label": "Admin Page URL"
+    },
+    {
+      "fieldname": "web_url",
+      "fieldtype": "Data",
+      "label": "Web URL"
+    },
+    {
+      "fieldname": "firebase_web_key",
+      "fieldtype": "Data",
+      "label": "Firebase Web Key",
+      "read_only": 1
+    },
+    {
+      "fieldname": "section_break_2",
+      "fieldtype": "Section Break"
+    },
+    {
+      "fieldname": "payfast_merchant_id",
+      "fieldtype": "Data",
+      "label": "PayFast Merchant ID",
+      "read_only": 1
+    },
+    {
+      "fieldname": "payfast_merchant_key",
+      "fieldtype": "Password",
+      "label": "PayFast Merchant Key",
+      "read_only": 1
+    },
+    {
+      "fieldname": "payfast_passphrase",
+      "fieldtype": "Password",
+      "label": "PayFast Passphrase",
+      "read_only": 1
+    },
+    {
+      "fieldname": "section_break_3",
+      "fieldtype": "Section Break"
+    },
+    {
+      "fieldname": "default_latitude",
+      "fieldtype": "Float",
+      "label": "Default Map Latitude",
+      "read_only": 1
+    },
+    {
+      "fieldname": "default_longitude",
+      "fieldtype": "Float",
+      "label": "Default Map Longitude",
+      "read_only": 1
+    },
+    {
+      "fieldname": "build_status_section",
+      "fieldtype": "Section Break",
+      "label": "Build Status"
+    },
+    {
+      "fieldname": "build_status",
+      "fieldtype": "Select",
+      "label": "Build Status",
+      "options": "Not Started\nIn Progress\nSuccess\nFailed",
+      "default": "Not Started",
+      "read_only": 1
+    },
+    {
+      "fieldname": "build_log",
+      "fieldtype": "Text",
+      "label": "Build Log",
+      "read_only": 1
+    },
+    {
+      "fieldname": "apk_download_link",
+      "fieldtype": "Data",
+      "label": "Download Link",
+      "read_only": 1
+    }
+  ],
+  "links": [],
+  "modified": "2025-09-21 01:15:00.000000",
+  "modified_by": "Administrator",
+  "module": "PaaS",
+  "name": "Flutter App Configuration",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}
