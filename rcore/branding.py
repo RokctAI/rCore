@@ -10,54 +10,64 @@ def get_paas_branding():
     """Get PaaS branding settings for tenant"""
     try:
         # Check if tenant has PaaS plan
-        subscription = frappe.db.get_value('Company Subscription',
-                                           {'company': frappe.defaults.get_user_default(
-                                               'Company')},
-                                           ['subscription_plan'], as_dict=True)
+        subscription = frappe.db.get_value(
+            "Company Subscription",
+            {"company": frappe.defaults.get_user_default("Company")},
+            ["subscription_plan"],
+            as_dict=True,
+        )
 
         if not subscription:
-            return {'enabled': False}
+            return {"enabled": False}
 
         # Check if plan includes PaaS
-        plan = frappe.get_doc(
-            'Subscription Plan',
-            subscription.subscription_plan)
-        has_paas = any(module.module_name == 'PaaS' for module in plan.modules)
+        plan = frappe.get_doc("Subscription Plan", subscription.subscription_plan)
+        has_paas = any(module.module_name == "PaaS" for module in plan.modules)
 
         if not has_paas:
-            return {'enabled': False}
+            return {"enabled": False}
 
         # Get PaaS settings logo and app name
-        settings = frappe.get_single('Settings')
+        settings = frappe.get_single("Settings")
 
         # Use Settings logo if available, otherwise fallback to ROKCT default
         # logos
-        logo = settings.logo if settings and settings.logo else '/assets/rokct/images/logo.svg'
-        favicon = settings.favicon if settings and settings.favicon else '/assets/rokct/images/logo.svg'
-        app_name = settings.project_title if settings and settings.project_title else 'ROKCT'
+        logo = (
+            settings.logo
+            if settings and settings.logo
+            else "/assets/rokct/images/logo.svg"
+        )
+        favicon = (
+            settings.favicon
+            if settings and settings.favicon
+            else "/assets/rokct/images/logo.svg"
+        )
+        app_name = (
+            settings.project_title if settings and settings.project_title else "ROKCT"
+        )
 
         return {
-            'enabled': True,
-            'logo': logo,
-            'app_name': app_name,
-            'favicon': favicon,
-            'logo_dark': '/assets/rokct/images/logo_dark.svg'  # Dark mode logo
+            "enabled": True,
+            "logo": logo,
+            "app_name": app_name,
+            "favicon": favicon,
+            "logo_dark": "/assets/rokct/images/logo_dark.svg",  # Dark mode logo
         }
 
     except Exception as e:
         frappe.log_error(f"PaaS branding error: {str(e)}")
-        return {'enabled': False}
+        return {"enabled": False}
 
 
 def get_paas_brand_html():
     """Generate PaaS branding HTML/CSS"""
     branding = get_paas_branding()
 
-    if not branding.get('enabled'):
+    if not branding.get("enabled"):
         return ""
 
-    logo_url = branding.get('logo', '')
-    app_name = branding.get('app_name', 'My App')
+    logo_url = branding.get("logo", "")
+    app_name = branding.get("app_name", "My App")
 
     # Logo replacement script
     logo_script = f"""
@@ -115,6 +125,13 @@ def get_paas_brand_html():
 @frappe.whitelist(allow_guest=True)
 def get_paas_branding_for_tenant() -> Any:
     """API endpoint to get PaaS branding"""
-    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
+    import sys
+
+    _ = (
+        frappe.request.headers.get("x-trace-id")
+        if hasattr(frappe, "request")
+        else None,
+        sys.stderr,
+    )
     branding = get_paas_branding()
     return branding

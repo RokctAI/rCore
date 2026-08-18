@@ -1,3 +1,7 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 import frappe
 import os
 import json
@@ -29,9 +33,9 @@ class JSONSeeder:
         trace context
         """
         # Users are in rokct app for security
-        rokct_fixtures_path = os.path.abspath(os.path.join(
-            get_bench_path(), "apps/control/control/seeds"
-        ))
+        rokct_fixtures_path = os.path.abspath(
+            os.path.join(get_bench_path(), "apps/control/control/seeds")
+        )
         users_file = os.path.abspath(os.path.join(rokct_fixtures_path, "users.json"))
 
         if not os.path.exists(users_file):
@@ -54,9 +58,7 @@ class JSONSeeder:
                 name = u.get("name", "")
                 first_name = name.split(" ")[0] if name else "User"
                 last_name = (
-                    " ".join(name.split(" ")[1:])
-                    if name and " " in name
-                    else ""
+                    " ".join(name.split(" ")[1:]) if name and " " in name else ""
                 )
 
                 _doc = frappe.get_doc(
@@ -89,9 +91,7 @@ class JSONSeeder:
                     self.shop_map[s.get("id")] = shop_name
                     continue
 
-                user_email = (
-                    self.user_map.get(s.get("user_id")) or "Administrator"
-                )
+                user_email = self.user_map.get(s.get("user_id")) or "Administrator"
 
                 _doc = frappe.get_doc(
                     {
@@ -148,9 +148,9 @@ class JSONSeeder:
                     self.brand_map[b.get("id")] = title
                     continue
 
-                doc = frappe.get_doc(
-                    {"doctype": "Brand", "brand": title}
-                ).insert(ignore_permissions=True)
+                doc = frappe.get_doc({"doctype": "Brand", "brand": title}).insert(
+                    ignore_permissions=True
+                )
                 self.brand_map[b.get("id")] = doc.name
             except Exception as e:
                 print(f"Error brand {b.get('title')}: {e}")
@@ -214,9 +214,7 @@ class JSONSeeder:
                 if not type_name:
                     continue
 
-                if frappe.db.exists(
-                    "Parcel Order Setting", {"type": type_name}
-                ):
+                if frappe.db.exists("Parcel Order Setting", {"type": type_name}):
                     continue
 
                 frappe.get_doc(
@@ -243,9 +241,7 @@ class JSONSeeder:
                 # PaaS Translation might not have a unique constraint on key+locale in standard way,
                 # but let's check. If not, we might duplicate.
                 # Let's assume we check by key and locale.
-                if frappe.db.exists(
-                    "PaaS Translation", {"key": key, "locale": locale}
-                ):
+                if frappe.db.exists("PaaS Translation", {"key": key, "locale": locale}):
                     continue
 
                 frappe.get_doc(
@@ -279,9 +275,7 @@ class JSONSeeder:
                     else None
                 )
                 location_val = (
-                    json.dumps(addr.get("location"))
-                    if addr.get("location")
-                    else None
+                    json.dumps(addr.get("location")) if addr.get("location") else None
                 )
 
                 frappe.get_doc(
@@ -416,9 +410,7 @@ class JSONSeeder:
                 # print(f"Error assigning role: {e}")
                 pass
 
-    def seed_generic(
-        self, filename, doctype, unique_field="id", name_field="name"
-    ):  # noqa: C901
+    def seed_generic(self, filename, doctype, unique_field="id", name_field="name"):  # noqa: C901
         data = self.load_json(filename)
         if not data:
             return
@@ -517,9 +509,9 @@ def execute():
     site = frappe.local.site
     # UPDATED: Use seeds_data directory instead of fixtures to prevent
     # auto-import
-    fixtures_path = os.path.abspath(os.path.join(
-        get_bench_path(), "apps/control/control/seeds"
-    ))
+    fixtures_path = os.path.abspath(
+        os.path.join(get_bench_path(), "apps/control/control/seeds")
+    )
     seeder = JSONSeeder(site, fixtures_path)
     seeder.run()
 

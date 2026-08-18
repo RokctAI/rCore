@@ -1,3 +1,7 @@
+# Copyright (c) 2026, Rokct Intelligence (pty) Ltd.
+# For license information, please see license.txt
+
+
 from typing import Any, Optional
 import frappe
 
@@ -7,15 +11,20 @@ def get_assetlinks() -> Any:
     """
     The get_assetlinks function generates a JSON response containing asset links configuration for a Flutter app. It retrieves the package name and SHA256 fingerprints from the Flutter App Configuration settings, cleans up the fingerprints by removing empty lines or whitespace, and returns a list of asset links in the required format. The function returns an empty list if the package name is not set or if an error occurs during execution. The parameters for this function are implicitly defined by the configuration settings, specifically the package name and SHA256 fingerprints, which are used to construct the asset links configuration.
     """
-    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
+    import sys
+
+    _ = (
+        frappe.request.headers.get("x-trace-id")
+        if hasattr(frappe, "request")
+        else None,
+        sys.stderr,
+    )
     frappe.response["type"] = "json"
     try:
         config = frappe.get_single("Flutter App Configuration")
         package_name = config.package_name
         fingerprints = (
-            config.sha256_fingerprint.splitlines()
-            if config.sha256_fingerprint
-            else []
+            config.sha256_fingerprint.splitlines() if config.sha256_fingerprint else []
         )
 
         # Clean up fingerprints (remove empty lines or whitespace)
@@ -44,7 +53,14 @@ def get_apple_app_site_association() -> Any:
     """
     The get_apple_app_site_association function generates the apple-app-site-association JSON object, which is used to enable Universal Links for an iOS application. This function retrieves the Apple team ID and iOS bundle ID from the Flutter App Configuration, constructs the app ID, and returns a JSON object containing the applinks details. The returned JSON object includes the app ID and specifies that all paths are supported. If the team ID or bundle ID is missing, or if an error occurs during execution, an empty dictionary is returned.
     """
-    import sys; _ = (frappe.request.headers.get("x-trace-id") if hasattr(frappe, "request") else None, sys.stderr)
+    import sys
+
+    _ = (
+        frappe.request.headers.get("x-trace-id")
+        if hasattr(frappe, "request")
+        else None,
+        sys.stderr,
+    )
     frappe.response["type"] = "json"
     try:
         config = frappe.get_single("Flutter App Configuration")
