@@ -214,6 +214,15 @@
       "path": "../productivity/crm/frappe",
       "ref": "main",
       "_comment": "Core CRM slice (leads, deals, contacts, organizations, notes, tasks, call logs, statuses) ported from Frappenize/crm (frappe/crm fork) into the productivity SDK. Composing this module replaces installing the standalone frappe/crm app — a site must NOT have frappe/crm installed alongside rcore, since the doctype names (CRM Lead, CRM Deal, ...) are intentionally identical and would double-define. Existing sites need one 'bench execute rcore.patches.crm_seed_defaults.execute' to seed default statuses."
+    },
+    {
+      "name": "tender",
+      "enabled": true,
+      "source": "git",
+      "git": "https://github.com/RokctAI/corporate",
+      "path": "../corporate/tender/frappe",
+      "ref": "d938ea8df137c5b17011a98011172d9043e03f1a",
+      "_comment": "TenderAssist module (SA public-sector tendering: opportunity catalog, tender bids with checklists, deterministic compliance layer) merged in corporate#25; its manifest declares app_type personas 'control' and 'tenant'. The full-SHA ref pin is intentional — the composer only accepts SHA pins when cloning (hard-fails unpinned refs), unlike the legacy 'main' refs above which predate that rule."
     }
   ]
 }
