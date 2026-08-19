@@ -1,0 +1,20 @@
+{
+  "name": "Auth Settings",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "auth",
+  "fields": [
+    {
+      "fieldname": "otp_expire_time",
+      "fieldtype": "Int",
+      "label": "OTP Expire Time (minutes)"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

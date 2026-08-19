@@ -1,0 +1,9 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "status",
+ "fieldtype": "Select",
+ "label": "Status",
+ "options": "Pending\nPublished\nUnpublished"
+}
+

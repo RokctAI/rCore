@@ -1,0 +1,113 @@
+{
+  "doctype": "DocType",
+  "name": "Loan Refund",
+  "engine": "InnoDB",
+  "is_submittable": 1,
+  "issingle": 0,
+  "istable": 0,
+  "editable_grid": 1,
+  "module": "polaris",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Loan Manager",
+      "share": 1,
+      "submit": 1,
+      "cancel": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "loan",
+      "fieldtype": "Link",
+      "label": "Loan",
+      "options": "Loan",
+      "reqd": 1
+    },
+    {
+      "fieldname": "applicant_type",
+      "fieldtype": "Select",
+      "label": "Applicant Type",
+      "options": "Customer\nEmployee",
+      "default": "Customer"
+    },
+    {
+      "fieldname": "applicant",
+      "fieldtype": "Dynamic Link",
+      "label": "Applicant",
+      "options": "applicant_type"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "options": "Company"
+    },
+    {
+      "fieldname": "currency",
+      "fieldtype": "Link",
+      "label": "Currency",
+      "options": "Currency"
+    },
+    {
+      "default": "0",
+      "fieldname": "is_excess_amount_refund",
+      "fieldtype": "Check",
+      "label": "Is Excess Amount Refund"
+    },
+    {
+      "default": "0",
+      "fieldname": "is_security_amount_refund",
+      "fieldtype": "Check",
+      "label": "Is Security Amount Refund"
+    },
+    {
+      "fieldname": "refund_amount",
+      "fieldtype": "Currency",
+      "label": "Refund Amount",
+      "options": "currency",
+      "reqd": 1
+    },
+    {
+      "fieldname": "posting_date",
+      "fieldtype": "Date",
+      "label": "Posting Date",
+      "default": "Today"
+    },
+    {
+      "fieldname": "amended_from",
+      "fieldtype": "Link",
+      "label": "Amended From",
+      "options": "Loan Refund",
+      "no_copy": 1,
+      "print_hide": 1,
+      "read_only": 1
+    }
+  ]
+}

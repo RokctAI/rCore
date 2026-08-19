@@ -1,0 +1,29 @@
+{
+  "name": "Notification Type",
+  "engine": "InnoDB",
+  "doctype": "DocType",
+  "module": "comms",
+  "fields": [
+    {
+      "fieldname": "type",
+      "fieldtype": "Data",
+      "label": "Type",
+      "unique": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "payload",
+      "fieldtype": "Code",
+      "label": "Payload"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Design Settings",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "base",
+  "fields": [
+    {
+      "fieldname": "ui_selector",
+      "fieldtype": "HTML",
+      "label": "UI Selector"
+    },
+    {
+      "fieldname": "ui_type",
+      "fieldtype": "Select",
+      "label": "UI Type",
+      "options": "1\n2\n3\n4\n5",
+      "hidden": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

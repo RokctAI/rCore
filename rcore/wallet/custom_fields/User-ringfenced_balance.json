@@ -1,0 +1,8 @@
+{
+    "dt": "User",
+    "doctype": "Custom Field",
+    "fieldname": "ringfenced_balance",
+    "fieldtype": "Currency",
+    "label": "Ringfenced Balance",
+    "default": "0"
+}

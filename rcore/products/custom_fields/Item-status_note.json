@@ -1,0 +1,8 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "status_note",
+ "fieldtype": "Small Text",
+ "label": "Status Note"
+}
+

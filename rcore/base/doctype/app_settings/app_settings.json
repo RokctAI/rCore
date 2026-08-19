@@ -1,0 +1,45 @@
+{
+  "name": "App Settings",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "base",
+  "fields": [
+    {
+      "fieldname": "vendor_app_ios",
+      "fieldtype": "Data",
+      "label": "Vendor App IOS"
+    },
+    {
+      "fieldname": "vendor_app_android",
+      "fieldtype": "Data",
+      "label": "Vendor App Android"
+    },
+    {
+      "fieldname": "delivery_app_ios",
+      "fieldtype": "Data",
+      "label": "Delivery App IOS"
+    },
+    {
+      "fieldname": "delivery_app_android",
+      "fieldtype": "Data",
+      "label": "Delivery App Android"
+    },
+    {
+      "fieldname": "customer_app_ios",
+      "fieldtype": "Data",
+      "label": "Customer App IOS"
+    },
+    {
+      "fieldname": "customer_app_android",
+      "fieldtype": "Data",
+      "label": "Customer App Android"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

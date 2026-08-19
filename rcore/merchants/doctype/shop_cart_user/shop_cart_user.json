@@ -1,0 +1,17 @@
+{
+  "name": "Shop Cart User",
+  "module": "merchants",
+  "engine": "InnoDB",
+  "istable": 1,
+  "doctype": "DocType",
+  "permissions": [],
+  "fields": [
+    {
+      "fieldname": "user",
+      "fieldtype": "Link",
+      "label": "User",
+      "options": "User",
+      "reqd": 1
+    }
+  ]
+}

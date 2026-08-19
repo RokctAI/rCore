@@ -1,0 +1,73 @@
+{
+  "doctype": "DocType",
+  "name": "Process Loan Security Shortfall",
+  "engine": "InnoDB",
+  "is_submittable": 1,
+  "issingle": 0,
+  "istable": 0,
+  "editable_grid": 1,
+  "module": "polaris",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Loan Manager",
+      "share": 1,
+      "submit": 1,
+      "cancel": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "description": "Record-only orchestrator shell - see Loan Security Shortfall's description for why the real LTV-check logic isn't ported.",
+  "fields": [
+    {
+      "fieldname": "update_time",
+      "fieldtype": "Datetime",
+      "label": "Update Time",
+      "default": "Now"
+    },
+    {
+      "fieldname": "loan",
+      "fieldtype": "Link",
+      "label": "Loan",
+      "options": "Loan"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "\nDraft\nCompleted",
+      "default": "Draft",
+      "in_list_view": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "amended_from",
+      "fieldtype": "Link",
+      "label": "Amended From",
+      "options": "Process Loan Security Shortfall",
+      "no_copy": 1,
+      "print_hide": 1,
+      "read_only": 1
+    }
+  ]
+}

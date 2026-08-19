@@ -1,0 +1,54 @@
+{
+  "doctype": "DocType",
+  "name": "Shop Ads Package",
+  "engine": "InnoDB",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 0,
+  "module": "merchants",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "shop",
+      "fieldtype": "Link",
+      "label": "Shop",
+      "options": "Company",
+      "reqd": 1
+    },
+    {
+      "fieldname": "ads_package",
+      "fieldtype": "Link",
+      "label": "Ads Package",
+      "options": "Ads Package",
+      "reqd": 1
+    },
+    {
+      "fieldname": "start_date",
+      "fieldtype": "Date",
+      "label": "Start Date",
+      "reqd": 1
+    },
+    {
+      "fieldname": "end_date",
+      "fieldtype": "Date",
+      "label": "End Date",
+      "reqd": 1
+    }
+  ]
+}

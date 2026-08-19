@@ -1,0 +1,74 @@
+{
+  "doctype": "DocType",
+  "name": "LMS League Membership",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "rlms",
+  "autoname": "hash",
+  "fields": [
+    {
+      "fieldname": "student",
+      "fieldtype": "Link",
+      "label": "Student",
+      "options": "User",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "week_start",
+      "fieldtype": "Date",
+      "label": "Week Start",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "description": "Monday of the league week this row belongs to"
+    },
+    {
+      "fieldname": "tier",
+      "fieldtype": "Select",
+      "label": "Tier",
+      "options": "Bronze\nSilver\nGold\nSapphire\nDiamond",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "cohort",
+      "fieldtype": "Data",
+      "label": "Cohort",
+      "reqd": 1,
+      "in_list_view": 1,
+      "description": "Cohort id within the tier for this week (server-assigned)"
+    },
+    {
+      "fieldname": "points",
+      "fieldtype": "Int",
+      "label": "Points",
+      "default": "0",
+      "description": "Points snapshot written at week close; live standings are computed on read"
+    },
+    {
+      "fieldname": "final_rank",
+      "fieldtype": "Int",
+      "label": "Final Rank",
+      "description": "Rank within the cohort written at week close"
+    },
+    {
+      "fieldname": "closed",
+      "fieldtype": "Check",
+      "label": "Closed",
+      "default": "0",
+      "description": "Set when close_league_week has processed this week"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    }
+  ]
+}

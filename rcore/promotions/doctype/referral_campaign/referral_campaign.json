@@ -1,0 +1,50 @@
+{
+  "name": "Referral Campaign",
+  "engine": "InnoDB",
+  "doctype": "DocType",
+  "issingle": 0,
+  "module": "promotions",
+  "fields": [
+    {
+      "fieldname": "price_from",
+      "fieldtype": "Currency",
+      "label": "Price From"
+    },
+    {
+      "fieldname": "price_to",
+      "fieldtype": "Currency",
+      "label": "Price To"
+    },
+    {
+      "fieldname": "expired_at",
+      "fieldtype": "Date",
+      "label": "Expired At"
+    },
+    {
+      "fieldname": "image",
+      "fieldtype": "Attach Image",
+      "label": "Image"
+    },
+    {
+      "fieldname": "active",
+      "fieldtype": "Check",
+      "label": "Active",
+      "default": "1"
+    },
+    {
+      "fieldname": "translations",
+      "fieldtype": "Table",
+      "label": "Translations",
+      "options": "Referral Campaign Translation"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    }
+  ]
+}

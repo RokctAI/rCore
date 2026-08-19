@@ -1,0 +1,17 @@
+{
+  "doctype": "DocType",
+  "name": "Product Extra Group Link",
+  "engine": "InnoDB",
+  "istable": 1,
+  "module": "products",
+  "fields": [
+    {
+      "fieldname": "extra_group",
+      "fieldtype": "Link",
+      "label": "Extra Group",
+      "options": "Product Extra Group",
+      "reqd": 1,
+      "in_list_view": 1
+    }
+  ]
+}

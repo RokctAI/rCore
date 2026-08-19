@@ -1,0 +1,38 @@
+{
+  "doctype": "DocType",
+  "name": "LMS Skills Index",
+  "engine": "InnoDB",
+  "issingle": 1,
+  "istable": 0,
+  "module": "rlms",
+  "fields": [
+    {
+      "fieldname": "index_json",
+      "fieldtype": "Long Text",
+      "label": "Index JSON",
+      "description": "The factory-generated lessons/skills_index.json, verbatim: {\"skills\": {skill_ref: {card_id, subject, grade, topic, subtopic, lesson_name, status, ...}}}. Written only via api.skills.publish_skills_index; served to the app via api.skills.skills_index."
+    },
+    {
+      "fieldname": "published_on",
+      "fieldtype": "Datetime",
+      "label": "Published On",
+      "read_only": 1,
+      "description": "When the current index was last published."
+    },
+    {
+      "fieldname": "source",
+      "fieldtype": "Data",
+      "label": "Source",
+      "description": "Where this index came from: factory run id, commit, or migration note. Informational only."
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    }
+  ]
+}

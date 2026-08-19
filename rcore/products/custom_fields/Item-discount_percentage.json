@@ -1,0 +1,8 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "discount_percentage",
+ "fieldtype": "Float",
+ "label": "Discount Percentage"
+}
+

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - {{ shop_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            padding: 2.5rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .success-badge {
+            background: #dcfce7;
+            color: var(--success);
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            color: #0f172a;
+        }
+
+        p {
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .otp-box {
+            background: #eff6ff;
+            border: 3px solid #dbeafe;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .otp-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .otp-code {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #1d4ed8;
+            letter-spacing: 0.4rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .details-grid {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .detail-item .label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item .value {
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.9375rem;
+        }
+
+        .status-msg {
+            margin-top: 2rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .card { padding: 1.5rem; }
+            .otp-code { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        {% if error %}
+            <div style="padding: 2rem;">
+                <h1 style="color: #ef4444;">Verification Failed</h1>
+                <p>{{ error }}</p>
+                <button onclick="window.location.reload()" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 700;">Retry</button>
+            </div>
+        {% else %}
+            <div class="success-badge">✓ Payment Confirmed</div>
+            <h1>{{ shop_name }}</h1>
+            <p>Your payment was successful. Please show the code below to the cashier.</p>
+
+            <div class="otp-box">
+                <span class="otp-label">Verification Code</span>
+                <span class="otp-code">{{ otp }}</span>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="label">Amount Paid</span>
+                    <span class="value">R {{ "%.2f"|format(amount) }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Order ID</span>
+                    <span class="value">{{ order_id }}</span>
+                </div>
+            </div>
+
+            <div class="status-msg">
+                Waiting for merchant approval...
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

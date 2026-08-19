@@ -1,0 +1,36 @@
+{
+  "name": "QR Code Settings",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "hardware",
+  "fields": [
+    {
+      "fieldname": "qrcode_base_url",
+      "fieldtype": "Data",
+      "label": "QR Code Base URL"
+    },
+    {
+      "fieldname": "qrcode_type",
+      "fieldtype": "Select",
+      "label": "QR Code Type",
+      "options": "w1\nw2\nw3"
+    },
+    {
+      "fieldname": "split_min",
+      "fieldtype": "Int",
+      "label": "Split Min"
+    },
+    {
+      "fieldname": "split_max",
+      "fieldtype": "Int",
+      "label": "Split Max"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

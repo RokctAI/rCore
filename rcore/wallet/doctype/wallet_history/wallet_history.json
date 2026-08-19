@@ -1,0 +1,69 @@
+{
+  "doctype": "DocType",
+  "name": "Wallet History",
+  "engine": "InnoDB",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 0,
+  "module": "wallet",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "wallet",
+      "fieldtype": "Link",
+      "label": "Wallet",
+      "options": "Wallet",
+      "reqd": 1
+    },
+    {
+      "fieldname": "transaction_type",
+      "fieldtype": "Select",
+      "label": "Transaction Type",
+      "options": "Topup\nWithdraw\nReferral\nLoan Disbursement\nLoan Repayment\nPayment\nRefund\nCOD Collection\nCOD Settlement"
+    },
+    {
+      "fieldname": "amount",
+      "fieldtype": "Currency",
+      "label": "Amount"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Processed\nPaid\nRejected\nCanceled\nPending\nPending"
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Small Text",
+      "label": "Description"
+    },
+    {
+      "fieldname": "transaction_ref",
+      "fieldtype": "Link",
+      "label": "Transaction Ref",
+      "options": "Transaction"
+    },
+    {
+      "default": "0",
+      "fieldname": "is_withdrawable",
+      "fieldtype": "Check",
+      "label": "Is Withdrawable"
+    }
+  ]
+}

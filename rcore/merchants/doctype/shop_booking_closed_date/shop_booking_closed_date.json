@@ -1,0 +1,15 @@
+{
+  "doctype": "DocType",
+  "name": "Shop Booking Closed Date",
+  "engine": "InnoDB",
+  "istable": 1,
+  "module": "merchants",
+  "fields": [
+    {
+      "fieldname": "date",
+      "fieldtype": "Date",
+      "label": "Date",
+      "reqd": 1
+    }
+  ]
+}

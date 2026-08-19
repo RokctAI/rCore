@@ -1,0 +1,23 @@
+{
+  "doctype": "DocType",
+  "name": "Loan Transfer Detail",
+  "engine": "InnoDB",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 1,
+  "editable_grid": 1,
+  "module": "polaris",
+  "permissions": [],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "fields": [
+    {
+      "fieldname": "loan",
+      "fieldtype": "Link",
+      "label": "Loan",
+      "options": "Loan",
+      "in_list_view": 1,
+      "reqd": 1
+    }
+  ]
+}

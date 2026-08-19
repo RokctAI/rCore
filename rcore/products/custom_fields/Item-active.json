@@ -1,0 +1,9 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "active",
+ "fieldtype": "Check",
+ "label": "Active",
+ "default": "1"
+}
+

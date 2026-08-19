@@ -1,0 +1,30 @@
+{
+  "name": "Social Settings",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "base",
+  "fields": [
+    {
+      "fieldname": "facebook",
+      "fieldtype": "Data",
+      "label": "Facebook"
+    },
+    {
+      "fieldname": "instagram",
+      "fieldtype": "Data",
+      "label": "Instagram"
+    },
+    {
+      "fieldname": "twitter",
+      "fieldtype": "Data",
+      "label": "Twitter"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

@@ -1,0 +1,446 @@
+# Copyright (c) 2020, Frappe Technologies Pvt. Ltd. and Contributors
+# See license.txt
+
+from json import dumps
+from unittest.mock import patch
+
+import frappe
+# ROKCT: cross-module test imports into the composed erp module, resolved
+# from __name__ — doctype-tree files must not carry the composer's app-name
+# token for cross-module paths (crm-port precedent). Upstream imported from
+# the separate erpnext app; the erp port flattens doctypes to
+# <app>.erp.doctype.<dt>.
+from importlib import import_module as _import_module
+
+_ERP = __name__.split(".gateways.doctype.", 1)[0] + ".erp"
+create_customer = _import_module(_ERP + ".doctype.payment_entry.test_payment_entry").create_customer
+create_pos_invoice = _import_module(_ERP + ".doctype.pos_invoice.test_pos_invoice").create_pos_invoice
+create_opening_entry = _import_module(
+	_ERP + ".doctype.pos_opening_entry.test_pos_opening_entry"
+).create_opening_entry
+make_pos_profile = _import_module(_ERP + ".doctype.pos_profile.test_pos_profile").make_pos_profile
+
+from rcore.gateways.doctype.mpesa_settings.mpesa_settings import (
+	create_mode_of_payment,
+	process_balance_info,
+	verify_transaction,
+)
+from rcore.gateways.tests.utils import PaymentsTestSuite
+
+
+@patch("rcore.gateways.doctype.mpesa_settings.mpesa_settings.get_account_balance")
+@patch("rcore.gateways.doctype.mpesa_settings.mpesa_settings.generate_stk_push")
+class TestMpesaSettings(PaymentsTestSuite):
+	def setUp(self):
+		self.enterContext(self.change_settings("Global Defaults", {"default_company": "Wind Power LLC"}))
+		self.enterContext(self.change_settings("POS Settings", {"invoice_type": "POS Invoice"}))
+
+		# create payment gateway in setup
+		create_mpesa_settings(payment_gateway_name="_Test")
+		create_mpesa_settings(payment_gateway_name="_Account Balance")
+		create_mpesa_settings(payment_gateway_name="Payment")
+
+		create_customer("_Test Customer KES", "KES")
+		self.pos_profile = make_pos_profile(
+			company="Wind Power LLC",
+			cost_center="Main - WP",
+			currency="USD",
+			expense_account="Cost of Goods Sold - WP",
+			income_account="Sales - WP",
+			selling_price_list="Standard Selling",
+			territory="United States",
+			warehouse="Stores - WP",
+			write_off_account="Write Off - WP",
+			write_off_cost_center="Main - WP",
+		)
+
+	def tearDown(self):
+		super().tearDown()
+		for x in frappe.db.get_all("POS Opening Entry"):
+			frappe.get_doc("POS Opening Entry", x.name).cancel().delete()
+		frappe.db.sql("delete from `tabMpesa Settings`")
+		frappe.db.sql("delete from `tabIntegration Request` where integration_request_service = 'Mpesa'")
+
+	def test_creation_of_payment_gateway(self, mock_stk_push, mock_get_account_balance):
+		mode_of_payment = create_mode_of_payment("Mpesa-_Test", payment_type="Phone")
+		self.assertTrue(frappe.db.exists("Payment Gateway Account", {"payment_gateway": "Mpesa-_Test"}))
+		self.assertEqual(mode_of_payment.type, "Phone")
+
+	def test_processing_of_account_balance(self, mock_stk_push, mock_get_account_balance):
+		mock_get_account_balance.return_value = get_test_account_balance_response()
+
+		mpesa_doc = frappe.get_doc("Mpesa Settings", "_Account Balance")
+		mpesa_doc.get_account_balance_info()
+
+		callback_response = get_account_balance_callback_payload()
+		process_balance_info(**callback_response)
+		integration_request = frappe.get_doc("Integration Request", "AG_20200927_00007cdb1f9fb6494315")
+
+		# test integration request creation and successful update of the status on receiving callback response
+		self.assertEqual(integration_request.status, "Completed")
+
+		# test formatting of account balance received as string to json with appropriate currency symbol
+		mpesa_doc.reload()
+		self.assertEqual(
+			mpesa_doc.account_balance,
+			dumps(
+				{
+					"Working Account": {
+						"current_balance": "Sh 481,000.00",
+						"available_balance": "Sh 481,000.00",
+						"reserved_balance": "Sh 0.00",
+						"uncleared_balance": "Sh 0.00",
+					}
+				}
+			),
+		)
+
+		integration_request.delete()
+
+	@PaymentsTestSuite.change_settings(
+		"Accounts Settings", {"allow_multi_currency_invoices_against_single_party_account": 1}
+	)
+	def test_processing_of_callback_payload(self, mock_stk_push, mock_get_account_balance):
+		mock_stk_push.side_effect = lambda **kwargs: get_payment_request_response_payload(
+			kwargs["request_amount"]
+		)
+
+		create_opening_entry(self.pos_profile, frappe.session.user)
+		mpesa_account = frappe.db.get_value(
+			"Payment Gateway Account", {"payment_gateway": "Mpesa-Payment"}, "payment_account"
+		)
+		frappe.db.set_value("Account", mpesa_account, "account_currency", "KES")
+		pos_invoice = create_pos_invoice(
+			item="_Test Item",
+			customer="_Test Customer KES",
+			debit_to="Debtors - WP",
+			warehouse="Stores - WP",
+			cost_center="Main - WP",
+			company="Wind Power LLC",
+			income_account="Sales - WP",
+			pos_profile=self.pos_profile.name,
+			account_for_change_amount="Cash - WP",
+			expense_account="Cost of Goods Sold - WP",
+			do_not_submit=1,
+		)
+		pos_invoice.append(
+			"payments", {"mode_of_payment": "Mpesa-Payment", "account": mpesa_account, "amount": 500}
+		)
+		pos_invoice.contact_mobile = "093456543894"
+		pos_invoice.currency = "KES"
+		pos_invoice.save()
+
+		pr = pos_invoice.create_payment_request()
+		# test payment request creation
+		self.assertEqual(pr.payment_gateway, "Mpesa-Payment")
+
+		integration_req_id = frappe.db.get_value(
+			"Integration Request",
+			{
+				"reference_doctype": pr.doctype,
+				"reference_docname": pr.name,
+			},
+			"name",
+		)
+
+		callback_response = get_payment_callback_payload(Amount=500, CheckoutRequestID=integration_req_id)
+		verify_transaction(**callback_response)
+		# test creation of integration request
+		integration_request = frappe.get_doc("Integration Request", integration_req_id)
+
+		# test integration request creation and successful update of the status on receiving callback response
+		self.assertEqual(integration_request.status, "Completed")
+
+		pos_invoice.reload()
+		self.assertEqual(pos_invoice.mpesa_receipt_number, "LGR7OWQX0R")
+
+		integration_request.delete()
+		pr.reload()
+		pr.cancel()
+		pr.delete()
+		pos_invoice.delete()
+
+	@PaymentsTestSuite.change_settings(
+		"Accounts Settings", {"allow_multi_currency_invoices_against_single_party_account": 1}
+	)
+	def test_processing_of_multiple_callback_payload(self, mock_stk_push, mock_get_account_balance):
+		mock_stk_push.side_effect = lambda **kwargs: get_payment_request_response_payload(
+			kwargs["request_amount"]
+		)
+
+		create_opening_entry(self.pos_profile, frappe.session.user)
+		mpesa_account = frappe.db.get_value(
+			"Payment Gateway Account", {"payment_gateway": "Mpesa-Payment"}, "payment_account"
+		)
+		frappe.db.set_value("Account", mpesa_account, "account_currency", "KES")
+		frappe.db.set_value("Mpesa Settings", "Payment", "transaction_limit", "500")
+
+		pos_invoice = create_pos_invoice(
+			item="_Test Item",
+			customer="_Test Customer KES",
+			debit_to="Debtors - WP",
+			warehouse="Stores - WP",
+			cost_center="Main - WP",
+			company="Wind Power LLC",
+			income_account="Sales - WP",
+			pos_profile=self.pos_profile.name,
+			account_for_change_amount="Cash - WP",
+			expense_account="Cost of Goods Sold - WP",
+			do_not_submit=1,
+		)
+		pos_invoice.append(
+			"payments", {"mode_of_payment": "Mpesa-Payment", "account": mpesa_account, "amount": 1000}
+		)
+		pos_invoice.contact_mobile = "093456543894"
+		pos_invoice.currency = "KES"
+		pos_invoice.save()
+
+		pr = pos_invoice.create_payment_request()
+		# test payment request creation
+		self.assertEqual(pr.payment_gateway, "Mpesa-Payment")
+
+		# submitting payment request creates integration requests with random id
+		integration_req_ids = frappe.get_all(
+			"Integration Request",
+			filters={
+				"reference_doctype": pr.doctype,
+				"reference_docname": pr.name,
+			},
+			pluck="name",
+		)
+
+		# create random receipt nos and send it as response to callback handler
+		mpesa_receipt_numbers = [frappe.utils.random_string(5) for d in integration_req_ids]
+
+		integration_requests = []
+		for i in range(len(integration_req_ids)):
+			callback_response = get_payment_callback_payload(
+				Amount=500,
+				CheckoutRequestID=integration_req_ids[i],
+				MpesaReceiptNumber=mpesa_receipt_numbers[i],
+			)
+			# handle response manually
+			verify_transaction(**callback_response)
+			# test completion of integration request
+			integration_request = frappe.get_doc("Integration Request", integration_req_ids[i])
+			self.assertEqual(integration_request.status, "Completed")
+			integration_requests.append(integration_request)
+
+		# check receipt number once all the integration requests are completed
+		pos_invoice.reload()
+		self.assertEqual(pos_invoice.mpesa_receipt_number, ", ".join(mpesa_receipt_numbers))
+
+		for row in integration_requests:
+			row.delete()
+		pr.reload()
+		pr.cancel()
+		pr.delete()
+		pos_invoice.delete()
+
+	@PaymentsTestSuite.change_settings(
+		"Accounts Settings", {"allow_multi_currency_invoices_against_single_party_account": 1}
+	)
+	def test_processing_of_only_one_success_callback_payload(self, mock_stk_push, mock_get_account_balance):
+		mock_stk_push.side_effect = lambda **kwargs: get_payment_request_response_payload(
+			kwargs["request_amount"]
+		)
+
+		create_opening_entry(self.pos_profile, frappe.session.user)
+		mpesa_account = frappe.db.get_value(
+			"Payment Gateway Account", {"payment_gateway": "Mpesa-Payment"}, "payment_account"
+		)
+		frappe.db.set_value("Account", mpesa_account, "account_currency", "KES")
+		frappe.db.set_value("Mpesa Settings", "Payment", "transaction_limit", "500")
+
+		pos_invoice = create_pos_invoice(
+			item="_Test Item",
+			customer="_Test Customer KES",
+			debit_to="Debtors - WP",
+			warehouse="Stores - WP",
+			cost_center="Main - WP",
+			company="Wind Power LLC",
+			income_account="Sales - WP",
+			pos_profile=self.pos_profile.name,
+			account_for_change_amount="Cash - WP",
+			expense_account="Cost of Goods Sold - WP",
+			do_not_submit=1,
+		)
+		pos_invoice.append(
+			"payments", {"mode_of_payment": "Mpesa-Payment", "account": mpesa_account, "amount": 1000}
+		)
+		pos_invoice.contact_mobile = "093456543894"
+		pos_invoice.currency = "KES"
+		pos_invoice.save()
+
+		pr = pos_invoice.create_payment_request()
+		# test payment request creation
+		self.assertEqual(pr.payment_gateway, "Mpesa-Payment")
+
+		# submitting payment request creates integration requests with random id
+		integration_req_ids = frappe.get_all(
+			"Integration Request",
+			filters={
+				"reference_doctype": pr.doctype,
+				"reference_docname": pr.name,
+			},
+			pluck="name",
+		)
+
+		# create random receipt nos and send it as response to callback handler
+		mpesa_receipt_numbers = [frappe.utils.random_string(5) for d in integration_req_ids]
+
+		callback_response = get_payment_callback_payload(
+			Amount=500,
+			CheckoutRequestID=integration_req_ids[0],
+			MpesaReceiptNumber=mpesa_receipt_numbers[0],
+		)
+		# handle response manually
+		verify_transaction(**callback_response)
+		# test completion of integration request
+		integration_request = frappe.get_doc("Integration Request", integration_req_ids[0])
+		self.assertEqual(integration_request.status, "Completed")
+
+		# now one request is completed
+		# second integration request fails
+		# now retrying payment request should make only one integration request again
+		pr = pos_invoice.create_payment_request()
+		new_integration_req_ids = frappe.get_all(
+			"Integration Request",
+			filters={
+				"reference_doctype": pr.doctype,
+				"reference_docname": pr.name,
+				"name": ["not in", integration_req_ids],
+			},
+			pluck="name",
+		)
+
+		self.assertEqual(len(new_integration_req_ids), 1)
+
+		for integration_req_id in [*integration_req_ids, *new_integration_req_ids]:
+			frappe.delete_doc("Integration Request", integration_req_id)
+
+		pr.reload()
+		pr.cancel()
+		pr.delete()
+		pos_invoice.delete()
+
+
+def create_mpesa_settings(payment_gateway_name="Express"):
+	if frappe.db.exists("Mpesa Settings", payment_gateway_name):
+		return frappe.get_doc("Mpesa Settings", payment_gateway_name)
+
+	doc = frappe.get_doc(
+		{
+			"doctype": "Mpesa Settings",
+			"sandbox": 1,
+			"payment_gateway_name": payment_gateway_name,
+			"consumer_key": "5sMu9LVI1oS3oBGPJfh3JyvLHwZOdTKn",
+			"consumer_secret": "VI1oS3oBGPJfh3JyvLHw",
+			"online_passkey": "LVI1oS3oBGPJfh3JyvLHwZOd",
+			"till_number": "174379",
+		}
+	)
+	doc.insert(ignore_permissions=True)
+	return doc
+
+
+def get_test_account_balance_response():
+	"""Response received after calling the account balance API."""
+	return {
+		"ResultType": 0,
+		"ResultCode": 0,
+		"ResultDesc": "The service request has been accepted successfully.",
+		"OriginatorConversationID": "10816-694520-2",
+		"ConversationID": "AG_20200927_00007cdb1f9fb6494315",
+		"TransactionID": "LGR0000000",
+		"ResultParameters": {
+			"ResultParameter": [
+				{"Key": "ReceiptNo", "Value": "LGR919G2AV"},
+				{"Key": "Conversation ID", "Value": "AG_20170727_00004492b1b6d0078fbe"},
+				{"Key": "FinalisedTime", "Value": 20170727101415},
+				{"Key": "Amount", "Value": 10},
+				{"Key": "TransactionStatus", "Value": "Completed"},
+				{"Key": "ReasonType", "Value": "Salary Payment via API"},
+				{"Key": "TransactionReason"},
+				{"Key": "DebitPartyCharges", "Value": "Fee For B2C Payment|KES|33.00"},
+				{"Key": "DebitAccountType", "Value": "Utility Account"},
+				{"Key": "InitiatedTime", "Value": 20170727101415},
+				{"Key": "Originator Conversation ID", "Value": "19455-773836-1"},
+				{"Key": "CreditPartyName", "Value": "254708374149 - John Doe"},
+				{"Key": "DebitPartyName", "Value": "600134 - Safaricom157"},
+			]
+		},
+		"ReferenceData": {"ReferenceItem": {"Key": "Occasion", "Value": "aaaa"}},
+	}
+
+
+def get_payment_request_response_payload(Amount=500):
+	"""Response received after successfully calling the stk push process request API."""
+
+	CheckoutRequestID = frappe.utils.random_string(10)
+
+	return {
+		"MerchantRequestID": "8071-27184008-1",
+		"CheckoutRequestID": CheckoutRequestID,
+		"ResultCode": 0,
+		"ResultDesc": "The service request is processed successfully.",
+		"CallbackMetadata": {
+			"Item": [
+				{"Name": "Amount", "Value": Amount},
+				{"Name": "MpesaReceiptNumber", "Value": "LGR7OWQX0R"},
+				{"Name": "TransactionDate", "Value": 20201006113336},
+				{"Name": "PhoneNumber", "Value": 254723575670},
+			]
+		},
+	}
+
+
+def get_payment_callback_payload(
+	Amount=500, CheckoutRequestID="ws_CO_061020201133231972", MpesaReceiptNumber="LGR7OWQX0R"
+):
+	"""Response received from the server as callback after calling the stkpush process request API."""
+	return {
+		"Body": {
+			"stkCallback": {
+				"MerchantRequestID": "19465-780693-1",
+				"CheckoutRequestID": CheckoutRequestID,
+				"ResultCode": 0,
+				"ResultDesc": "The service request is processed successfully.",
+				"CallbackMetadata": {
+					"Item": [
+						{"Name": "Amount", "Value": Amount},
+						{"Name": "MpesaReceiptNumber", "Value": MpesaReceiptNumber},
+						{"Name": "Balance"},
+						{"Name": "TransactionDate", "Value": 20170727154800},
+						{"Name": "PhoneNumber", "Value": 254721566839},
+					]
+				},
+			}
+		}
+	}
+
+
+def get_account_balance_callback_payload():
+	"""Response received from the server as callback after calling the account balance API."""
+	return {
+		"Result": {
+			"ResultType": 0,
+			"ResultCode": 0,
+			"ResultDesc": "The service request is processed successfully.",
+			"OriginatorConversationID": "16470-170099139-1",
+			"ConversationID": "AG_20200927_00007cdb1f9fb6494315",
+			"TransactionID": "OIR0000000",
+			"ResultParameters": {
+				"ResultParameter": [
+					{"Key": "AccountBalance", "Value": "Working Account|KES|481000.00|481000.00|0.00|0.00"},
+					{"Key": "BOCompletedTime", "Value": 20200927234123},
+				]
+			},
+			"ReferenceData": {
+				"ReferenceItem": {
+					"Key": "QueueTimeoutURL",
+					"Value": "https://internalsandbox.safaricom.co.ke/mpesa/abresults/v1/submit",
+				}
+			},
+		}
+	}

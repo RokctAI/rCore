@@ -1,0 +1,29 @@
+{
+  "doctype": "DocType",
+  "name": "Branch Translation",
+  "engine": "InnoDB",
+  "istable": 1,
+  "module": "base",
+  "fields": [
+    {
+      "fieldname": "locale",
+      "fieldtype": "Data",
+      "label": "Locale",
+      "reqd": 1
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "reqd": 1
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Text",
+      "label": "Description"
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

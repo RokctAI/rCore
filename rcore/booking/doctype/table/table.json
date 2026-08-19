@@ -1,0 +1,49 @@
+{
+  "doctype": "DocType",
+  "name": "Table",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "booking",
+  "fields": [
+    {
+      "fieldname": "name",
+      "fieldtype": "Data",
+      "label": "Name",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "shop_section",
+      "fieldtype": "Link",
+      "label": "Shop Section",
+      "options": "Shop Section",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "chair_count",
+      "fieldtype": "Int",
+      "label": "Chair Count"
+    },
+    {
+      "fieldname": "tax",
+      "fieldtype": "Float",
+      "label": "Tax"
+    },
+    {
+      "fieldname": "active",
+      "fieldtype": "Check",
+      "label": "Active",
+      "default": "1"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    }
+  ]
+}

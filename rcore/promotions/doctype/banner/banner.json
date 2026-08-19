@@ -1,0 +1,94 @@
+{
+  "doctype": "DocType",
+  "name": "Banner",
+  "engine": "InnoDB",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 0,
+  "module": "promotions",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "read": 1,
+      "write": 1,
+      "role": "PaaS Seller"
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "shop",
+      "fieldtype": "Link",
+      "label": "Shop",
+      "options": "Shop"
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Text",
+      "label": "Description"
+    },
+    {
+      "fieldname": "button_text",
+      "fieldtype": "Data",
+      "label": "Button Text"
+    },
+    {
+      "fieldname": "image",
+      "fieldtype": "Attach Image",
+      "label": "Image",
+      "reqd": 1
+    },
+    {
+      "fieldname": "link",
+      "fieldtype": "Data",
+      "label": "Link"
+    },
+    {
+      "fieldname": "is_active",
+      "fieldtype": "Check",
+      "label": "Is Active",
+      "default": "1"
+    },
+    {
+      "fieldname": "is_ad",
+      "fieldtype": "Check",
+      "label": "Is Ad",
+      "default": "0"
+    },
+    {
+      "fieldname": "likes",
+      "fieldtype": "Int",
+      "label": "Likes",
+      "default": "0",
+      "read_only": 1
+    },
+    {
+      "fieldname": "translations",
+      "fieldtype": "Table",
+      "label": "Translations",
+      "options": "Banner Translation"
+    }
+  ]
+}

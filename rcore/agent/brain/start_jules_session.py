@@ -1,0 +1,53 @@
+# Copyright (c) 2026 RokctAI
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import json
+import frappe
+import sys
+import uuid
+from rcore import __version__ as brain_version
+from rcore.agent.services.jules_service import JulesClient
+
+
+@frappe.whitelist()
+def start_jules_session(prompt: str, source_repo: str, api_key: str = None, automation_mode: str = "AUTO_CREATE_PR", require_approval: bool = False, title: str = None) -> dict:
+    """
+    Start a new Jules session with the given prompt and source repository.
+    """
+    trace_id = str(uuid.uuid4())
+
+    def log_info(message):
+        entry = {"trace_id": trace_id, "message": message, "level": "info"}
+        print(json.dumps(entry), file=sys.stderr)
+
+    def log_error(message):
+        entry = {"trace_id": trace_id, "message": message, "level": "error"}
+        print(json.dumps(entry), file=sys.stderr)
+
+    log_info(f"Starting Jules session with prompt: {prompt[:50]}... if len(prompt) > 50 else prompt, source_repo: {source_repo}, api_key provided: {bool(api_key)}")
+
+    try:
+        client = JulesClient()
+        result = client.create_session(api_key, prompt, source_repo, automation_mode, require_approval, title)
+        log_info("Successfully started Jules session")
+        return result
+    except Exception as e:
+        log_error(f"Failed to start Jules session. Error: {str(e)}")
+        raise

@@ -1,0 +1,98 @@
+{
+  "doctype": "DocType",
+  "name": "Transaction",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 0,
+  "module": "wallet",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "user",
+      "fieldtype": "Link",
+      "label": "User",
+      "options": "User"
+    },
+    {
+      "fieldname": "amount",
+      "fieldtype": "Currency",
+      "label": "Amount"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Pending\nProgress\nPaid\nCanceled\nFailed"
+    },
+    {
+      "fieldname": "payable_type",
+      "fieldtype": "Data",
+      "label": "Payable Type"
+    },
+    {
+      "fieldname": "payable_id",
+      "fieldtype": "Data",
+      "label": "Payable ID"
+    },
+    {
+      "fieldname": "payment_gateway",
+      "fieldtype": "Link",
+      "label": "Payment Gateway",
+      "options": "PaaS Payment Gateway"
+    },
+    {
+      "fieldname": "payment_reference",
+      "fieldtype": "Data",
+      "label": "Payment Reference"
+    },
+    {
+      "fieldname": "note",
+      "fieldtype": "Small Text",
+      "label": "Note"
+    },
+    {
+      "fieldname": "status_description",
+      "fieldtype": "Data",
+      "label": "Status Description"
+    },
+    {
+      "fieldname": "performed_at",
+      "fieldtype": "Datetime",
+      "label": "Performed At"
+    },
+    {
+      "fieldname": "refunded_at",
+      "fieldtype": "Datetime",
+      "label": "Refunded At"
+    },
+    {
+      "fieldname": "type",
+      "fieldtype": "Data",
+      "label": "Type"
+    },
+    {
+      "fieldname": "request_data",
+      "fieldtype": "Code",
+      "label": "Request Data",
+      "options": "JSON"
+    }
+  ]
+}

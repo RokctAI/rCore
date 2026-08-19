@@ -1,0 +1,53 @@
+{
+  "doctype": "DocType",
+  "name": "LMS Subscription Period",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "rlms",
+  "autoname": "hash",
+  "fields": [
+    {
+      "fieldname": "student",
+      "fieldtype": "Link",
+      "label": "Student",
+      "options": "User",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "start_date",
+      "fieldtype": "Date",
+      "label": "Start Date",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "end_date",
+      "fieldtype": "Date",
+      "label": "End Date",
+      "in_list_view": 1,
+      "description": "Empty = the period is still open (currently active subscription). Set when the subscription lapses or is cancelled."
+    },
+    {
+      "fieldname": "source",
+      "fieldtype": "Data",
+      "label": "Source",
+      "description": "Where this period came from: plan id, payment reference, or migration note. Informational \u2014 entitlement resolution uses only the date range."
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    },
+    {
+      "role": "All",
+      "read": 1,
+      "if_owner": 1
+    }
+  ]
+}

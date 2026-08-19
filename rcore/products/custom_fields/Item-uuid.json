@@ -1,0 +1,11 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "uuid",
+ "fieldtype": "Data",
+ "label": "UUID",
+ "no_copy": 1,
+ "reqd": 1,
+ "unique": 1
+}
+

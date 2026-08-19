@@ -1,0 +1,8 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "max_qty",
+ "fieldtype": "Int",
+ "label": "Max Qty"
+}
+

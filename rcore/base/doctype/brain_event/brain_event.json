@@ -1,0 +1,73 @@
+{
+  "name": "Brain Event",
+  "engine": "InnoDB",
+  "doctype": "DocType",
+  "module": "base",
+  "fields": [
+    {
+      "fieldname": "source",
+      "fieldtype": "Data",
+      "label": "Source",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "event_type",
+      "fieldtype": "Data",
+      "label": "Event Type",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "entity_id",
+      "fieldtype": "Data",
+      "label": "Entity ID",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "entity_type",
+      "fieldtype": "Data",
+      "label": "Entity Type"
+    },
+    {
+      "fieldname": "payload",
+      "fieldtype": "JSON",
+      "label": "Payload"
+    },
+    {
+      "fieldname": "user",
+      "fieldtype": "Link",
+      "label": "User",
+      "options": "User"
+    },
+    {
+      "fieldname": "shop",
+      "fieldtype": "Link",
+      "label": "Shop",
+      "options": "Shop"
+    },
+    {
+      "fieldname": "timestamp",
+      "fieldtype": "Datetime",
+      "label": "Timestamp",
+      "reqd": 1,
+      "default": "now"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    },
+    {
+      "role": "Seller",
+      "read": 1,
+      "create": 1
+    }
+  ],
+  "sort_field": "timestamp",
+  "sort_order": "DESC"
+}

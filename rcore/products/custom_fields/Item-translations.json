@@ -1,0 +1,9 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "translations",
+ "fieldtype": "Table",
+ "label": "Translations",
+ "options": "Product Translation"
+}
+

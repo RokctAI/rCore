@@ -1,0 +1,86 @@
+{
+  "doctype": "DocType",
+  "name": "LMS Course",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "rlms",
+  "fields": [
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "subject",
+      "fieldtype": "Data",
+      "label": "Subject",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "description": "Subject slug (e.g. maths, science) \u2014 matches SubjectEntitlements.allowedSubjects entries"
+    },
+    {
+      "fieldname": "grade",
+      "fieldtype": "Int",
+      "label": "Grade",
+      "in_standard_filter": 1,
+      "description": "The grade this course targets (1-12). 0/empty = grade-agnostic: shown to every student regardless of the catalog's grade filter (the pre-grade-field seeded content stays visible)."
+    },
+    {
+      "fieldname": "short_introduction",
+      "fieldtype": "Small Text",
+      "label": "Short Introduction",
+      "reqd": 1
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Text",
+      "label": "Description"
+    },
+    {
+      "fieldname": "column_break_subject",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "image",
+      "fieldtype": "Attach Image",
+      "label": "Preview Image"
+    },
+    {
+      "default": "0",
+      "fieldname": "published",
+      "fieldtype": "Check",
+      "label": "Published",
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "published_on",
+      "fieldtype": "Date",
+      "label": "Published On",
+      "read_only": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "lesson_count",
+      "fieldtype": "Int",
+      "label": "Lessons",
+      "read_only": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    },
+    {
+      "role": "All",
+      "read": 1
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "name": "Notification Log",
+  "engine": "InnoDB",
+  "doctype": "DocType",
+  "module": "comms",
+  "fields": [
+    {
+      "fieldname": "user",
+      "fieldtype": "Link",
+      "label": "User",
+      "options": "User",
+      "reqd": 1
+    },
+    {
+      "fieldname": "notification_type",
+      "fieldtype": "Link",
+      "label": "Notification Type",
+      "options": "Notification Type",
+      "reqd": 1
+    },
+    {
+      "fieldname": "subject",
+      "fieldtype": "Data",
+      "label": "Subject",
+      "reqd": 1
+    },
+    {
+      "fieldname": "message",
+      "fieldtype": "Text",
+      "label": "Message",
+      "reqd": 1
+    },
+    {
+      "fieldname": "read",
+      "fieldtype": "Check",
+      "label": "Read",
+      "default": "0"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    },
+    {
+      "role": "All",
+      "read": 1
+    }
+  ]
+}

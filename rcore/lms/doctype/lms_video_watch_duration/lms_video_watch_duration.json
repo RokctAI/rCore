@@ -1,0 +1,65 @@
+{
+  "doctype": "DocType",
+  "name": "LMS Video Watch Duration",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "rlms",
+  "autoname": "hash",
+  "fields": [
+    {
+      "fieldname": "lesson",
+      "fieldtype": "Link",
+      "label": "Lesson",
+      "options": "Course Lesson",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fetch_from": "lesson.course",
+      "fieldname": "course",
+      "fieldtype": "Link",
+      "label": "Course",
+      "options": "LMS Course",
+      "read_only": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "member",
+      "fieldtype": "Link",
+      "label": "Member",
+      "options": "User",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "source",
+      "fieldtype": "Data",
+      "label": "Source",
+      "reqd": 1,
+      "description": "Which asset track this duration was recorded against, e.g. animation or audio"
+    },
+    {
+      "fieldname": "watch_time",
+      "fieldtype": "Float",
+      "label": "Watch Time (seconds)",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    },
+    {
+      "role": "All",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "if_owner": 1
+    }
+  ]
+}

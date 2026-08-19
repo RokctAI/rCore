@@ -1,0 +1,39 @@
+{
+  "name": "Location Settings",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "base",
+  "fields": [
+    {
+      "fieldname": "google_map_key",
+      "fieldtype": "Data",
+      "label": "Google Map Key"
+    },
+    {
+      "fieldname": "location",
+      "fieldtype": "Geolocation",
+      "label": "Location"
+    },
+    {
+      "fieldname": "location_latitude",
+      "fieldtype": "Float",
+      "label": "Latitude",
+      "precision": "9",
+      "read_only": 1
+    },
+    {
+      "fieldname": "location_longitude",
+      "fieldtype": "Float",
+      "label": "Longitude",
+      "precision": "9",
+      "read_only": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

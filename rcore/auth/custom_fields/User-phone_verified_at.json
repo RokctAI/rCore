@@ -1,0 +1,9 @@
+{
+    "dt": "User",
+    "doctype": "Custom Field",
+    "fieldname": "phone_verified_at",
+    "fieldtype": "Datetime",
+    "label": "Phone Verified At",
+    "insert_after": "phone",
+    "read_only": 1
+}

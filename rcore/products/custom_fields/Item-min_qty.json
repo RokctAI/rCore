@@ -1,0 +1,8 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "min_qty",
+ "fieldtype": "Int",
+ "label": "Min Qty"
+}
+

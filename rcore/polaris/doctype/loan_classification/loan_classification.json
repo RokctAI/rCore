@@ -1,0 +1,55 @@
+{
+  "doctype": "DocType",
+  "name": "Loan Classification",
+  "autoname": "field:classification_code",
+  "engine": "InnoDB",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 0,
+  "editable_grid": 1,
+  "module": "polaris",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "Loan Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "fields": [
+    {
+      "fieldname": "classification_code",
+      "fieldtype": "Data",
+      "label": "Classification Code",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "classification_name",
+      "fieldtype": "Data",
+      "label": "Classification Name",
+      "reqd": 1,
+      "in_list_view": 1
+    }
+  ]
+}

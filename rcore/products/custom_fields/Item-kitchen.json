@@ -1,0 +1,9 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "kitchen",
+ "fieldtype": "Link",
+ "label": "Kitchen",
+ "options": "Kitchen"
+}
+

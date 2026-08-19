@@ -1,0 +1,69 @@
+{
+  "name": "Settings",
+  "engine": "InnoDB",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "base",
+  "fields": [
+    {
+      "fieldname": "project_title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "default": "Juvo"
+    },
+    {
+      "fieldname": "deliveryman_order_acceptance_time",
+      "fieldtype": "Int",
+      "label": "Deliveryman Order Acceptance Time",
+      "default": "5"
+    },
+    {
+      "fieldname": "service_fee",
+      "fieldtype": "Currency",
+      "label": "Service Fee",
+      "default": "0"
+    },
+    {
+      "fieldname": "recommended_count",
+      "fieldtype": "Int",
+      "label": "Recommended Count",
+      "default": "1"
+    },
+    {
+      "fieldname": "tip_type",
+      "fieldtype": "Select",
+      "label": "Tip Type",
+      "options": "shop\ndriver\nsystem\nall",
+      "default": "all"
+    },
+    {
+      "fieldname": "favicon",
+      "fieldtype": "Attach Image",
+      "label": "Favicon"
+    },
+    {
+      "fieldname": "logo",
+      "fieldtype": "Attach Image",
+      "label": "Logo"
+    },
+    {
+      "fieldname": "enable_marketplace",
+      "fieldtype": "Check",
+      "label": "Enable Marketplace (Multi-Vendor)",
+      "default": "0"
+    },
+    {
+      "fieldname": "default_shop",
+      "fieldtype": "Link",
+      "label": "Default Shop (Single Vendor)",
+      "options": "Shop"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

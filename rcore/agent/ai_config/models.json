@@ -1,0 +1,12 @@
+{
+  "PAID": {
+    "id": "gemini-3-pro",
+    "label": "Pro",
+    "description": "Reasoning & Depth"
+  },
+  "FREE": {
+    "id": "gemini-2.5-flash",
+    "label": "Flash",
+    "description": "Fast & Efficient"
+  }
+}

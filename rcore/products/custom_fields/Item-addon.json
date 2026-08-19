@@ -1,0 +1,9 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "addon",
+ "fieldtype": "Check",
+ "label": "Addon",
+ "default": "0"
+}
+

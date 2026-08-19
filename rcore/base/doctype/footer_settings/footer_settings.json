@@ -1,0 +1,30 @@
+{
+  "name": "Footer Settings",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "base",
+  "fields": [
+    {
+      "fieldname": "phone",
+      "fieldtype": "Data",
+      "label": "Phone"
+    },
+    {
+      "fieldname": "address",
+      "fieldtype": "Data",
+      "label": "Address"
+    },
+    {
+      "fieldname": "footer_text",
+      "fieldtype": "Data",
+      "label": "Footer Text"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

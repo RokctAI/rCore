@@ -1,0 +1,10 @@
+{
+    "dt": "User",
+    "doctype": "Custom Field",
+    "fieldname": "email_verification_token",
+    "fieldtype": "Data",
+    "label": "Email Verification Token",
+    "insert_after": "phone_verified_at",
+    "read_only": 1,
+    "hidden": 1
+}

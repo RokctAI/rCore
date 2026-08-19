@@ -1,0 +1,29 @@
+{
+  "name": "Referral Campaign Translation",
+  "engine": "InnoDB",
+  "doctype": "DocType",
+  "istable": 1,
+  "module": "promotions",
+  "fields": [
+    {
+      "fieldname": "language",
+      "fieldtype": "Data",
+      "label": "Language"
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title"
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Text",
+      "label": "Description"
+    },
+    {
+      "fieldname": "faq",
+      "fieldtype": "Text Editor",
+      "label": "Terms (FAQ)"
+    }
+  ]
+}

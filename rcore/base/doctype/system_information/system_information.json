@@ -1,0 +1,84 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "creation": "2025-05-20 12:00:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "rcore",
+    "control",
+    "app_version",
+    "brain",
+    "payments",
+    "flutter_sdk_version",
+    "latest_error"
+  ],
+  "fields": [
+    {
+      "fieldname": "rcore",
+      "fieldtype": "Data",
+      "label": "Core Version",
+      "read_only": 1
+    },
+    {
+      "fieldname": "control",
+      "fieldtype": "Data",
+      "label": "Control Version",
+      "read_only": 1
+    },
+    {
+      "fieldname": "app_version",
+      "fieldtype": "Data",
+      "label": "App Version",
+      "read_only": 1
+    },
+    {
+      "fieldname": "brain",
+      "fieldtype": "Data",
+      "label": "Brain Version",
+      "read_only": 1
+    },
+    {
+      "fieldname": "payments",
+      "fieldtype": "Data",
+      "label": "Payments Version",
+      "read_only": 1
+    },
+    {
+      "fieldname": "flutter_sdk_version",
+      "fieldtype": "Data",
+      "label": "Flutter SDK Version",
+      "read_only": 1
+    },
+    {
+      "fieldname": "latest_error",
+      "fieldtype": "Text",
+      "label": "Latest Error",
+      "read_only": 1
+    }
+  ],
+  "issingle": 1,
+  "links": [],
+  "modified": "2025-05-20 12:00:00.000000",
+  "modified_by": "Administrator",
+  "module": "base",
+  "name": "System Information",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

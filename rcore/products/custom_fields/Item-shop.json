@@ -1,0 +1,9 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "shop",
+ "fieldtype": "Link",
+ "label": "Shop",
+ "options": "Shop"
+}
+

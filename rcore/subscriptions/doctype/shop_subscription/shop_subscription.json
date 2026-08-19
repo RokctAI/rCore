@@ -1,0 +1,67 @@
+{
+  "doctype": "DocType",
+  "name": "Shop Subscription",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "subscriptions",
+  "fields": [
+    {
+      "fieldname": "shop",
+      "fieldtype": "Link",
+      "label": "Shop",
+      "options": "Shop",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "subscription",
+      "fieldtype": "Link",
+      "label": "Subscription Plan",
+      "options": "Subscription Plan",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "expired_at",
+      "fieldtype": "Date",
+      "label": "Expired At",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "price",
+      "fieldtype": "Currency",
+      "label": "Price"
+    },
+    {
+      "fieldname": "type",
+      "fieldtype": "Select",
+      "label": "Type",
+      "options": "shop\norders\nproducts"
+    },
+    {
+      "fieldname": "active",
+      "fieldtype": "Check",
+      "label": "Active",
+      "default": "0"
+    },
+    {
+      "fieldname": "allowed_subjects",
+      "fieldtype": "Small Text",
+      "label": "Allowed Subjects",
+      "description": "JSON array of subject slugs unlocked by the linked plan, copied from the Subscription at assignment time"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    },
+    {
+      "role": "Seller",
+      "read": 1
+    }
+  ]
+}

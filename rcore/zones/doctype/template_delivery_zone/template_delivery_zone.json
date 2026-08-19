@@ -1,0 +1,20 @@
+{
+  "name": "Template Delivery Zone",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "istable": 1,
+  "module": "zones",
+  "fields": [
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "reqd": 1
+    },
+    {
+      "fieldname": "coordinates",
+      "fieldtype": "Geolocation",
+      "label": "Coordinates"
+    }
+  ]
+}

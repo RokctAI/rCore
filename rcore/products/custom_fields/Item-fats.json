@@ -1,0 +1,8 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "fats",
+ "fieldtype": "Data",
+ "label": "Fats"
+}
+

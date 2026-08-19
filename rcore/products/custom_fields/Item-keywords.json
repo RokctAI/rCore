@@ -1,0 +1,8 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "keywords",
+ "fieldtype": "Small Text",
+ "label": "Keywords"
+}
+

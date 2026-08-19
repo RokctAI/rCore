@@ -1,0 +1,8 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "protein",
+ "fieldtype": "Data",
+ "label": "Protein"
+}
+

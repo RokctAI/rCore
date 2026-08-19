@@ -1,0 +1,64 @@
+{
+  "doctype": "DocType",
+  "name": "Request Model",
+  "engine": "InnoDB",
+  "is_submittable": 0,
+  "issingle": 0,
+  "istable": 0,
+  "module": "base",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "model_type",
+      "fieldtype": "Select",
+      "label": "Model Type",
+      "options": "Category\nProduct\nUser"
+    },
+    {
+      "fieldname": "model",
+      "fieldtype": "Dynamic Link",
+      "label": "Model",
+      "options": "model_type"
+    },
+    {
+      "fieldname": "data",
+      "fieldtype": "JSON",
+      "label": "Data"
+    },
+    {
+      "fieldname": "created_by_user",
+      "fieldtype": "Link",
+      "label": "Created By",
+      "options": "User",
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Pending\nApproved\nCanceled",
+      "default": "Pending"
+    },
+    {
+      "fieldname": "created_at",
+      "fieldtype": "Datetime",
+      "label": "Created At"
+    }
+  ]
+}

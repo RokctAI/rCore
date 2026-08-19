@@ -1,0 +1,9 @@
+{
+ "dt": "Item",
+ "doctype": "Custom Field",
+ "fieldname": "vegetarian",
+ "fieldtype": "Check",
+ "label": "Vegetarian",
+ "default": "0"
+}
+

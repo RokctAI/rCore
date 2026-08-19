@@ -1,0 +1,101 @@
+{
+  "doctype": "DocType",
+  "name": "LMS Homework Question",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "rlms",
+  "autoname": "hash",
+  "fields": [
+    {
+      "fieldname": "member",
+      "fieldtype": "Link",
+      "label": "Member",
+      "options": "User",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "subject",
+      "fieldtype": "Data",
+      "label": "Subject",
+      "description": "Subject the question belongs to, as the student tagged it (free text; homework arrives for any subject, enrolled or not)"
+    },
+    {
+      "fieldname": "grade",
+      "fieldtype": "Int",
+      "label": "Grade",
+      "description": "The student's grade at submission time, for the fulfilment side's context"
+    },
+    {
+      "fieldname": "question_text",
+      "fieldtype": "Long Text",
+      "label": "Question Text",
+      "reqd": 1,
+      "description": "The homework question exactly as the student submitted it"
+    },
+    {
+      "fieldname": "attachment_refs",
+      "fieldtype": "Small Text",
+      "label": "Attachment Refs",
+      "description": "Optional JSON list of attachment references (file URLs/ids) the student included with the question"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Submitted\nIn Review\nReady\nDeclined\nCompleted",
+      "default": "Submitted",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "description": "Send-and-wait lifecycle (product log #4/#42): Submitted -> In Review -> Ready (MCQ published) -> Completed (student attempted), or -> Declined (essay-type, not reducible to MCQ)"
+    },
+    {
+      "fieldname": "submitted_at",
+      "fieldtype": "Datetime",
+      "label": "Submitted At",
+      "read_only": 1
+    },
+    {
+      "fieldname": "mcq_json",
+      "fieldtype": "Long Text",
+      "label": "MCQ JSON",
+      "description": "SERVER-SIDE ONLY guided check (product log #1): {question, options, correct_index, explanation}. correct_index/explanation must never reach a student before their attempt is recorded \u2014 student reads go through api.homework, which strips them until answer_homework_mcq"
+    },
+    {
+      "fieldname": "decline_reason",
+      "fieldtype": "Small Text",
+      "label": "Decline Reason",
+      "description": "Why this question was declined (essay/written-argument boundary in product log #1) \u2014 shown to the student"
+    },
+    {
+      "fieldname": "answered_index",
+      "fieldtype": "Int",
+      "label": "Answered Index",
+      "description": "Index of the option the student picked; empty until they attempt"
+    },
+    {
+      "fieldname": "answer_outcome",
+      "fieldtype": "Select",
+      "label": "Answer Outcome",
+      "options": "\nCorrect\nIncorrect",
+      "description": "How the student's attempt landed; empty until they attempt"
+    },
+    {
+      "fieldname": "answered_at",
+      "fieldtype": "Datetime",
+      "label": "Answered At",
+      "read_only": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    }
+  ]
+}

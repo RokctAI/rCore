@@ -1,0 +1,62 @@
+{
+  "doctype": "DocType",
+  "name": "LMS Practice Attempt",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "rlms",
+  "autoname": "hash",
+  "fields": [
+    {
+      "fieldname": "member",
+      "fieldtype": "Link",
+      "label": "Member",
+      "options": "User",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "item_id",
+      "fieldtype": "Data",
+      "label": "Item ID",
+      "reqd": 1,
+      "in_list_view": 1,
+      "description": "Practice item id from the published LMS Practice Item Bank \u2014 items are pre-authored, not Frappe-authored"
+    },
+    {
+      "fieldname": "subtopic_ref",
+      "fieldtype": "Data",
+      "label": "Subtopic Ref",
+      "description": "Subtopic boundary id the practiced item belongs to (feeds the adaptive need weighting)"
+    },
+    {
+      "fieldname": "outcome",
+      "fieldtype": "Select",
+      "label": "Outcome",
+      "options": "Correct\nIncorrect\nSkipped",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "selected_index",
+      "fieldtype": "Int",
+      "label": "Selected Index",
+      "description": "Index of the option the student picked; empty when skipped"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    },
+    {
+      "role": "All",
+      "read": 1,
+      "create": 1,
+      "if_owner": 1
+    }
+  ]
+}

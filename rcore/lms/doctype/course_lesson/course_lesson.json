@@ -1,0 +1,70 @@
+{
+  "doctype": "DocType",
+  "name": "Course Lesson",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "rlms",
+  "autoname": "hash",
+  "fields": [
+    {
+      "fieldname": "chapter",
+      "fieldtype": "Link",
+      "label": "Chapter",
+      "options": "Course Chapter",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fetch_from": "chapter.course",
+      "fieldname": "course",
+      "fieldtype": "Link",
+      "label": "Course",
+      "options": "LMS Course",
+      "read_only": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "sequence",
+      "fieldtype": "Int",
+      "label": "Sequence",
+      "default": "0",
+      "description": "Lesson order within the chapter"
+    },
+    {
+      "fieldname": "session_id",
+      "fieldtype": "Data",
+      "label": "Replay Session ID",
+      "reqd": 1,
+      "unique": 1,
+      "description": "Session ID of the Replay Session (replay_sdk/agent/replay/frappe) that holds this lesson's manifest/audio/animation assets. Cross-module reference by id, not a Link \u2014 Replay Session lives in a sibling Frappe module."
+    },
+    {
+      "fieldname": "is_free_sample",
+      "fieldtype": "Check",
+      "label": "Free Sample",
+      "default": "0",
+      "description": "Tutor-discovery sample lesson: bypasses the #25/#27 serving gates entirely (samples ARE the funnel \u2014 they must play for guests and never-subscribed visitors)."
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    },
+    {
+      "role": "All",
+      "read": 1
+    }
+  ]
+}

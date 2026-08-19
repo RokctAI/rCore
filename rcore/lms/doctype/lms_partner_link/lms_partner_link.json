@@ -1,0 +1,109 @@
+{
+  "doctype": "DocType",
+  "name": "LMS Partner Link",
+  "engine": "InnoDB",
+  "istable": 0,
+  "module": "rlms",
+  "autoname": "hash",
+  "fields": [
+    {
+      "fieldname": "student",
+      "fieldtype": "Link",
+      "label": "Student",
+      "options": "User",
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "description": "Empty on a partner-initiated invite until the student redeems it; required once the link is Active (enforced in the controller)"
+    },
+    {
+      "fieldname": "partner",
+      "fieldtype": "Link",
+      "label": "Partner",
+      "options": "User",
+      "in_standard_filter": 1,
+      "description": "Set once the invite is accepted and the partner's own login exists"
+    },
+    {
+      "fieldname": "relationship",
+      "fieldtype": "Select",
+      "label": "Relationship",
+      "options": "Parent\nGuardian\nSibling\nTeacher\nMentor\nSponsor",
+      "reqd": 1
+    },
+    {
+      "fieldname": "contact",
+      "fieldtype": "Data",
+      "label": "Contact",
+      "reqd": 1,
+      "description": "Phone number or email the invite was sent to"
+    },
+    {
+      "fieldname": "channel",
+      "fieldtype": "Select",
+      "label": "Channel",
+      "options": "sms\nemail",
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Invited\nActive\nRevoked",
+      "default": "Invited",
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "invite_token",
+      "fieldtype": "Data",
+      "label": "Pairing Code",
+      "unique": 1,
+      "description": "Single-use 6-digit pairing code minted at invite time (P3.2 \u2014 replaced web-link tokens); cleared once accepted"
+    },
+    {
+      "fieldname": "invite_expires_at",
+      "fieldtype": "Datetime",
+      "label": "Code Expires At",
+      "description": "Pairing codes are valid for 48 hours; expired codes are treated as invalid"
+    },
+    {
+      "fieldname": "initiated_by",
+      "fieldtype": "Select",
+      "label": "Initiated By",
+      "options": "Student\nPartner",
+      "default": "Student",
+      "description": "Which side sent the invite (P3.1 partner-first signup). Direction never changes the partner's reporting-only scope."
+    },
+    {
+      "fieldname": "payer",
+      "fieldtype": "Select",
+      "label": "Payer",
+      "options": "Student\nPartner",
+      "default": "Student",
+      "description": "Who is billed for the student's subscription (P3.1 partner-as-payer, delegated billing \u2014 the subscription stays the student's)"
+    },
+    {
+      "fieldname": "email_digest",
+      "fieldtype": "Check",
+      "label": "Weekly Email Digest",
+      "default": "0",
+      "description": "Partner opt-in: email the weekly progress report every Sunday evening. Off by default; the partner toggles it from their app. Gates only an email of the same report the dashboard already shows \u2014 no new data."
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "delete": 1
+    },
+    {
+      "role": "All",
+      "read": 1,
+      "create": 1,
+      "write": 1,
+      "if_owner": 1
+    }
+  ]
+}

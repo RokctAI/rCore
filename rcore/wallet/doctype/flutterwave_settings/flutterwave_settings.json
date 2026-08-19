@@ -1,0 +1,48 @@
+{
+  "name": "Flutterwave Settings",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "wallet",
+  "custom": 0,
+  "fields": [
+    {
+      "fieldname": "enabled",
+      "label": "Enable Flutterwave",
+      "fieldtype": "Check"
+    },
+    {
+      "fieldname": "secret_key",
+      "label": "Secret Key",
+      "fieldtype": "Password"
+    },
+    {
+      "fieldname": "public_key",
+      "label": "Public Key",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "success_redirect_url",
+      "label": "Success Redirect URL",
+      "fieldtype": "Data",
+      "description": "The full URL to redirect to after a successful payment. E.g., https://myapp.com/payment-success"
+    },
+    {
+      "fieldname": "failure_redirect_url",
+      "label": "Failure Redirect URL",
+      "fieldtype": "Data",
+      "description": "The full URL to redirect to after a failed or cancelled payment. E.g., https://myapp.com/payment-failed"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1,
+      "submit": 0,
+      "cancel": 0,
+      "amend": 0
+    }
+  ]
+}

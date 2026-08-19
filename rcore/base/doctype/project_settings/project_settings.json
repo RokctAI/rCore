@@ -1,0 +1,21 @@
+{
+  "name": "Project Settings",
+  "engine": "InnoDB",
+  "doctype": "DocType",
+  "issingle": 1,
+  "module": "base",
+  "fields": [
+    {
+      "fieldname": "html_content",
+      "fieldtype": "HTML",
+      "label": "Dashboard"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}
