@@ -1,8 +1,0 @@
-{
- "dt": "Item",
- "doctype": "Custom Field",
- "fieldname": "interval",
- "fieldtype": "Float",
- "label": "Interval"
-}
-

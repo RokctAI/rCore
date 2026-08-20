@@ -1,8 +1,0 @@
-{
- "dt": "Item",
- "doctype": "Custom Field",
- "fieldname": "tax",
- "fieldtype": "Float",
- "label": "Tax"
-}
-

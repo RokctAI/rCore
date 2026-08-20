@@ -1,5 +1,0 @@
-{
-    "vision_backend": "jina",
-    "brain_backend": "jina",
-    "router_backend": "jina"
-}
