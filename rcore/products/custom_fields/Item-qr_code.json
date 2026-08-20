@@ -1,8 +1,0 @@
-{
- "dt": "Item",
- "doctype": "Custom Field",
- "fieldname": "qr_code",
- "fieldtype": "Data",
- "label": "QR Code"
-}
-

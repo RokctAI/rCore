@@ -1,8 +1,0 @@
-{
- "dt": "Item",
- "doctype": "Custom Field",
- "fieldname": "carbs",
- "fieldtype": "Data",
- "label": "Carbs"
-}
-

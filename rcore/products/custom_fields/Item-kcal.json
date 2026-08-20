@@ -1,8 +1,0 @@
-{
- "dt": "Item",
- "doctype": "Custom Field",
- "fieldname": "kcal",
- "fieldtype": "Data",
- "label": "Kcal"
-}
-

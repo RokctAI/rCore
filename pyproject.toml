@@ -5,27 +5,7 @@ description = "Core ROKCT Logic"
 authors = [
     { name = "RokctAI", email = "admin@rokct.ai"}
 ]
-dependencies = [
-    "accelerate",
-    "braintree~=4.20.0",
-    "croniter",
-    "cryptography",
-    "gocardless-pro~=1.22.0",
-    "huggingface-hub",
-    "paytmchecksum~=1.7.0",
-    "pillow",
-    "protobuf",
-    "pycryptodome>=3.18.0,<4.0.0",
-    "razorpay~=2.0.0",
-    "requests",
-    "sentence-transformers",
-    "sentencepiece",
-    "setuptools==80.9.0",
-    "staticmap",
-    "stripe~=10.12.0",
-    "torch",
-    "transformers"
-]
+dependencies = []
 
 
 [build-system]

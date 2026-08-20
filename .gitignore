@@ -105,3 +105,44 @@ yarn-error.log*
 .svn/
 .swiftpm/
 migrate_working_dir/
+
+# --- Composer state: NEVER commit (repo-owner ruling, 2026-08-20) ---
+# rCore is a bare Frappe app shell. Composed SDK output and composer state
+# live only in ephemeral CI/dev workspaces (see .github/workflows/compose-test.yml
+# and the template registry in The-Rokct-Protocol core/utils/frappe/composer/).
+/composer.json
+/requirements.txt
+.rokct/cache/
+# Files the composer writes into the app package
+/rcore/commands.py
+/rcore/patches.txt
+/rcore/patches/
+/rcore/www/
+# Composed module directories (module set of the canonical rcore template;
+# every product flavor composes a subset of these)
+/rcore/agent/
+/rcore/auth/
+/rcore/base/
+/rcore/booking/
+/rcore/builder/
+/rcore/comms/
+/rcore/crm/
+/rcore/delivery/
+/rcore/gateways/
+/rcore/hardware/
+/rcore/kitchen/
+/rcore/lms/
+/rcore/loyalty/
+/rcore/map/
+/rcore/merchants/
+/rcore/orders/
+/rcore/polaris/
+/rcore/productivity/
+/rcore/products/
+/rcore/promotions/
+/rcore/subscriptions/
+/rcore/telemetry/
+/rcore/users/
+/rcore/wallet/
+/rcore/weather/
+/rcore/zones/

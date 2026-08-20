@@ -1,8 +1,0 @@
-{
- "dt": "Item",
- "doctype": "Custom Field",
- "fieldname": "slug",
- "fieldtype": "Data",
- "label": "Slug"
-}
-
