@@ -1,0 +1,208 @@
+name: Compose Test
+
+# rCore is a bare Frappe app shell (repo-owner ruling, 2026-08-20): no
+# composed SDK output and no composer state are ever committed to this repo.
+# This workflow is the proof that the shell actually works: for EVERY
+# product-flavor template in the protocol registry
+# (The-Rokct-Protocol core/utils/frappe/composer/*.json) it
+#   1. copies the bare shell into a throwaway workspace,
+#   2. materializes that flavor's composer.json from the registry template,
+#   3. runs the canonical backend composer there (private SDK repos are
+#      cloned with MONOREPO_PAT, exactly like universal-frappe-ci's
+#      "Compose Backend SDK Modules" step),
+#   4. verifies the composed app (every enabled module materialized and
+#      registered, composed Python byte-compiles),
+#   5. dumps the workspace and moves on to the next flavor.
+# Nothing is ever committed or pushed back — the checkout is read-only and
+# each flavor starts from a pristine copy of the shell.
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Daily canary: the registry templates ride protocol main, so a template
+    # or SDK regression should surface here even when rCore itself is idle.
+    - cron: "0 4 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compose-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          # This job must be physically unable to push anything back.
+          persist-credentials: false
+
+      - uses: actions/setup-python@e348410e00f449ece8581cb8e88be8f0e7712da6 # v5
+        with:
+          # Fleet backend Python (rCore build.yml default is 3.14.x).
+          # Composed sources use PEP 701 multiline f-strings, so the
+          # byte-compile verification needs >= 3.12.
+          python-version: "3.14"
+
+      - name: Fetch protocol template registry
+        env:
+          MONOREPO_PAT: ${{ secrets.MONOREPO_PAT }}
+        run: |
+          set -euo pipefail
+          PROTOCOL_DIR="${RUNNER_TEMP}/The-Rokct-Protocol"
+          if ! git clone --depth 1 "https://x-access-token:${MONOREPO_PAT:-}@github.com/RokctAI/The-Rokct-Protocol.git" "$PROTOCOL_DIR" 2>/dev/null; then
+            # The protocol's raw files are fetchable without auth elsewhere in
+            # the fleet (universal-frappe-ci curls them) — try unauthenticated
+            # before failing.
+            git clone --depth 1 "https://github.com/RokctAI/The-Rokct-Protocol.git" "$PROTOCOL_DIR"
+          fi
+          REGISTRY="$PROTOCOL_DIR/core/utils/frappe/composer"
+          if ! ls "$REGISTRY"/*.json >/dev/null 2>&1; then
+            echo "::error::No flavor templates found at core/utils/frappe/composer/ in the protocol checkout."
+            exit 1
+          fi
+          echo "PROTOCOL_DIR=$PROTOCOL_DIR" >> "$GITHUB_ENV"
+          echo "Flavors discovered:"
+          ls "$REGISTRY"/*.json
+
+      - name: Compose every product flavor ephemerally
+        env:
+          # Private SDK repos: the composer injects this token into its git
+          # clone URLs (compose_backend.py authenticated_git_url), mirroring
+          # universal-frappe-ci's "Compose Backend SDK Modules" step.
+          MONOREPO_PAT: ${{ secrets.MONOREPO_PAT }}
+          # All registry templates except rcore.json currently ride unpinned
+          # SDK refs (same situation the frontend compose canary handles).
+          ROKCT_ALLOW_UNPINNED_SDKS: "1"
+        run: |
+          set -uo pipefail
+          REGISTRY="$PROTOCOL_DIR/core/utils/frappe/composer"
+          SHELL_SRC="$GITHUB_WORKSPACE"
+          FAILED=()
+          PASSED=()
+
+          for template in "$REGISTRY"/*.json; do
+            flavor="$(basename "$template" .json)"
+            echo "::group::Flavor: $flavor"
+
+            # Backend flavors only: a template with no enabled modules[] is
+            # not a Frappe composition (e.g. a Next.js-only sdks[] template).
+            if ! python3 - "$template" <<'PY'
+          import json, sys
+          t = json.load(open(sys.argv[1]))
+          sys.exit(0 if any(m.get("enabled") for m in t.get("modules", [])) else 1)
+          PY
+            then
+              echo "Template '$flavor' has no enabled backend modules — skipping (not a Frappe flavor)."
+              echo "::endgroup::"
+              continue
+            fi
+
+            # 1. Pristine throwaway workspace: a copy of the bare shell,
+            #    without .git so nothing can ever be committed from it.
+            WS="${RUNNER_TEMP}/compose-ws-${flavor}"
+            rm -rf "$WS"
+            mkdir -p "$WS"
+            cp -a "$SHELL_SRC/." "$WS/"
+            rm -rf "$WS/.git"
+
+            # 2. Materialize this flavor's composer.json from the registry
+            #    template (the flutter model: the template is canonical).
+            cp "$template" "$WS/composer.json"
+
+            # 3. Compose in the workspace with the canonical composer. The
+            #    protocol's skills wrapper is preferred: it fetches
+            #    compose_backend.py at the lock-pinned PROTOCOL_REF and
+            #    verifies its sha256 before executing (the same composer
+            #    .rokct/initiate.py would provision — but initiate.py writes
+            #    into tracked paths, so it is never run against the checkout).
+            (
+              cd "$WS"
+              if [ -f "$PROTOCOL_DIR/core/skills/.rok/frappe/scripts/compose.py" ]; then
+                python3 "$PROTOCOL_DIR/core/skills/.rok/frappe/scripts/compose.py"
+              else
+                python3 "$PROTOCOL_DIR/core/utils/frappe/compose_backend.py"
+              fi
+            )
+            compose_rc=$?
+
+            # 4. Verify the composed app is coherent.
+            if [ "$compose_rc" -eq 0 ]; then
+              if python3 - "$template" "$WS" <<'PY'
+          import json, os, sys
+          template, ws = sys.argv[1], sys.argv[2]
+          t = json.load(open(template))
+          modules = [m["name"] for m in t.get("modules", []) if m.get("enabled")]
+          app = t.get("name", "rcore_app").removesuffix("_app")
+          ok = True
+          registered = set()
+          mtxt = os.path.join(ws, app, "modules.txt")
+          if os.path.isfile(mtxt):
+              registered = {l.strip() for l in open(mtxt) if l.strip()}
+          else:
+              print(f"::error::{mtxt} missing after compose")
+              ok = False
+          for m in modules:
+              if not os.path.isdir(os.path.join(ws, app, m)):
+                  print(f"::error::module '{m}' did not materialize under {app}/")
+                  ok = False
+              if m not in registered:
+                  print(f"::error::module '{m}' not registered in {app}/modules.txt")
+                  ok = False
+          print(f"Verified {len(modules)} enabled modules against the composed tree.")
+          sys.exit(0 if ok else 1)
+          PY
+              then
+                if python3 -m compileall -q "$WS/rcore"; then
+                  composed_files=$(find "$WS/rcore" -type f | wc -l)
+                  echo "Flavor '$flavor' OK — composed tree has $composed_files files under rcore/ (nothing is committed)."
+                  PASSED+=("$flavor")
+                else
+                  echo "::error::Flavor '$flavor': composed Python does not byte-compile."
+                  FAILED+=("$flavor")
+                fi
+              else
+                FAILED+=("$flavor")
+              fi
+            else
+              echo "::error::Flavor '$flavor': compose exited with $compose_rc."
+              FAILED+=("$flavor")
+            fi
+
+            # 5. Dump the workspace, next flavor.
+            rm -rf "$WS"
+            echo "::endgroup::"
+          done
+
+          echo "Passed: ${PASSED[*]:-none}"
+          if [ "${#FAILED[@]}" -gt 0 ]; then
+            echo "::error::Flavors failed to compose/verify: ${FAILED[*]}"
+            exit 1
+          fi
+          if [ "${#PASSED[@]}" -eq 0 ]; then
+            echo "::error::No backend flavor was composed — the registry produced nothing to test."
+            exit 1
+          fi
+          echo "All ${#PASSED[@]} product flavors composed and verified ephemerally."
+
+      - name: Assert the checkout is still pristine
+        run: |
+          set -euo pipefail
+          # The whole point of this workflow: nothing composes into the repo
+          # checkout itself, and nothing could be committed back even if it did
+          # (persist-credentials: false). Fail loudly if anything leaked.
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --porcelain
+            echo "::error::Compose test dirtied the repo checkout — the loop must stay fully ephemeral."
+            exit 1
+          fi
+          echo "Checkout is pristine — no composed output touched the repo."
