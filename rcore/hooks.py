@@ -62,15 +62,15 @@ whitelisted_methods = {
     "rokct.platform.api": "rcore.platform.api.execute",
     # Legacy paas.* aliases kept for clients still calling the old app name.
     # Targets are the rcore-substituted paths the SDK module manifests declare.
-    "paas.api.auth.refresh": "rcore.auth.api.auth.auth.refresh",
-    "paas.tenant.api.log_frontend_error": "rcore.telemetry.telemetry.log_frontend_error.log_frontend_error",
+    "paas.api.auth.refresh": "rcore.auth.tenant.api.auth.auth.refresh",
+    "paas.tenant.api.log_frontend_error": "rcore.telemetry.tenant.telemetry.log_frontend_error.log_frontend_error",
     "paas.api.upload.upload_file": "rcore.base.api.upload.upload_file",
 }
 
 # Frappe's dispatcher resolves aliases from this hook (see frappe.override_whitelisted_method)
 override_whitelisted_methods = {
     "rokct.platform.api": "rcore.platform.api.execute",
-    "paas.api.auth.refresh": "rcore.auth.api.auth.auth.refresh",
-    "paas.tenant.api.log_frontend_error": "rcore.telemetry.telemetry.log_frontend_error.log_frontend_error",
+    "paas.api.auth.refresh": "rcore.auth.tenant.api.auth.auth.refresh",
+    "paas.tenant.api.log_frontend_error": "rcore.telemetry.tenant.telemetry.log_frontend_error.log_frontend_error",
     "paas.api.upload.upload_file": "rcore.base.api.upload.upload_file",
 }
