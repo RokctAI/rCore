@@ -1,4 +1,4 @@
-# Copyright (c) 2026 RokctAI
+# Copyright (c) 2026 ROKCT INTELLIGENCE (PTY) LTD
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,7 @@
 # SOFTWARE.
 
 from typing import Any, Optional
-# Copyright (c) 2025, Rendani Sinyage and contributors
+# Copyright (c) 2025, ROKCT INTELLIGENCE (PTY) LTD and contributors
 # For license information, please see license.txt
 
 import frappe

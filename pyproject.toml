@@ -3,7 +3,7 @@ name = "rcore"
 version = "1.4.9"
 description = "Core ROKCT Logic"
 authors = [
-    { name = "RokctAI", email = "admin@rokct.ai"}
+    { name = "ROKCT INTELLIGENCE (PTY) LTD", email = "admin@rokct.ai"}
 ]
 dependencies = []
 

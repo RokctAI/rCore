@@ -1,4 +1,4 @@
-# Copyright (c) 2026 RokctAI
+# Copyright (c) 2026 ROKCT INTELLIGENCE (PTY) LTD
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ from setuptools import setup, find_packages
 name = "rcore"
 version = "1.4.9"
 description = "Core ROKCT Logic"
-author = "RokctAI"
+author = "ROKCT INTELLIGENCE (PTY) LTD"
 author_email = "admin@rokct.ai"
 packages = find_packages()
 zip_safe = False
