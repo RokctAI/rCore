@@ -19,7 +19,7 @@
 # SOFTWARE.
 
 from typing import Any, Optional
-# Copyright (c) 2025, Rendani Sinyage and contributors
+# Copyright (c) 2025, ROKCT INTELLIGENCE (PTY) LTD and contributors
 # For license information, please see license.txt
 
 import frappe
