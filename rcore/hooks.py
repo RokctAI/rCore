@@ -20,7 +20,7 @@ app_title = "Rcore"
 app_publisher = "ROKCT INTELLIGENCE (PTY) LTD"
 app_description = "Core business logic and utilities"
 app_email = "admin@rokct.ai"
-app_license = "mit"
+app_license = "AGPL-3.0-only"
 
 # NOTE: no required_apps = ["erpnext"] (unlike the retired paas shell).
 # ERPNext-touching install/test steps are guarded at runtime with
