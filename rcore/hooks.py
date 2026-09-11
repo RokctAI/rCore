@@ -33,7 +33,7 @@ before_tests = "rcore.tests.utils.before_tests"
 # Installation
 # ------------
 before_install = "rcore.install.check_site_role"
-after_install = "rcore.install.after_install"
+after_install = ["rcore.install.after_install"]
 # before_uninstall for the build-in-progress guard is composed from the
 # builder SDK module's manifest (corporate/builder/frappe) - not declared
 # statically here, so it is registered exactly once.
