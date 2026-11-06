@@ -52,13 +52,16 @@ website_route_rules = [
 
 # Whitelisted Methods (Public APIs)
 whitelisted_methods = {
-    # The single universal entry point for the platform (routes by site role)
+    # The single universal entry point for the platform (routes by site role).
+    # rcore.platform is not in this repo or in any SDK module: it is supplied
+    # by the private rcore_private overlay, which build_ecosystem.sh copies
+    # over apps/rcore. A public-only compose leaves this target unresolved.
     "rokct.platform.api": "rcore.platform.api.execute",
     # Legacy paas.* aliases kept for clients still calling the old app name.
     # Targets are the rcore-substituted paths the SDK module manifests declare.
     "paas.api.auth.refresh": "rcore.auth.tenant.api.auth.auth.refresh",
     "paas.tenant.api.log_frontend_error": "rcore.telemetry.tenant.telemetry.log_frontend_error.log_frontend_error",
-    "paas.api.upload.upload_file": "rcore.base.api.upload.upload_file",
+    "paas.api.upload.upload_file": "rcore.base.tenant.api.upload.upload_file",
 }
 
 # Frappe's dispatcher resolves aliases from this hook (see frappe.override_whitelisted_method)
@@ -66,5 +69,5 @@ override_whitelisted_methods = {
     "rokct.platform.api": "rcore.platform.api.execute",
     "paas.api.auth.refresh": "rcore.auth.tenant.api.auth.auth.refresh",
     "paas.tenant.api.log_frontend_error": "rcore.telemetry.tenant.telemetry.log_frontend_error.log_frontend_error",
-    "paas.api.upload.upload_file": "rcore.base.api.upload.upload_file",
+    "paas.api.upload.upload_file": "rcore.base.tenant.api.upload.upload_file",
 }
