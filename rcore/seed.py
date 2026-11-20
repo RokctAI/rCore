@@ -425,8 +425,18 @@ class JSONSeeder:
         if not data:
             return
 
+        # The table may not exist yet (doctype not synced at this point of the
+        # install). On Postgres a lookup against a missing table aborts the
+        # whole transaction, so skip the doctype instead of querying it.
+        if not frappe.db.table_exists(doctype):
+            print(f"Skipping {doctype} from {filename}: table does not exist yet.")
+            return
+
         print(f"Seeding {doctype} from {filename}...")
         for item in data:
+            # A savepoint per record, so one failed lookup or insert cannot
+            # leave the Postgres transaction in the aborted state.
+            frappe.db.savepoint("seed_generic_item")
             try:
                 # Basic mapping
                 doc_data = {"doctype": doctype}
@@ -459,7 +469,7 @@ class JSONSeeder:
                 frappe.get_doc(doc_data).insert(ignore_permissions=True)
             except Exception:
                 # print(f"Error {doctype} {item.get('id')}: {e}")
-                pass
+                frappe.db.rollback(save_point="seed_generic_item")
 
     def seed_remaining(self):
         # Map of filename -> DocType for generic seeding
